@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ar" data-default-lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — الصفحة غير موجودة | منارة</title>
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/vendor/porfile.css">
+  <script src="js/theme.js"></script>
+  <script src="js/lang.js"></script>
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .wrap { text-align: center; padding: 40px 24px; }
+    .big { font-size: 72px; font-weight: 900; color: var(--primary); font-family: Inter, sans-serif; }
+    .msg { font-size: 18px; font-weight: 700; color: var(--gray-600); margin: 12px 0 28px; line-height: 1.7; }
+    .btn { display: inline-block; padding: 12px 28px; border-radius: 10px; font-weight: 700; text-decoration: none; background: var(--primary); color: #fff; transition: .2s; }
+    .btn:hover { opacity: .85; }
+    .top-right { position: fixed; top: 18px; right: 18px; display: flex; gap: 8px; }
+  </style>
+</head>
+<body>
+  <div class="top-right">
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle theme">🌙</button>
+  </div>
+  <div class="wrap">
+    <div class="big">404</div>
+    <h1 style="font-size:22px;font-weight:900;color:var(--dark);margin:8px 0 4px;" data-i18n="err.title">الصفحة غير موجودة</h1>
+    <p class="msg" data-i18n="err.msg">الرابط الذي حاولت الوصول إليه غير موجود أو تم نقله.</p>
+    <a href="index.html" class="btn" data-i18n="err.home">العودة للرئيسية</a>
+  </div>
+</body>
+</html>

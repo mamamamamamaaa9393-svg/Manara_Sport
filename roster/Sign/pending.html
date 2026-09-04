@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ar" data-default-lang="ar">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" type="image/x-icon" href="../img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>طلبك قيد المراجعة — Manara</title>
+<meta name="description" content="طلبك قيد المراجعة — ستتلقى إشعاراً فور تفعيل حسابك.">
+<meta property="og:title" content="طلبك قيد المراجعة — Manara | منارة">
+<meta property="og:description" content="طلبك قيد المراجعة — ستتلقى إشعاراً فور تفعيل حسابك.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manara.app/">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/vendor/Style_Sig.css">
+<script src="../js/theme.js"></script>
+<script src="../js/lang.js"></script>
+<style>
+  .pending-box { max-width: 560px; margin: 0 auto; }
+  .status-card { text-align: center; padding: 40px 34px 34px; }
+  .status-ico {
+    width: 84px; height: 84px; margin: 0 auto 18px;
+    border-radius: 50%;
+    background: var(--green-bg, #d1fae5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
+    box-shadow: 0 10px 30px rgba(5, 150, 105, .18);
+  }
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 800; font-size: 14px;
+    padding: 8px 18px; border-radius: 999px;
+    margin-bottom: 12px;
+  }
+  .status-title { font-size: 22px; font-weight: 900; color: var(--dark); margin-bottom: 8px; }
+  .status-sub { color: var(--gray-500); font-size: 14px; line-height: 1.8; margin-bottom: 22px; }
+  .steps {
+    text-align: right;
+    background: var(--bg-soft, #f8fafc);
+    border: 1px solid var(--gray-200);
+    border-radius: 14px;
+    padding: 20px 20px 6px;
+    margin-bottom: 20px;
+  }
+  .step { display: flex; gap: 14px; margin-bottom: 16px; }
+  .step .num {
+    flex: 0 0 34px; height: 34px; border-radius: 10px;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 900; font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step b { display: block; font-size: 14px; color: var(--dark); margin-bottom: 2px; }
+  .step span { font-size: 12.5px; color: var(--gray-500); line-height: 1.7; }
+  .how {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 13px; color: #92400e; line-height: 1.8;
+    margin-bottom: 24px;
+  }
+  .actions { display: grid; gap: 10px; }
+  .actions .btn-ghost {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 13px 18px; border-radius: 12px;
+    background: var(--gray-100);
+    color: var(--gray-700);
+    font-weight: 800; font-size: 14px;
+    text-decoration: none;
+    transition: .2s;
+  }
+  .actions .btn-ghost:hover { background: var(--gray-200); }
+  .support { text-align: center; margin-top: 20px; font-size: 12.5px; color: var(--gray-500); line-height: 1.9; }
+  .support a { color: var(--primary); font-weight: 800; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="mark"><img src="../img/logo.png" width="43" height="43"></span>
+      <span>Man<span class="b">ara</span></span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" class="btn-back" data-i18n="nav.home">← Home</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="تبديل الوضع الداكن" title="الوضع الليلي">🌙</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="head">
+    <span class="badge" data-i18n="pending.badge">APPLICATION SUBMITTED</span>
+    <h1><span data-i18n="pending.title_pre">طلبك</span> <span class="accent" data-i18n="pending.title_accent">قيد المراجعة</span></h1>
+    <p data-i18n="pending.sub">نراجع ملفك بدقة قبل تفعيل الحساب — يستغرق عادةً أقل من 24 ساعة ✨</p>
+  </div>
+
+  <div class="pending-box">
+    <div class="form-card show">
+      <div class="status-card">
+        <div class="status-ico">✅</div>
+        <div class="status-pill">⏳ بانتظار مراجعة الإدارة</div>
+        <h2 class="status-title" id="statusTitle">تم استلام ملفك بنجاح</h2>
+        <p class="status-sub" id="statusSub">
+          أرسلنا ملفك إلى فريق الإدارة للمراجعة. سنفعّل حسابك فور اكتمال التحقق من المستندات، وستتلقى تأكيداً عند دخولك إلى المنصة.
+        </p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="num">1</div>
+            <div>
+              <b>📥 استلمنا طلبك</b>
+              <span>وصل ملفك كاملاً وأصبح في قائمة مراجعة الإدارة.</span>
+            </div>
+          </div>
+          <div class="step">
+            <div class="num">2</div>
+            <div>
+              <b>🔍 مراجعة المستندات</b>
+              <span>يتحقق الفريق من المستندات والمعلومات التي أرفقتها في طلبك.</span>
+            </div>
+          </div>
+          <div class="step">
+            <div class="num">3</div>
+            <div>
+              <b>✅ تفعيل الحساب</b>
+              <span>بعد الموافقة تدخل مباشرة بنفس البريد الإلكتروني وكلمة المرور.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="how">
+          <b>كيف أعرف أنه تم قبولي؟</b><br>
+          جرّب تسجيل الدخول بنفس بياناتك بعد قليل — بمجرد قبول طلبك سيدخلك مباشرة إلى حسابك. وإن رفضنا الطلب لأي سبب ستظهر لك رسالة واضحة توضح السبب.
+        </div>
+
+        <div class="actions">
+          <a class="submit" href="Sign_In.html">🔐 سجّل الدخول الآن</a>
+          <a class="btn-ghost" href="../index.html">العودة إلى الرئيسية ←</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="support" id="liveLine"></div>
+    <div class="support">
+      لديك استفسار عن طلبك؟ تواصل معنا على
+      <a href="mailto:support@manara.example">support@manara.example</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Role-based copy so the applicant sees a message that fits their request.
+  (function () {
+    var role = new URLSearchParams(window.location.search).get('role');
+    var title = document.getElementById('statusTitle');
+    var sub = document.getElementById('statusSub');
+    if (role === 'club') {
+      title.textContent = 'تم استلام ملف النادي بنجاح';
+      sub.textContent = 'أرسلنا ملف النادي إلى فريق الإدارة للمراجعة. سنفعّل الحساب فور اكتمال التحقق من الخطاب الرسمي والمستندات المرفوعة، وستتلقى تأكيداً عند دخولك إلى المنصة.';
+    }
+  })();
+
+  // Live status check: the page polls the server (no login needed thanks to
+  // the one-time status token) and swaps the view when admin approves/rejects.
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem('manara_reg') || 'null'); } catch (e) {}
+    var id = params.get('id') || (stored && stored.registrationId);
+    var token = params.get('token') || (stored && stored.statusToken);
+    var email = params.get('email') || (stored && stored.email);
+    if (!id || !token || !email) return;
+
+    var base = (window.API && window.API.base) ? window.API.base : '/api';
+    var card = document.querySelector('.status-card');
+    var liveLine = document.getElementById('liveLine');
+    var timer = null;
+
+    // Browser notification when the request is approved/rejected.
+    var notifyEnabled = false;
+    function notify(body) {
+      if (notifyEnabled && "Notification" in window && Notification.permission === "granted") {
+        try { new Notification("Manara — حالة طلبك", { body: body }); } catch (e) {}
+      }
+    }
+    if ("Notification" in window) {
+      var nbtn = document.createElement("button");
+      nbtn.type = "button";
+      nbtn.textContent = "🔔 نبهني فور تغيّر الحالة";
+      nbtn.style.cssText = "margin-top:12px;padding:10px 16px;border-radius:10px;border:1px solid var(--primary-soft);background:var(--primary-light);color:var(--primary);font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;";
+      nbtn.addEventListener("click", function () {
+        Notification.requestPermission().then(function (perm) {
+          if (perm === "granted") { notifyEnabled = true; nbtn.textContent = "✅ سيتم إشعارك تلقائياً عند تغيّر الحالة"; nbtn.disabled = true; }
+          else { nbtn.textContent = "🔕 الإشعارات غير مفعّلة — تحقق من إعدادات المتصفح"; }
+        });
+      });
+      var supportWrap = document.querySelector('.support');
+      if (supportWrap) supportWrap.appendChild(nbtn);
+    }
+
+    function renderApproved() {
+      notify("تمت الموافقة على طلبك — حسابك أصبح نشطاً الآن! 🎉");
+      card.innerHTML =
+        '<div class="status-ico" style="background:#d1fae5;">🎉</div>' +
+        '<div class="status-pill" style="background:#d1fae5;color:#047857;">تم تفعيل حسابك</div>' +
+        '<h2 class="status-title">أهلاً بك في Manara!</h2>' +
+        '<p class="status-sub">وافقت الإدارة على طلبك وأصبح حسابك نشطاً الآن. سجّل الدخول بنفس البريد الإلكتروني وكلمة المرور التي استخدمتها في التسجيل.</p>' +
+        '<div class="actions">' +
+        '  <a class="submit" href="Sign_In.html">🔐 سجّل الدخول الآن</a>' +
+        '  <a class="btn-ghost" href="../index.html">العودة إلى الرئيسية ←</a>' +
+        '</div>';
+    }
+
+    function renderRejected(note, retryAfter) {
+      notify("تم رفض طلبك — السبب: " + (note || "المستندات غير صحيحة"));
+      var retryTxt = '';
+      if (retryAfter) {
+        var mins = Math.max(0, Math.ceil((new Date(retryAfter).getTime() - Date.now()) / 60000));
+        if (mins > 0) retryTxt = '<br><b>يمكنك إعادة التقديم بعد ' + mins + ' دقيقة.</b>';
+      }
+      card.innerHTML =
+        '<div class="status-ico" style="background:#fee2e2;font-size:36px;">❌</div>' +
+        '<div class="status-pill" style="background:#fee2e2;color:#b91c1c;">تم رفض الطلب</div>' +
+        '<h2 class="status-title">للأسف، لم تتم الموافقة على طلبك</h2>' +
+        '<p class="status-sub"><b>سبب الرفض:</b> ' + (note || 'المستندات غير صحيحة') + '.<br>أعد إرسال المستندات الرسمية الصحيحة ثم قدّم طلباً جديداً.' + retryTxt + '</p>' +
+        '<div class="actions">' +
+        '  <a class="submit" href="Sign_Up.html">📝 أعد التسجيل بالمستندات الصحيحة</a>' +
+        '  <a class="btn-ghost" href="pending.html?id=' + encodeURIComponent(id) + '&token=' + encodeURIComponent(token) + '">تحديث الحالة 🔄</a>' +
+        '</div>';
+    }
+
+    function check() {
+      fetch(base + '/auth/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, token: token })
+      }).then(function (r) {
+        return r.json().then(function (d) { return { ok: r.ok, data: d }; });
+      }).then(function (r) {
+        if (!r.ok) return;
+        var now = new Date();
+        liveLine.textContent = 'آخر فحص: ' + now.toLocaleTimeString('ar-EG') + ' — نتحقق تلقائياً من حالة طلبك';
+        if (r.data.status === 'approved') {
+          if (timer) clearInterval(timer);
+          renderApproved();
+          liveLine.textContent = '';
+        } else if (r.data.status === 'rejected') {
+          if (timer) clearInterval(timer);
+          renderRejected(r.data.adminNote, r.data.retryAfter);
+          liveLine.textContent = '';
+        } else {
+          liveLine.textContent = 'لا يزال طلبك قيد المراجعة — نتحقق تلقائياً، تحديث ' + now.toLocaleTimeString('ar-EG');
+        }
+      }).catch(function () {});
+    }
+
+    check();
+    timer = setInterval(check, 10000);
+  })();
+</script>
+
+</body>
+</html>

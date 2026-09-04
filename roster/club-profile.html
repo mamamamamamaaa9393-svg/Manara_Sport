@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html lang="ar" data-default-lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ملف النادي | Manara</title>
+<meta name="description" content="ملف النادي — تعرّف على النادي وتفاصيله ومهارات اللاعبين المرتبطين به.">
+<meta property="og:title" content="ملف النادي | منارة">
+<meta property="og:description" content="ملف النادي — تعرّف على النادي وتفاصيله ومهارات اللاعبين المرتبطين به.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manara.app/">
+<meta property="og:image" content="https://manara.app/img/logo.png">
+<meta property="og:site_name" content="Manara">
+<meta name="twitter:card" content="summary_large_image">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/vendor/porfile.css">
+  <script src="js/theme.js"></script>
+<script src="js/lang.js"></script>
+  <script src="js/nav.js"></script>
+</head>
+<body>
+
+<!-- Nav -->
+<div data-partial="nav.e7b3dd"></div>
+
+<div class="container">
+  <div id="trialBanner" style="display:none;"></div>
+
+  <!-- Cover -->
+  <div class="cover">
+    <span class="verified" id="coverBadge">✓ Verified Club</span>
+  </div>
+
+  <!-- Profile head -->
+  <div class="profile-head">
+    <div class="avatar-wrap">
+      <div class="avatar avatar-relative" id="clubLogo">🏟️</div>
+      <div class="head-actions">
+        <span class="btn-msg" style="background:var(--gray-100);color:var(--gray-700);box-shadow:none;">🏟️ ملف النادي</span>
+      </div>
+    </div>
+
+    <div class="name-block">
+      <h1 id="clubName">النادي <span class="check" title="Verified">✓</span></h1>
+      <div class="handle" id="clubId">Club ID</div>
+      <div class="tags" id="clubTags">
+        <span class="tag">🏟️ نادي</span>
+      </div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="quick-stats" id="clubStats">
+      <div class="qs"><b>—</b><span>سنة التأسيس</span></div>
+      <div class="qs"><b>—</b><span>الدوري</span></div>
+      <div class="qs"><b>—</b><span>لاعب</span></div>
+      <div class="qs"><b>—</b><span>المركز المطلوب</span></div>
+    </div>
+  </div>
+
+  <!-- Layout -->
+  <div class="layout">
+    <!-- Main -->
+    <div class="main">
+
+      <!-- About -->
+      <div class="card">
+        <div class="card-title">
+          <span><span class="ico">🏟️</span> <span data-i18n="clubprofile.about">عن النادي</span></span>
+        </div>
+        <p class="bio" id="clubAbout">...</p>
+      </div>
+
+      <!-- Players wanted -->
+      <div class="card">
+        <div class="card-title">
+          <span><span class="ico">🔍</span> <span data-i18n="clubprofile.needs">اللاعبون المطلوبون</span></span>
+        </div>
+        <p id="clubNeeds" style="margin:0;color:var(--gray-600);font-weight:600;line-height:1.8;">...</p>
+      </div>
+
+      <!-- Squad -->
+      <div class="card">
+        <div class="card-title">
+          <span><span class="ico">👥</span> <span data-i18n="clubprofile.squad">لاعبو النادي</span></span>
+        </div>
+        <div id="clubSquad" style="display:flex;flex-direction:column;gap:10px;">...</div>
+      </div>
+
+      <!-- Shortlist -->
+      <div class="card" id="shortlistCard">
+        <div class="card-title">
+          <span><span class="ico">⭐</span> <span data-i18n="clubprofile.shortlist">القائمة المختصرة</span></span>
+          <span class="btn-msg" id="compareBtn" style="display:none;cursor:pointer;background:var(--primary);color:#fff;font-weight:800;" data-i18n="clubprofile.compare">⚖️ مقارنة</span>
+        </div>
+        <div id="shortlistBox" style="display:flex;flex-direction:column;gap:10px;">...</div>
+        <div id="compareBox" style="display:none;margin-top:14px;overflow-x:auto;"></div>
+      </div>
+
+      <!-- Documents -->
+      <div class="card" id="docsCard">
+        <div class="card-title">
+          <span><span class="ico">📄</span> <span data-i18n="clubprofile.docs">المستندات الرسمية</span></span>
+        </div>
+        <div class="doc-list" id="clubDocs"></div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="side">
+      <!-- Quick info -->
+      <div class="widget">
+        <h3><span class="ico">📋</span> <span data-i18n="clubprofile.quick">معلومات سريعة</span></h3>
+        <div id="clubQuick"></div>
+      </div>
+
+      <!-- Contact -->
+      <div class="widget">
+        <h3><span class="ico">✉️</span> <span data-i18n="clubprofile.contact">بيانات التواصل</span></h3>
+        <div id="clubContact"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  <div class="toast" id="toast" style="position:fixed;bottom:24px;right:50%;transform:translateX(50%);background:var(--green);color:#fff;font-weight:800;font-size:13.5px;padding:13px 22px;border-radius:12px;box-shadow:var(--shadow-md);opacity:0;pointer-events:none;transition:opacity .25s;z-index:3000;">تم بنجاح</div>
+  <!-- partials.js MUST run BEFORE the page script: it injects the navbar
+       markup synchronously, so handlers bound to #logoutBtn actually attach. -->
+  <script src="js/partials.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/sub-banner.js"></script>
+  <script src="js/club-profile.js"></script>
+<div data-partial="foot.b25e1b"></div>
+</body>
+</html>

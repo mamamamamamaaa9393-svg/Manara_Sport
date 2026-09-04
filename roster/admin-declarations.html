@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ar" data-default-lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🔐 خزنة الإقرارات | Manara</title>
+<meta name="description" content="خزينة الإقرارات — عرض المستندات المشفرة للاعبين الموثّقين.">
+<meta property="og:title" content="خزينة الإقرارات | منارة">
+<meta property="og:description" content="خزينة الإقرارات — عرض المستندات المشفرة للاعبين الموثّقين.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manara.app/">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/vendor/porfile.css">
+  <script src="js/theme.js"></script>
+<script src="js/lang.js"></script>
+  <script src="js/nav.js"></script>
+<style>
+  .admin-wrap { margin-top: 22px; }
+  .admin-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+  .admin-head h1 { margin: 0; font-size: 22px; font-weight: 900; color: var(--dark); }
+  .admin-head p { margin: 4px 0 0; font-size: 13px; color: var(--gray-500); font-weight: 600; }
+
+  .err-bar { background: #fdecea; border: 1px solid #f5b5ad; color: #b3261e; font-weight: 700; font-size: 13px; padding: 12px 16px; border-radius: 12px; margin-bottom: 14px; }
+
+  .back-link { background: var(--gray-100); color: var(--gray-700); padding: 10px 18px; border-radius: 12px; font-weight: 800; font-size: 13px; text-decoration: none; display: inline-flex; gap: 6px; }
+  .back-link:hover { background: var(--gray-200); }
+
+  /* ---- Locked view ---- */
+  .vault-card { max-width: 520px; margin: 26px auto 0; background: var(--surface); border: 1px solid var(--gray-200); border-radius: 22px; padding: 34px 30px; text-align: center; box-shadow: var(--shadow-sm); }
+  .vault-ico { width: 72px; height: 72px; margin: 0 auto 16px; border-radius: 20px; background: linear-gradient(135deg, var(--primary), var(--violet)); display: grid; place-items: center; font-size: 34px; color: #fff; box-shadow: var(--shadow-primary); }
+  .vault-card h2 { margin: 0 0 8px; font-size: 20px; font-weight: 900; color: var(--dark); }
+  .vault-sub { margin: 0 0 22px; font-size: 12.5px; font-weight: 700; color: var(--gray-500); line-height: 1.8; }
+  .vault-sec { display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 20px; font-size: 11.5px; font-weight: 800; color: var(--primary); background: var(--primary-light); border-radius: 20px; padding: 7px 14px; width: fit-content; margin-inline: auto; }
+  .field { text-align: right; margin-bottom: 14px; }
+  .field label { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--gray-600); margin-bottom: 6px; }
+  .field label .step { background: var(--primary); color: #fff; width: 20px; height: 20px; border-radius: 7px; display: inline-grid; place-items: center; font-size: 11px; font-weight: 900; flex: none; }
+  .vault-input { width: 100%; border: 1px solid var(--gray-200); border-radius: 12px; padding: 12px 14px; font-size: 13.5px; font-family: 'Inter', 'Cairo', monospace; direction: ltr; text-align: left; background: var(--gray-50); color: var(--dark); outline: none; transition: border-color .15s, box-shadow .15s; }
+  .vault-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); background: var(--surface); }
+  .vault-btn { margin-top: 8px; width: 100%; border: none; border-radius: 12px; padding: 13px 22px; font-weight: 900; font-size: 14px; cursor: pointer; font-family: inherit; background: var(--primary); color: #fff; transition: background .15s, transform .1s; }
+  .vault-btn:hover { background: var(--primary-ink); }
+  .vault-btn:active { transform: scale(.98); }
+  .vault-btn:disabled { opacity: .6; cursor: not-allowed; }
+  .vault-foot { margin-top: 16px; font-size: 11px; color: var(--gray-400); font-weight: 700; }
+  .vault-foot b { color: var(--gray-500); }
+
+  /* ---- Unlocked view ---- */
+  .vault-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; background: var(--surface); border: 1px solid var(--gray-200); border-radius: 16px; padding: 14px 18px; }
+  .vault-bar .v-count { font-size: 13.5px; font-weight: 800; color: var(--gray-600); }
+  .vault-bar .v-count b { color: var(--primary); font-size: 17px; }
+  .btn-lock { border: 1px solid #fecaca; background: var(--surface); color: #dc2626; border-radius: 11px; padding: 10px 20px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .btn-lock:hover { background: #fef2f2; }
+
+  .decl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+  .decl-card { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 16px; overflow: hidden; cursor: pointer; transition: transform .15s, box-shadow .15s, border-color .15s; }
+  .decl-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+  .decl-thumb { height: 170px; background: var(--gray-50); display: grid; place-items: center; overflow: hidden; border-bottom: 1px solid var(--gray-100); position: relative; }
+  .decl-thumb img { width: 100%; height: 100%; object-fit: contain; }
+  .decl-thumb .pdf-ico { font-size: 46px; color: var(--gray-400); }
+  .decl-body { padding: 13px 15px; }
+  .decl-body b { font-size: 14px; font-weight: 900; color: var(--dark); display: block; }
+  .decl-open { margin-top: 10px; font-size: 11px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 5px; }
+
+  .empty-vault { text-align: center; padding: 60px 16px; color: var(--gray-500); font-weight: 700; font-size: 13.5px; background: var(--surface); border: 1px dashed var(--gray-200); border-radius: 16px; }
+  .empty-vault .big { font-size: 40px; display: block; margin-bottom: 10px; }
+
+  /* ---- Lightbox ---- */
+  .lightbox { position: fixed; inset: 0; background: rgba(10, 15, 30, .88); display: grid; place-items: center; z-index: 999; padding: 30px; }
+  .lb-inner { max-width: 92vw; max-height: 92vh; position: relative; display: flex; align-items: center; justify-content: center; }
+  .lb-inner img { max-width: 92vw; max-height: 92vh; border-radius: 14px; box-shadow: var(--shadow-lg); }
+  .lb-close { position: absolute; top: -46px; left: 0; background: var(--surface); color: var(--dark); border: none; border-radius: 10px; width: 38px; height: 38px; font-size: 16px; cursor: pointer; font-weight: 900; }
+</style>
+</head>
+<body>
+
+<div data-partial="nav.a46804"></div>
+
+<div class="container admin-wrap">
+  <div class="admin-head">
+    <div>
+      <h1>🔐 خزنة الإقرارات</h1>
+      <p>نسخ مشفّرة (AES-256-GCM) من صورة الإقرار لكل لاعب تمت الموافقة عليه — فتحها يتطلب العبارة السرية الثلاثية.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <a href="admin.html" class="back-link">← لوحة الإدارة</a>
+      <span class="btn-msg" style="background:var(--gray-100);color:var(--gray-600);box-shadow:none;">مرحباً <b id="adminName">…</b></span>
+    </div>
+  </div>
+
+  <div id="errBar" class="err-bar" style="display:none"></div>
+
+  <!-- Locked: passphrase gate -->
+  <div id="lockView">
+    <div class="vault-card">
+      <div class="vault-ico">🔐</div>
+      <h2>أدخل العبارة السرية لفك الخزنة</h2>
+      <p class="vault-sub">هذه الصفحة محمية بتشفير من الدرجة العسكرية. يجب إدخال كلمات المرور الثلاث بالترتيب الصحيح لعرض الإقرارات.</p>
+      <div class="vault-sec">🛡️ AES-256-GCM &nbsp;·&nbsp; scrypt &nbsp;·&nbsp; جلسة 15 دقيقة</div>
+      <div class="field">
+        <label><span class="step">١</span> كلمة المرور الأولى</label>
+        <input type="password" id="p1" class="vault-input" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="field">
+        <label><span class="step">٢</span> كلمة المرور الثانية</label>
+        <input type="password" id="p2" class="vault-input" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="field">
+        <label><span class="step">٣</span> كلمة المرور الثالثة</label>
+        <input type="password" id="p3" class="vault-input" autocomplete="off" spellcheck="false">
+      </div>
+      <button id="unlockBtn" class="vault-btn" type="button">🔓 فتح الخزنة</button>
+      <div class="vault-foot">عدد الإقرارات المخزنة: <b id="lockCount">0</b></div>
+    </div>
+  </div>
+
+  <!-- Unlocked: declarations grid -->
+  <div id="vaultView" style="display:none;">
+    <div class="vault-bar">
+      <span class="v-count">🔓 الخزنة مفتوحة — الإقرارات: <b id="declCount">0</b></span>
+      <button id="lockBtn" class="btn-lock" type="button">🔒 قفل الخزنة</button>
+    </div>
+    <div id="declGrid" class="decl-grid"></div>
+  </div>
+</div>
+
+<div id="lightbox" class="lightbox" style="display:none;">
+  <div class="lb-inner">
+    <button id="lbClose" class="lb-close" type="button" aria-label="إغلاق">✕</button>
+    <img id="lbImg" alt="صورة الإقرار">
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ تم تنفيذ الإجراء</div>
+
+<!-- partials.js MUST run BEFORE the page script: it injects the navbar
+     markup synchronously, so handlers bound to #logoutBtn actually attach. -->
+<script src="js/partials.js"></script>
+<script src="js/api.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var declToken = "";
+  var openedUrls = [];
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function toast(msg, isError) {
+    var t = $("toast");
+    t.textContent = msg;
+    if (isError) t.style.background = "#ef4444"; else t.style.background = "";
+    t.classList.add("show");
+    setTimeout(function () { t.classList.remove("show"); }, 3500);
+  }
+  function showErr(msg) {
+    var b = $("errBar");
+    b.style.display = "block";
+    b.textContent = "⚠️ " + msg;
+  }
+  function hideErr() { $("errBar").style.display = "none"; }
+
+  function revokeUrls() {
+    openedUrls.forEach(function (u) { try { URL.revokeObjectURL(u); } catch (e) {} });
+    openedUrls = [];
+  }
+
+  function showLocked(count) {
+    $("lockCount").textContent = count || 0;
+    $("lockView").style.display = "";
+    $("vaultView").style.display = "none";
+    revokeUrls();
+    $("p1").value = ""; $("p2").value = ""; $("p3").value = "";
+    $("declGrid").innerHTML = "";
+  }
+
+  function cardHTML(d) {
+    var isPdf = /pdf/i.test(d.mimetype);
+    return '<div class="decl-card" data-id="' + esc(d.id) + '">' +
+      '<div class="decl-thumb" data-kind="' + (isPdf ? "pdf" : "img") + '">' +
+        (isPdf ? '<span class="pdf-ico">📄</span>' : '<img alt="" loading="lazy">') +
+      '</div>' +
+      '<div class="decl-body">' +
+        '<b>' + esc(d.playerName) + '</b>' +
+        '<div class="decl-open">' + (isPdf ? "فتح المستند ↗" : "عرض صورة الإقرار") + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderList(list) {
+    $("declCount").textContent = list.length;
+    $("lockView").style.display = "none";
+    $("vaultView").style.display = "";
+    revokeUrls();
+    var grid = $("declGrid");
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty-vault"><span class="big">🗂️</span>لا توجد إقرارات مخزنة بعد.<br>تُلتقط نسخة مشفّرة تلقائياً عند قبول أي لاعب أثناء إنشاء حسابه.</div>';
+      return;
+    }
+    grid.innerHTML = list.map(cardHTML).join("");
+    grid.querySelectorAll(".decl-card").forEach(function (card) {
+      var id = card.dataset.id;
+      var isPdf = card.querySelector('[data-kind="pdf"]');
+      window.API.adminDeclarationFile(id, declToken).then(function (r) {
+        var url = URL.createObjectURL(r.blob);
+        openedUrls.push(url);
+        if (isPdf) {
+          card.dataset.pdfUrl = url;
+        } else {
+          var img = card.querySelector("img");
+          if (img) img.src = url;
+        }
+      }).catch(function (err) { card.querySelector(".decl-open").textContent = "تعذر فك التشفير"; });
+    });
+  }
+
+  function openLightbox(src) {
+    $("lbImg").src = src;
+    $("lightbox").style.display = "grid";
+  }
+  function closeLightbox() { $("lightbox").style.display = "none"; $("lbImg").src = ""; }
+
+  function bind() {
+    var unlock = $("unlockBtn");
+    unlock.addEventListener("click", function () {
+      var p1 = $("p1").value, p2 = $("p2").value, p3 = $("p3").value;
+      if (!p1 || !p2 || !p3) { showErr("يرجى إدخال كلمات المرور الثلاث."); return; }
+      unlock.disabled = true;
+      hideErr();
+      window.API.adminDeclarationsUnlock(p1, p2, p3).then(function (res) {
+        declToken = res.token;
+        unlock.disabled = false;
+        renderList(res.list || []);
+      }).catch(function (err) {
+        unlock.disabled = false;
+        showErr(err.message || "تعذر فتح الخزنة");
+        toast("❌ " + (err.message || "كلمات المرور غير صحيحة"), true);
+      });
+    });
+
+    $("lockBtn").addEventListener("click", function () {
+      declToken = "";
+      window.API.adminDeclarationsStatus().then(function (s) {
+        showLocked(s.count);
+      });
+    });
+
+    $("lbClose").addEventListener("click", closeLightbox);
+    $("lightbox").addEventListener("click", function (e) {
+      if (e.target === $("lightbox")) closeLightbox();
+    });
+
+    $("declGrid").addEventListener("click", function (e) {
+      var card = e.target.closest(".decl-card");
+      if (!card) return;
+      var isPdf = card.querySelector('[data-kind="pdf"]');
+      if (isPdf) {
+        if (card.dataset.pdfUrl) { var a = document.createElement("a"); a.href = card.dataset.pdfUrl; a.target = "_blank"; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove(); }
+      } else {
+        var img = card.querySelector("img");
+        if (img && img.src) openLightbox(img.src);
+      }
+    });
+
+    ["p1", "p2", "p3"].forEach(function (id) {
+      $(id).addEventListener("keydown", function (e) {
+        if (e.key === "Enter") unlock.click();
+      });
+    });
+
+    var lo = $("logoutBtn");
+    if (lo) lo.addEventListener("click", function () {
+      window.API.logout();
+      window.location.href = "Sign/Sign_In.html";
+    });
+  }
+
+  (function init() {
+    if (!window.API.token()) { window.location.href = "Sign/Sign_In.html"; return; }
+    window.API.getMe().then(function (me) {
+      if (!me.user || me.user.role !== "admin") { window.location.href = "index.html"; return; }
+      $("adminName").textContent = me.user.name || "Admin";
+      bind();
+      window.API.adminDeclarationsStatus().then(function (s) {
+        showLocked(s.count);
+      }).catch(function (err) {
+        showErr(err.message || "تعذر الاتصال بالخادم");
+      });
+    }).catch(function () {
+      window.location.href = "Sign/Sign_In.html";
+    });
+  })();
+})();
+</script>
+<div data-partial="foot.b25e1b"></div>
+</body>
+</html>

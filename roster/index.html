@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<script>document.documentElement.classList.add('js')</script>
+<meta charset="utf-8">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b1220">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="منارة">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>منارة — منصة اكتشاف المواهب الرياضية</title>
+  <meta name="description" content="منصة منارة تربط الرياضيين الشباب بالأندية والأكاديميات. سجّل ملفك الرياضي مجاناً واعرض مهاراتك للعالم.">
+  <meta property="og:title" content="منارة — منصة اكتشاف المواهب الرياضية">
+  <meta property="og:description" content="منصة منارة تربط الرياضيين الشباب بالأندية والأكاديميات. سجّل ملفك الرياضي مجاناً.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://manara.app/">
+  <meta property="og:image" content="img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/vendor/bootstrap.min.css">
+<link rel="stylesheet" href="css/style.css">
+<script src="js/theme.js"></script>
+<script src="js/lang.js"></script>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); }</script>
+<style>
+  .cat-soon {
+    display: inline-block;
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    font-weight: 800;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+</style>
+<link rel="canonical" href="https://manara.app/">
+<script type="application/ld+json" id="manara-org-jsonld">{"@context":"https://schema.org","@type":"Organization","name":"منارة","alternateName":"Manara","url":"https://manara.app/","description":"منصة منارة لاكتشاف المواهب الرياضية — تربط الرياضيين الشباب بالأندية والأكاديميات.","logo":"https://manara.app/img/logo.png"}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- ============================================================ Navbar -->
+<div data-partial="nav.53be93"></div>
+
+<main id="main">
+
+<!-- ============================================================ Hero -->
+<section class="hero section">
+  <div class="container-x">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow" data-i18n="index.eyebrow">Manara — منارة</span>
+        <h1 data-i18n="index.hero_title">Find your<span class="hl"> athlete</span></h1>
+        <p class="hero-lead" data-i18n="index.hero_lead">Manara connects athletes with vetted clubs and academies across every sport — with verified profiles and a scouting process that respects your time.</p>
+
+        <form class="searchbar" id="heroSearch" role="search" aria-label="Job search">
+          <label class="field" aria-label="Keyword">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" name="keyword" placeholder="Job title or keyword" autocomplete="off" data-i18n-ph="index.keyword_ph">
+          </label>
+          
+          <label class="field" aria-label="Category">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            <select name="category" aria-label="Category">
+              <option value="" data-i18n="index.all_sports">All sports</option>
+              <option value="Football">Football</option>
+            </select>
+          </label>
+          <button type="submit" class="btn btn-primary" data-i18n="index.search_btn">Search Player</button>
+        </form>
+
+<div class="search-chips">
+          <span class="lbl" data-i18n="index.popular">Popular:</span>
+          <button type="button" class="chip">Player</button>
+          <button type="button" class="chip">Club</button>
+          <button type="button" class="chip">Striker</button>
+          <button type="button" class="chip">Goalkeeper</button>
+          <button type="button" class="chip">Academy</button>
+        </div>
+
+        <a class="btn btn-outline-ink btn-pill" id="heroProfileBtn" href="profile.html" style="margin-top:18px;" data-i18n="index.view_profile">👤 View my profile</a>
+      </div>
+
+      <div class="hero-visual reveal reveal-d1">
+        <img class="hero-photo" src="img/images.jpg" width="560" height="672" fetchpriority="high" alt="لاعب كرة قدم شاب أثناء التدريب على أرضية الملعب">
+        <div class="hero-card card-a">
+          <span class="hc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <div><small>Application sent</small><strong>Your message was delivered</strong></div>
+        </div>
+        <div class="hero-card card-b">
+          <span class="hc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+          <div><small>Average offer</small><strong>+18% on last role</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ Stats -->
+<section class="stats section-sm">
+  <div class="container-x">
+<div class="stats-grid">
+      <div class="stat reveal"><div class="num tnum" data-stat="players" data-count="0" data-suffix="+">0+</div><div class="lbl" data-i18n="index.stat_players">Registered Players</div></div>
+      <div class="stat reveal reveal-d1"><div class="num tnum" data-stat="pro" data-count="0" data-suffix="+">0+</div><div class="lbl" data-i18n="index.stat_pro">Professional Clubs</div></div>
+      <div class="stat reveal reveal-d2"><div class="num tnum" data-stat="academy" data-count="0" data-suffix="+">0+</div><div class="lbl" data-i18n="index.stat_academy">Academies</div></div>
+      <div class="stat reveal reveal-d3"><div class="num tnum" data-stat="amateur" data-count="0" data-suffix="+">0+</div><div class="lbl" data-i18n="index.stat_amateur">Amateur Clubs</div></div>
+      <div class="stat reveal reveal-d4"><div class="num tnum" data-stat="center" data-count="0" data-suffix="+">0+</div><div class="lbl" data-i18n="index.stat_center">Training Centers</div></div>
+      <div class="stat reveal reveal-d5"><div class="num tnum" data-stat="team" data-count="0" data-suffix="+">0+</div><div class="lbl" data-i18n="index.stat_team">National Teams</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ Categories -->
+<section class="section section-soft" id="categories">
+  <div class="container-x">
+    <div class="section-head center">
+      <span class="eyebrow" data-i18n="index.cat_eyebrow">Browse by sport</span>
+      <h2 class="section-title" data-i18n="index.cat_title">Discover talent across every sport</h2>
+      <p class="section-sub" data-i18n="index.cat_sub">Browse verified athletes, review their profiles and message the ones you want.</p>
+    </div>
+    <div class="cat-grid">
+      <a class="cat-card c-eng reveal" href="jobs.html" data-cat="Football">
+        <span class="cat-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-ball-football"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 7l4.76 3.45l-1.76 5.55h-6l-1.76 -5.55l4.76 -3.45" /><path d="M12 7v-4m3 13l2.5 3m-.74 -8.55l3.74 -1.45m-11.44 7.05l-2.56 2.95m.74 -8.55l-3.74 -1.45" /></svg></span>
+        <div><h3>Football</h3><span class="count"><b data-sport-count="Football">0</b> open players</span></div>
+      </a>
+      <div class="cat-card c-des reveal soon" data-cat="Basketball">
+        <span class="cat-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/><path d="M5.65 5.65l12.7 12.7"/><path d="M5.65 18.35l12.7 -12.7"/><path d="M12 3a9 9 0 0 0 9 9"/><path d="M3 12a9 9 0 0 1 9 9"/></svg></span>
+        <div><h3>Basketball</h3><span class="soon-badge" data-i18n="cat.soon">Coming soon</span></div>
+      </div>
+      <div class="cat-card c-mkt reveal soon" data-cat="Tennis">
+        <span class="cat-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/><path d="M6 5.3a9 9 0 0 1 0 13.4"/><path d="M18 5.3a9 9 0 0 0 0 13.4"/></svg></span>
+        <div><h3>Tennis</h3><span class="soon-badge" data-i18n="cat.soon">Coming soon</span></div>
+      </div>
+      <div class="cat-card c-sal reveal soon" data-cat="Volleyball">
+        <span class="cat-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/><path d="M12 12a8 8 0 0 0 8 4"/><path d="M7.5 13.5a12 12 0 0 0 8.5 6.5"/><path d="M12 12a8 8 0 0 0 -7.464 4.928"/><path d="M12.951 7.353a12 12 0 0 0 -9.88 4.111"/><path d="M12 12a8 8 0 0 0 -.536 -8.928"/><path d="M15.549 15.147a12 12 0 0 0 1.38 -10.611"/></svg></span>
+        <div><h3>Volleyball</h3><span class="soon-badge" data-i18n="cat.soon">Coming soon</span></div>
+      </div>
+      <div class="cat-card c-hea reveal soon" data-cat="Handball">
+        <span class="cat-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="16.5" cy="7.5" r="3"/><path d="M12.2 10.2c-2.9 1.2-5 3.4-6.2 6.3"/><path d="M10.5 13.5c-1.6.9-2.9 2.2-3.8 3.8"/></svg></span>
+        <div><h3>Handball</h3><span class="soon-badge" data-i18n="cat.soon">Coming soon</span></div>
+      </div>
+      <div class="cat-card c-sup reveal soon" data-cat="Golf">
+        <span class="cat-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 18v-15l7 4l-7 4"/><path d="M9 17.67c-.62 .36 -1 .82 -1 1.33c0 1.1 1.8 2 4 2s4 -.9 4 -2c0 -.5 -.38 -.97 -1 -1.33"/></svg></span>
+        <div><h3>Golf</h3><span class="soon-badge" data-i18n="cat.soon">Coming soon</span></div>
+      </div>
+      <div class="cat-card c-fin reveal soon" data-cat="Karate">
+        <span class="cat-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 9l4.5 1l3 2.5"/><path d="M13 21v-8l3 -5.5"/><path d="M8 4.5l4 2l4 1l4 3.5l-2 3.5"/><circle cx="17" cy="5" r="2"/></svg></span>
+        <div><h3>Karate</h3><span class="soon-badge" data-i18n="cat.soon">Coming soon</span></div>
+      </div>
+      <div class="cat-card c-rem reveal soon" data-cat="Swimming">
+        <span class="cat-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="16" cy="9" r="1"/><path d="M6 11l4 -2l3.5 3l-1.5 2"/><path d="M3 16.75a2.4 2.4 0 0 0 1 .25a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 1 -.25"/></svg></span>
+        <div><h3>Swimming</h3><span class="soon-badge" data-i18n="cat.soon">Coming soon</span></div>
+      </div>
+    </div>
+    
+  </div>
+</section>
+
+<!-- ============================================================ Featured listings -->
+<!-- ============================================================ Companies -->
+<section class="section-sm companies" id="companies">
+  <div class="container-x">
+    <p class="lead-line">Our best clubs</p>
+    <div class="wordmarks">
+      <a class="btn btn-outline-ink btn-pill" href="clubs.html" data-i18n="index.browse_clubs">Browse verified clubs →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ How it works -->
+<section class="section" id="how">
+  <div class="container-x">
+    <div class="flow">
+      <div class="flow-inner">
+
+        <!-- 1) Get started -->
+        <div class="section-head" style="margin-bottom:0">
+          <span class="eyebrow on-accent">Get started</span>
+          <h2 class="section-title">Start in three simple steps</h2>
+          <p class="section-sub">Football is live on Manara right now.</p>
+        </div>
+
+        <div class="flow-steps">
+          <div class="flow-step">
+            <span class="step-n">STEP 01</span>
+            <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+            <h3>Create your account</h3>
+            <p>Register in under a minute as a player or a club with a verified Manara profile.</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-n">STEP 02</span>
+            <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg></span>
+            <h3>Build your profile</h3>
+            <p>Add your details, position and highlights — Football positions are available for now.</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-n">STEP 03</span>
+            <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <h3>Browse &amp; get discovered</h3>
+            <p>Players browse other athletes with a simple View button, and clubs find you on the board.</p>
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:28px">
+          <a class="btn btn-primary btn-pill" href="Sign/Sign_Up.html">Create your account</a>
+        </div>
+
+        <!-- 2) Subscription path -->
+        <div class="section-head" style="margin-bottom:0;margin-top:56px">
+          <span class="eyebrow on-accent">Go further</span>
+          <h2 class="section-title">Unlock your AI assistant</h2>
+          <p class="section-sub">A Manara subscription opens the smart assistant that guides you at every step.</p>
+        </div>
+
+        <div class="flow-steps flow-steps--4">
+          <div class="flow-step">
+            <span class="step-n">STEP 01</span>
+            <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+            <h3>Register</h3>
+            <p>Sign up as a player or a club — it takes under a minute.</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-n">STEP 02</span>
+            <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg></span>
+            <h3>Build your profile</h3>
+            <p>Complete your verified profile so clubs can find you.</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-n">STEP 03</span>
+            <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <h3>Clubs view you</h3>
+            <p>Scouts review your card with one View click — no messages until you're ready.</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-n">STEP 04</span>
+            <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg></span>
+            <h3>Activate your subscription</h3>
+            <p>Pay with Egyptian wallets and unlock the AI assistant replies.</p>
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:28px">
+          <a class="btn btn-primary btn-pill" href="subscribe.html">See subscription plans</a>
+        </div>
+
+        <!-- 3) Features -->
+        <div class="section-head" style="margin-bottom:0;margin-top:56px">
+          <span class="eyebrow on-accent">Everything included</span>
+          <h2 class="section-title">Features that move you forward</h2>
+          <p class="section-sub">Every profile is verified and every tool is built to save you time.</p>
+        </div>
+
+        <div class="flow-steps">
+          <div class="flow-step">
+            <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <h3>Verified profiles</h3>
+            <p>Every athlete is checked before their profile goes live.</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54Z"/></svg></span>
+            <h3>Smart filters</h3>
+            <p>Filter by sport, position and level — results update instantly.</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg></span>
+            <h3>Direct messages</h3>
+            <p>Contact players or clubs and track every conversation in one place.</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>
+            <h3>Notifications &amp; alerts</h3>
+            <p>Get a digest of new verified players that match your searches.</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
+            <h3>Clear pricing</h3>
+            <p>Simple Egyptian-wallet payments (Vodafone Cash / Fawry) with a free trial.</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg></span>
+            <h3>Fast signings</h3>
+            <p>Agree terms and complete moves in days, not months.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ============================================================ FAQ -->
+<section class="section" id="faq">
+  <div class="container-x">
+    <div class="section-head center">
+      <span class="eyebrow">Questions</span>
+      <h2 class="section-title">Frequently asked</h2>
+      <p class="section-sub">Everything you need to know about scouting and joining on Manara.</p>
+    </div>
+    <div class="faq-list">
+      <details class="faq" open>
+        <summary>هل البحث والتواصل مع اللاعبين مجاني؟<span class="plus" aria-hidden="true"></span></summary>
+        <div class="faq-body"><p>نعم. البحث والتصفية وإرسال الرسائل متاحة بالكامل مجاناً للأندية. الرياضيون ينشئون ملفاً موثّقاً واحداً ولا توجد أي رسوم لاكتشافهم عبر أي نادي في المنصة.</p></div>
+      </details>
+      <details class="faq">
+        <summary>لو لاعب عجبني اعمل ايه؟<span class="plus" aria-hidden="true"></span></summary>
+        <div class="faq-body"><p>تتواصل مع الدعم من هذا الرقم 01229409393 و تكتب اسم ثلاثي و المركز </div>
+      </details>
+      <details class="faq">
+        <summary>كيف تعمل الفلاتر الفورية؟<span class="plus" aria-hidden="true"></span></summary>
+        <div class="faq-body"><p>فلاتر الكلمات المفتاحية والرياضة والتوفر تعمل فوراً عند التغيير — بدون إعادة تحميل. في صفحة اللاعبين الكاملة يمكنك أيضاً تصفية بالرياضة والتوفر فقط للحصول على النتائج الدقيقة التي تبحث عنها.</p></div>
+      </details>
+      <details class="faq">
+        <summary>هل يمكنني تلقي إشعارات عن مواهب جديدة؟<span class="plus" aria-hidden="true"></span></summary>
+        <div class="faq-body"><p>نعم. أدخل بريدك الإلكتروني وستتلقى ملخصاً أسبوعياً باللاعبين الجدد الموثّقين الذين يطابقون بحثك. يمكنك تعديل الرياضات والمواقع التي تتابعها وإلغاء الاشتراك بنقرة واحدة.</p></div>
+      </details>
+      <details class="faq">
+        <summary>كم تكلفة الانضمام كنادي؟<span class="plus" aria-hidden="true"></span></summary>
+        <div class="faq-body"><p>ملف النادي الأول مجاني. بعدها تدفع اشتراكاً شهرياً بدلاً من الدفع لكل لاعب، ويشمل كل خطة أكمل رحلة الكشافة مع تصفية مبنية على المهارات.</p></div>
+      </details>
+      <details class="faq">
+        <summary>هل اللاعبين في منارة موثّقون؟<span class="plus" aria-hidden="true"></span></summary>
+        <div class="faq-body"><p>نعم. نتحقق من كل رياضي قبل نشر ملفه، ونفحص هويته وعقد ناديه الحالي وتأكد من صحة إحصائياته وقيمتهم السوقية. الملفات التي لا تلبي المعايير لا تظهر في المنصة.</p></div>
+      </details>
+      <details class="faq">
+        <summary>ما الرياضات المدعومة؟<span class="plus" aria-hidden="true"></span></summary>
+        <div class="faq-body"><p>حالياً تدعم منارة كرة القدم. سنضيف المزيد من الرياضات في التحديثات المستقبلية، وتُضاف رياضات جديدة عند الطلب — تواصل معنا إذا لم تكن رياضتك موجودة.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================ Footer -->
+<div data-partial="foot.ddf034"></div>
+<script src="js/partials.js"></script>
+
+<script src="js/vendor/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/search-utils.js"></script>
+<script src="js/main.js"></script>
+<script src="js/inquiry-notify.js"></script>
+</body>
+</html>
+

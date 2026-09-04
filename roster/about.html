@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="ar" data-default-lang="ar" dir="rtl">
+<head>
+<script>document.documentElement.classList.add('js')</script>
+<meta charset="utf-8">
+<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>عن المنصة | منارة</title>
+<meta name="description" content="منارة تربط الرياضيين الشباب بالأندية والأكاديميات. تعرف على قصتنا وكيف نعمل.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/vendor/bootstrap.min.css">
+<link rel="stylesheet" href="css/style.css">
+<script src="js/theme.js"></script>
+<script src="js/lang.js"></script>
+<style>
+  /* About hero */
+  .about-hero {
+    text-align: center;
+    max-width: 720px;
+    margin-inline: auto;
+    padding-bottom: 12px;
+  }
+  .about-hero h1 {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    margin-bottom: 16px;
+  }
+  .about-hero p {
+    color: var(--ink-2);
+    font-size: 1.18rem;
+    line-height: 1.75;
+    margin-bottom: 0;
+  }
+
+  /* Mission grid */
+  .mission-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+  .mission-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    text-align: center;
+    box-shadow: var(--shadow-xs);
+    transition: transform .18s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .mission-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-soft);
+  }
+  .mission-card .mc-ico {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 18px;
+  }
+  .mission-card .mc-ico svg { width: 28px; height: 28px; }
+  .mission-card .mc-ico.mc-blue { background: var(--primary-soft); color: var(--primary); }
+  .mission-card .mc-ico.mc-green { background: var(--green-soft); color: var(--green-ink); }
+  .mission-card .mc-ico.mc-accent { background: var(--accent-soft); color: var(--accent-ink); }
+  .mission-card h3 {
+    font-size: 1.15rem;
+    margin-bottom: 10px;
+  }
+  .mission-card p {
+    color: var(--muted);
+    font-size: .96rem;
+    margin: 0;
+    line-height: 1.65;
+  }
+  @media (max-width: 860px) {
+    .mission-grid { grid-template-columns: 1fr; max-width: 480px; margin-inline: auto; }
+  }
+
+  /* About story */
+  .story-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .story-copy h2 {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    margin-bottom: 18px;
+  }
+  .story-copy p {
+    color: var(--ink-2);
+    font-size: 1.06rem;
+    line-height: 1.75;
+    margin-bottom: 16px;
+  }
+  .story-visual {
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    min-height: 340px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .story-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+  }
+  .story-visual .placeholder-img {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    color: var(--muted);
+    padding: 40px;
+  }
+  .story-visual .placeholder-img svg { width: 64px; height: 64px; color: var(--faint); }
+  .story-visual .placeholder-img span { font-weight: 700; font-size: .96rem; }
+  @media (max-width: 860px) {
+    .story-grid { grid-template-columns: 1fr; gap: 36px; }
+  }
+
+  /* Stats (reusing existing .stats-grid) */
+  .about-stats {
+    background: linear-gradient(180deg, var(--surface), var(--bg-soft));
+  }
+
+  /* Team */
+  /* Team — flex so ANY card count stays centered (2, 3, 6...) */
+  .team-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 22px;
+  }
+  .team-card {
+    flex: 0 1 calc((100% - 44px) / 3); /* same width as the old 3-col grid */
+  }
+  .team-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: var(--shadow-xs);
+    transition: transform .18s ease, box-shadow .2s ease;
+  }
+  .team-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-sm);
+  }
+  .team-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 16px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: #fff;
+  }
+  .ta-blue { background: linear-gradient(135deg, var(--primary), var(--primary-2)); }
+  .ta-green { background: linear-gradient(135deg, var(--green), #2bc489); }
+  .ta-accent { background: linear-gradient(135deg, var(--accent), #ffbe3d); color: #3a2600; }
+  .ta-violet { background: linear-gradient(135deg, var(--violet), #9a7ef5); }
+  .ta-rose { background: linear-gradient(135deg, var(--rose), #f47a9b); }
+  .ta-teal { background: linear-gradient(135deg, var(--teal), #33bfc9); }
+  .team-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+  }
+  .team-card .team-role {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: .9rem;
+    margin-bottom: 10px;
+  }
+  .team-card p {
+    color: var(--muted);
+    font-size: .92rem;
+    margin: 0;
+    line-height: 1.6;
+  }
+  @media (max-width: 860px) {
+    .team-card { flex-basis: calc((100% - 22px) / 2); } /* 2 per row, centered */
+  }
+  @media (max-width: 520px) {
+    .team-card { flex-basis: 100%; max-width: 360px; margin-inline: auto; }
+  }
+
+  /* CTA band */
+  .cta-band {
+    text-align: center;
+    max-width: 640px;
+    margin-inline: auto;
+  }
+  .cta-band h2 {
+    font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+    margin-bottom: 14px;
+  }
+  .cta-band p {
+    color: var(--muted);
+    font-size: 1.1rem;
+    margin-bottom: 28px;
+  }
+</style>
+<link rel="canonical" href="https://manara.app/about.html">
+<script type="application/ld+json" id="manara-org-jsonld">{"@context":"https://schema.org","@type":"Organization","name":"منارة","alternateName":"Manara","url":"https://manara.app/","description":"منصة منارة لاكتشاف المواهب الرياضية — تربط الرياضيين الشباب بالأندية والأكاديميات.","logo":"https://manara.app/img/logo.png"}</script>
+</head>
+<body>
+
+<!-- ============================================================ Navbar -->
+<div data-partial="nav.dc911d"></div>
+
+<!-- ============================================================ Page Head -->
+<section class="page-head">
+  <div class="container-x">
+    <div class="crumbs">
+      <a href="index.html">الرئيسية</a>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span>عن المنصة</span>
+    </div>
+    <div class="about-hero">
+      <h1>منصة منارة لاكتشاف المواهب الرياضية</h1>
+      <p>نربط الرياضيين الموهوبين بالأندية والأكاديميات — بكل شفافية واحترام.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ Main -->
+<main id="main">
+
+  <!-- Mission -->
+  <section class="section">
+    <div class="container-x">
+      <div class="section-head center">
+        <span class="eyebrow">مهمتنا</span>
+        <h2 class="section-title">لماذا منارة؟</h2>
+        <p class="section-sub">نبذل جهداً لإنشاء جسر حقيقي بين الرياضيين والأندية — بدون تعقيد.</p>
+      </div>
+      <div class="mission-grid">
+        <div class="mission-card reveal">
+          <div class="mc-ico mc-blue" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3>ربط المواهب بالأندية</h3>
+          <p>نساعد الرياضيين على بناء ملفات موثّقة وعرض مهاراتهم للأندية والأكاديميات الباحثة عن مواهب جديدة.</p>
+        </div>
+        <div class="mission-card reveal reveal-d1">
+          <div class="mc-ico mc-green" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>شفافية وثقة</h3>
+          <p>نتحقق من كل رياضي قبل نشر ملفه — هوية وإحصائيات ووثائق — لتتمكن الأندية من اتخاذ قرارات مدروسة.</p>
+        </div>
+        <div class="mission-card reveal reveal-d2">
+          <div class="mc-ico mc-accent" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg>
+          </div>
+          <h3>سرعة وسهولة</h3>
+          <p>ابدأ في دقيقة واحدة — أنشئ حسابك، أكمل ملفك، وابدأ في التواصل مع الأندية في أي وقت وأي مكان.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story / About -->
+  <section class="section section-soft">
+    <div class="container-x">
+      <div class="story-grid">
+        <div class="story-copy reveal">
+          <span class="eyebrow">قصتنا</span>
+          <h2>من فكرة إلى منصة تخدم آلاف الرياضيين</h2>
+          <p>بدأت منارة من ملاحظة بسيطة: الرياضيون الموهوبون في كثير من الأحيان يفتقرون للفرصة لعرض أنفسهم أمام الأندية المناسبة. في المقابل، تواجه الأندية صعوبة في اكتشاف المواهب الجديدة خارج دوائرها المعتادة.</p>
+          <p>قرّرنا بناء حل يجمع بين البساطة والشفافية — منصة تُسهّل على الرياضيين بناء ملفات موثّقة، وعلى الأندية البحث والتصفية بسهولة. لا تعقيد، لا وسطاء — فقط فرصة حقيقية للموهبة.</p>
+          <p>اليوم، منارة تخدم آلاف اللاعبين والأندية في جميع أنحاء الوطن العربي، ونواصل العمل لإضافة رياضات وميزات جديدة باستمرار.</p>
+        </div>
+        <div class="story-visual reveal reveal-d1">
+          <div class="placeholder-img">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            <span>صورة الفريق</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section" id="about-how">
+    <div class="container-x">
+      <div class="flow">
+        <div class="flow-inner">
+          <div class="section-head center">
+            <span class="eyebrow on-accent">كيف تعمل منارة</span>
+            <h2 class="section-title">ثلاث خطوات بسيطة</h2>
+            <p class="section-sub">من التسجيل إلى التواصل — رحلة سلسة للرياضيين والأندية.</p>
+          </div>
+
+          <div class="flow-steps">
+            <div class="flow-step">
+              <span class="step-n">الخطوة 01</span>
+              <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+              <h3>أنشئ حسابك</h3>
+              <p>سجّل كلاعب أو كنادي في أقل من دقيقة. أنشئ ملفك الموثّق وابدأ رحلتك مع منارة.</p>
+            </div>
+            <div class="flow-step">
+              <span class="step-n">الخطوة 02</span>
+              <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg></span>
+              <h3>أكمل ملفك</h3>
+              <p>أضف تفاصيلك ومعلوماتك الرياضية وأبرز إنجازاتك — الملفات الموثّقة تحظى بأولوية أعلى.</p>
+            </div>
+            <div class="flow-step">
+              <span class="step-n">الخطوة 03</span>
+              <span class="step-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+              <h3>انضم واكتشف</h3>
+              <p>تصفح اللاعبين أو دع الأندية تكتشفك. تواصل مباشرة وتابع محادثاتك في مكان واحد.</p>
+            </div>
+          </div>
+
+          <div style="text-align:center;margin-top:28px">
+            <a class="btn btn-primary btn-pill" href="Sign/Sign_Up.html">ابدأ الآن</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="section-sm about-stats">
+    <div class="container-x">
+      <div class="stats-grid">
+        <div class="stat reveal"><div class="num tnum" data-stat="players" data-count="0" data-suffix="+">0+</div><div class="lbl">لاعب مسجّل</div></div>
+        <div class="stat reveal reveal-d1"><div class="num tnum" data-stat="clubs" data-count="0" data-suffix="+">0+</div><div class="lbl">نادي وأكاديمية</div></div>
+        <div class="stat reveal reveal-d2"><div class="num tnum" data-stat="sports" data-count="0" data-suffix="+">0+</div><div class="lbl">رياضات مدعومة</div></div>
+        <div class="stat reveal reveal-d3"><div class="num tnum" data-stat="countries" data-count="0" data-suffix="+">0+</div><div class="lbl">دولة</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="section section-soft">
+    <div class="container-x">
+      <div class="section-head center">
+        <span class="eyebrow">قيمنا</span>
+        <h2 class="section-title">ما يهمنا في منارة</h2>
+        <p class="section-sub">مبادئ توجه كل ما نفعله في المنصة.</p>
+      </div>
+      <div class="mission-grid">
+        <div class="mission-card reveal">
+          <div class="mc-ico mc-blue" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <h3>الشفافية</h3>
+          <p>إحصائيات صادقة ووثائق موثقة — لا مفاجآت. نؤمن بأن الشفافية تبني الثقة بين الرياضيين والأندية.</p>
+        </div>
+        <div class="mission-card reveal reveal-d1">
+          <div class="mc-ico mc-green" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>الأمان</h3>
+          <p>نتحقق من كل حساب قبل التفعيل. ملفات الرياضيين والأندية موثّقة وموثوقة لحماية الجميع.</p>
+        </div>
+        <div class="mission-card reveal reveal-d2">
+          <div class="mc-ico mc-accent" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-5"/></svg>
+          </div>
+          <h3>البساطة</h3>
+          <p>تجربة مستخدم سلسة وبديهية — من التسجيل إلى التواصل. لا تعقيد، فقط محتوى يهمك.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="section">
+    <div class="container-x">
+      <div class="section-head center">
+        <span class="eyebrow">الفريق</span>
+        <h2 class="section-title">لاشخاص وراء مناره</h2>
+        <p class="section-sub">فريق شغوف بالرياضة والتكنولوجيا يعمل كل يوم لتحسين تجربة المستخدم.</p>
+      </div>
+      <div class="team-grid">
+        <!-- <div class="team-card reveal">
+          <div class="team-avatar ta-blue">يس</div>
+          <h3>ياسين</h3>
+          <div class="team-role">قسم التسويق</div>
+          <p>خبرة 1 سنه في إدارة المشاريع الرياضية والمنصات الرقمية.</p>
+        </div> -->
+        <!-- <div class="team-card reveal reveal-d1">
+          <div class="team-avatar ta-green">سع</div>
+          <h3>سارة أحمد</h3>
+          <div class="team-role">مديرة المنتج</div>
+          <p>متخصصة في تصميم تجارب المستخدم للمنصات الرياضية والتعليمية.</p>
+        </div> -->
+        <div class="team-card reveal reveal-d2">
+          <div class="team-avatar ta-violet">م ع</div>
+          <h3>محمد علي</h3>
+          <div class="team-role">رئيس قسم الهندسة</div>
+          <p>و المواقع Manara مطوّر full-stack بخبرة واسعة في بناء منصات  وتطبيقات الجوال.</p>
+        </div>
+        <!-- <div class="team-card reveal reveal-d3">
+          <div class="team-avatar ta-accent">ن ع</div>
+          <h3>نورا علي</h3>
+          <div class="team-role">مديرة التسويق</div>
+          <p>متخصصة في تسويق المنصات الرياضية وبناء المجتمعات الرقمية.</p>
+        </div> -->
+         <!-- <div class="team-card reveal reveal-d4">
+          <div class="team-avatar ta-rose">خ ح</div>
+          <h3>خالد حسن</h3>
+          <div class="team-role">محلل بيانات رياضية</div>
+          <p>خبير في تحليل بيانات الرياضيين وتقديم رؤى استراتيجية للأندية.</p>
+        </div>  -->
+        <!-- <div class="team-card reveal reveal-d5">
+          <div class="team-avatar ta-teal">ف ر</div>
+          <h3>فاطمة رضا</h3>
+          <div class="team-role">مديرة العلاقات العامة</div>
+          <p>تربط منارة بالأندية والأكاديميات وتنقل صوت الرياضيين.</p>
+        </div> -->
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section section-soft">
+    <div class="container-x">
+      <div class="cta-band">
+        <h2>هل أنت مستعد للانضمام؟</h2>
+        <p>سواء كنت لاعباً يبحث عن فرصة أو نادياً يبحث عن موهبة — منارة هنا لمساعدتك.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <a class="btn btn-primary btn-pill btn-lg" href="Sign/Sign_Up.html">إنشاء حساب مجاني</a>
+          <a class="btn btn-outline-ink btn-pill btn-lg" href="contact.html">تواصل معنا</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================ Footer -->
+<div data-partial="foot.b25e1b"></div>
+<script src="js/partials.js"></script>
+
+<script src="js/vendor/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

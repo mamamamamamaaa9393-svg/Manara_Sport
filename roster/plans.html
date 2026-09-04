@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ar" data-default-lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b1220">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>خطط الاشتراك — لاعب أو نادي | Manara</title>
+<meta name="description" content="خطط بسيطة تناسب الجميع: خطة اللاعب 39 ج.م شهرياً مع يومين تجربة مجانية، وخطة النادي 299 ج.م شهرياً مع 7 أيام تجربة مجانية.">
+<meta property="og:title" content="خطط الاشتراك — لاعب أو نادي | منارة">
+<meta property="og:description" content="خطط بسيطة تناسب الجميع — اللاعبون يصلون إلى الأندية، والأندية تكتشف المواهب.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manara.app/plans.html">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/vendor/porfile.css">
+<script src="js/theme.js"></script>
+<script src="js/lang.js"></script>
+<script src="js/nav.js"></script>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); }</script>
+<style>
+  .plans-wrap { max-width: 1040px; margin: 30px auto; }
+
+  /* ---- Hero ---- */
+  .plans-hero { text-align: center; max-width: 680px; margin: 0 auto 34px; }
+  .plans-hero .eyebrow { display: inline-block; background: var(--primary-light); color: var(--primary); font-weight: 800; font-size: 12px; padding: 6px 16px; border-radius: 20px; margin-bottom: 14px; }
+  .plans-hero h1 { font-size: 30px; font-weight: 900; color: var(--dark); margin: 0 0 10px; line-height: 1.4; }
+  .plans-hero h1 .hl { color: var(--primary); }
+  .plans-hero p { color: var(--gray-500); font-weight: 600; font-size: 14.5px; margin: 0; line-height: 1.9; }
+
+  /* ---- Plan cards ---- */
+  .plans-grid { display: grid; gap: 22px; align-items: stretch; }
+  @media (min-width: 940px) { .plans-grid { grid-template-columns: 1fr 1fr; } }
+
+  .plan-card { position: relative; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--gray-200); border-radius: 20px; padding: 30px 28px; box-shadow: var(--shadow-sm); transition: box-shadow .25s ease, transform .25s ease; overflow: hidden; }
+  .plan-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+  .plan-card.featured { border: 2px solid var(--primary); box-shadow: var(--shadow-primary); }
+  .plan-card.featured .top-bar { position: absolute; top: 0; inset-inline: 0; height: 5px; background: linear-gradient(90deg, var(--primary), var(--primary-2)); }
+  .plan-badge { position: absolute; top: 20px; inset-inline-end: 20px; background: linear-gradient(90deg, var(--primary), var(--primary-2)); color: #fff; font-size: 11px; font-weight: 800; padding: 5px 14px; border-radius: 20px; box-shadow: var(--shadow-primary); }
+
+  .plan-icon { width: 62px; height: 62px; border-radius: 16px; display: grid; place-items: center; margin-bottom: 16px; background: var(--primary-light); color: var(--primary); font-size: 27px; }
+  .plan-card.featured .plan-icon { background: var(--primary); color: #fff; box-shadow: var(--shadow-primary); }
+
+  .plan-card h2 { margin: 0 0 5px; font-size: 20px; font-weight: 900; color: var(--dark); }
+  .plan-desc { margin: 0 0 16px; color: var(--gray-500); font-weight: 600; font-size: 13px; line-height: 1.8; }
+  .plan-price { display: flex; align-items: baseline; gap: 7px; margin-bottom: 12px; }
+  .plan-price .num { font-size: 46px; font-weight: 900; color: var(--dark); line-height: 1; }
+  .plan-price .per { font-size: 15px; font-weight: 800; color: var(--gray-500); }
+  .trial-chip { display: inline-flex; align-items: center; gap: 7px; background: var(--primary-light); color: var(--primary); font-size: 12px; font-weight: 800; padding: 7px 15px; border-radius: 20px; margin-bottom: 20px; }
+
+  .feat-list { list-style: none; margin: 0 0 22px; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+  .feat-list li { display: flex; gap: 11px; align-items: flex-start; font-size: 13.5px; color: var(--gray-700); font-weight: 700; line-height: 1.7; }
+  .feat-list li::before { content: "✓"; flex: none; width: 21px; height: 21px; border-radius: 50%; background: var(--green-bg); color: var(--green-ink); font-weight: 900; font-size: 12px; display: grid; place-items: center; margin-top: 1px; }
+
+  .plan-cta { margin-top: auto; display: block; text-align: center; width: 100%; border: none; border-radius: 13px; padding: 14px 18px; font-family: inherit; font-weight: 900; font-size: 14.5px; cursor: pointer; text-decoration: none; background: var(--primary); color: #fff; transition: background .15s, transform .12s ease; }
+  .plan-cta:hover { background: var(--primary-2); color: #fff; }
+  .plan-cta:active { transform: scale(.98); }
+  .plan-card.featured .plan-cta { background: linear-gradient(90deg, var(--primary), var(--primary-2)); box-shadow: var(--shadow-primary); }
+  .plan-card.featured .plan-cta:hover { filter: brightness(1.06); }
+
+  /* ---- Payment methods ---- */
+  .pay-box { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 20px; padding: 26px; margin-top: 26px; }
+  .pay-box h3 { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 18px; font-size: 17px; font-weight: 900; color: var(--dark); }
+  .methods { display: grid; gap: 14px; margin-bottom: 16px; }
+  @media (min-width: 640px) { .methods { grid-template-columns: 1fr 1fr; } }
+  .method { display: flex; align-items: center; gap: 13px; border: 1px solid var(--gray-200); background: var(--gray-50); border-radius: 14px; padding: 15px; }
+  .method .m-ico { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 22px; }
+  .method.orange .m-ico { background: var(--orange-bg); color: var(--orange); }
+  .method.violet .m-ico { background: var(--primary-light); color: var(--primary); }
+  .method b { display: block; font-size: 13.5px; font-weight: 900; color: var(--dark); }
+  .method span { font-size: 12px; font-weight: 600; color: var(--gray-500); }
+  .secure-note { display: flex; gap: 11px; align-items: flex-start; background: var(--primary-light); border: 1px solid var(--gray-200); border-radius: 14px; padding: 14px 16px; font-size: 12.5px; color: var(--gray-600); font-weight: 700; line-height: 1.8; }
+  .secure-note .lock { flex: none; font-size: 17px; }
+
+  /* ---- FAQ ---- */
+  .faq-box { max-width: 680px; margin: 34px auto 0; }
+  .faq-box h3 { text-align: center; margin: 0 0 20px; font-size: 20px; font-weight: 900; color: var(--dark); }
+  .faq-item { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 14px; padding: 16px 18px; margin-bottom: 10px; }
+  .faq-item details { padding: 0; border: none; }
+  .faq-item summary { cursor: pointer; font-weight: 800; font-size: 14px; color: var(--gray-700); list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after { content: "⌄"; font-size: 17px; color: var(--gray-500); transition: transform .2s ease; }
+  .faq-item details[open] summary::after { transform: rotate(180deg); }
+  .faq-item details[open] summary { color: var(--primary); }
+  .faq-item p { margin: 10px 0 0; color: var(--gray-500); font-weight: 600; font-size: 13px; line-height: 1.9; }
+
+  .plans-outro { text-align: center; margin: 30px 0 8px; color: var(--gray-500); font-weight: 600; font-size: 13px; }
+</style>
+<link rel="canonical" href="https://manara.app/plans.html">
+</head>
+<body>
+
+<div data-partial="nav.cae0d0"></div>
+
+<div class="container plans-wrap">
+
+  <!-- ============ HERO ============ -->
+  <div class="plans-hero">
+    <span class="eyebrow" data-i18n="plans.eyebrow">اشترك في منارة الرياضية</span>
+    <h1 data-i18n="plans.title">خطط بسيطة <span class="hl">تناسب الجميع</span></h1>
+    <p data-i18n="plans.sub">اختر خطتك وابدأ رحلتك — اللاعبون يصلون إلى الأندية، والأندية تكتشف المواهب. مع فترة تجريبية مجانية بدون أي التزام.</p>
+  </div>
+
+  <!-- ============ PLANS ============ -->
+  <div class="plans-grid">
+
+    <!-- خطة اللاعب -->
+    <div class="plan-card">
+      <div class="plan-icon">🎮</div>
+      <h2 data-i18n="plans.player_name">خطة اللاعب</h2>
+      <p class="plan-desc" data-i18n="plans.player_desc">لكل رياضي شاب يرغب في الوصول إلى الأندية والأكاديميات</p>
+      <div class="plan-price">
+        <span class="num">39</span>
+        <span class="per" data-i18n="plans.per_month">ج.م / شهرياً</span>
+      </div>
+      <span class="trial-chip">⏱️ <span data-i18n="plans.player_trial">يومان تجربة مجانية</span></span>
+      <ul class="feat-list">
+        <li data-i18n="plans.pf1">ملف شخصي كامل بالعربية (نبذة + فيديو + إحصائيات)</li>
+        <li data-i18n="plans.pf2">تصفح ملفات الأندية والأكاديميات</li>
+        <li data-i18n="plans.pf3">استقبال طلبات الأندية (انتقال / تجربة / اكتشاف)</li>
+        <li data-i18n="plans.pf4">محادثة مباشرة مع الأندية</li>
+        <li data-i18n="plans.pf5">رفع الفيديوهات والصور مع ضغط تلقائي</li>
+        <li data-i18n="plans.pf6">تحديثات مجانية طوال مدة الاشتراك</li>
+      </ul>
+      <a class="plan-cta" href="subscribe.html" data-i18n="plans.player_cta">اشترك كرياضي</a>
+    </div>
+
+    <!-- خطة النادي -->
+    <div class="plan-card featured">
+      <div class="top-bar"></div>
+      <span class="plan-badge" data-i18n="plans.popular">⭐ الأكثر طلباً</span>
+      <div class="plan-icon">🏟️</div>
+      <h2 data-i18n="plans.club_name">خطة النادي</h2>
+      <p class="plan-desc" data-i18n="plans.club_desc">للأندية والأكاديميات الباحثة عن المواهب واللاعبين الجاهزين</p>
+      <div class="plan-price">
+        <span class="num">299</span>
+        <span class="per" data-i18n="plans.per_month">ج.م / شهرياً</span>
+      </div>
+      <span class="trial-chip">⏱️ <span data-i18n="plans.club_trial">7 أيام تجربة مجانية</span></span>
+      <ul class="feat-list">
+        <li data-i18n="plans.cf1">ملف نادٍ / أكاديمية كامل</li>
+        <li data-i18n="plans.cf2">لوحة بحث بفلاتر (رياضة، مركز، بلد، مستوى)</li>
+        <li data-i18n="plans.cf3">قائمة مختصرة + ملاحظات سكاوت خاصة</li>
+        <li data-i18n="plans.cf4">بدء المحادثات مع اللاعبين مباشرة</li>
+        <li data-i18n="plans.cf5">إرسال طلبات توظيف (انتقال / تجربة / اكتشاف)</li>
+        <li data-i18n="plans.cf6">تقييم اللاعبين بالنجوم (1-5) + عدّاد من شاهد ملفك</li>
+        <li data-i18n="plans.cf7">مساعد ذكي + دعم فني مميز</li>
+      </ul>
+      <a class="plan-cta" href="subscribe.html" data-i18n="plans.club_cta">اشترك كنادٍ</a>
+    </div>
+  </div>
+
+  <!-- ============ PAYMENT METHODS ============ -->
+  <div class="pay-box">
+    <h3>🔒 <span data-i18n="plans.pay_title">طرق الدفع الآمنة</span></h3>
+    <div class="methods">
+      <div class="method orange">
+        <span class="m-ico">💵</span>
+        <div>
+          <b data-i18n="plans.vf_cash">فودافون كاش</b>
+          <span data-i18n="plans.vf_hint">حول المبلغ وارفع صورة الإيصال</span>
+        </div>
+      </div>
+      <div class="method violet">
+        <span class="m-ico">🏧</span>
+        <div>
+          <b data-i18n="plans.fawry">فوري</b>
+          <span data-i18n="plans.fawry_hint">ادفع من أي منفذ أو تطبيق فوري</span>
+        </div>
+      </div>
+    </div>
+    <div class="secure-note">
+      <span class="lock">🛡️</span>
+      <span data-i18n="plans.pay_note">إيصالك يُفحص تلقائياً (مبلغ، تاريخ، رقم مرجعي) للتأكد من صحته، ثم يُفعَّل اشتراكك فوراً — مع مراجعة يدوية عند أي شك.</span>
+    </div>
+  </div>
+
+  <!-- ============ FAQ ============ -->
+  <div class="faq-box">
+    <h3 data-i18n="plans.faq_title">الأسئلة الشائعة</h3>
+
+    <div class="faq-item">
+      <details>
+        <summary data-i18n="plans.q1">كيف أدفع قيمة الاشتراك؟</summary>
+        <p data-i18n="plans.a1">عبر المحافظ المصرية: حوّل المبلغ إلى حساب منارة (فودافون كاش أو فوري) ثم ارفع صورة الإيصال من صفحة الاشتراك. يُفحص الإيصال تلقائياً ويُفعَّل الاشتراك بعد تأكيده.</p>
+      </details>
+    </div>
+
+    <div class="faq-item">
+      <details>
+        <summary data-i18n="plans.q2">ما هي مدة الفترة التجريبية المجانية؟</summary>
+        <p data-i18n="plans.a2">للاعب: يومان كاملان مجاناً، وللنادي أو الأكاديمية: 7 أيام كاملة مجاناً. يمكنك تجربة كل المزايا قبل الاشتراك الفعلي.</p>
+      </details>
+    </div>
+
+    <div class="faq-item">
+      <details>
+        <summary data-i18n="plans.q3">هل يمكنني إلغاء التجديد التلقائي؟</summary>
+        <p data-i18n="plans.a3">نعم، من صفحة إدارة الاشتراك يمكنك إلغاء التجديد أو استئنافه في أي وقت، وتصلك تذكيرات قبل انتهاء الفترة المدفوعة.</p>
+      </details>
+    </div>
+
+    <div class="faq-item">
+      <details>
+        <summary data-i18n="plans.q4">هل تشمل الخطة جميع الرياضات؟</summary>
+        <p data-i18n="plans.a4">نعم، تغطي منصة منارة جميع الرياضات — كرة القدم، السلة، اليد، السباحة، التنس وغيرها — بدون أي رسوم إضافية.</p>
+      </details>
+    </div>
+  </div>
+
+  <!-- ============ OUTRO ============ -->
+  <p class="plans-outro" data-i18n="plans.outro">لديك سؤال آخر؟ تواصل مع فريق الدعم عبر المنصة وسنرد عليك في أقرب وقت.</p>
+
+</div>
+
+<div data-partial="foot.b25e1b"></div>
+<script src="js/partials.js"></script>
+
+</body>
+</html>

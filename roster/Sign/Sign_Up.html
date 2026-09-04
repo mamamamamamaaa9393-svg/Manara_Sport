@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="ar" data-default-lang="ar">
+<head>
+<meta charset="UTF-8" />
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#0b1220">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="../icons/icon-180.png">
+<link rel="icon" type="image/x-icon" href="../img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>أنشئ حسابك في Manara — رياضي أو نادي</title>
+<meta name="description" content="سجّل حسابك في منارة — لاعب أو نادي. ابدأ الآن واستفد من التجربة المجانية.">
+<meta property="og:title" content="أنشئ حسابك في Manara — رياضي أو نادي | منارة">
+<meta property="og:description" content="سجّل حسابك في منارة — لاعب أو نادي. ابدأ الآن واستفد من التجربة المجانية.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manara.app/">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/vendor/Style_Sig.css">
+<script src="../js/theme.js"></script>
+<script src="../js/lang.js"></script>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('../sw.js').catch(function () {}); }); }</script>
+<style>
+  .ev-wrap { margin-top: 8px; }
+  .ev-btn { background: var(--primary); color: #fff; border: none; border-radius: 10px; padding: 10px 16px; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .ev-btn:disabled { opacity: .6; cursor: not-allowed; }
+  .ev-code-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+  .ev-code-input { flex: 1; max-width: 160px; text-align: center; font-size: 20px; letter-spacing: 5px; font-weight: 700; border: 2px solid var(--primary); border-radius: 10px; padding: 10px; }
+  .ev-status { margin-top: 6px; font-size: 13px; font-weight: 700; }
+  .ev-status.ok { color: #16a34a; }
+  .ev-status.err { color: #dc2626; }
+
+  .contract-dl-wrap { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+  .contract-dl {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--primary); color: #fff;
+    border: none; border-radius: 12px;
+    padding: 11px 18px; font-weight: 700; font-size: 14px;
+    text-decoration: none; cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,.12);
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .contract-dl:hover { background: var(--primary-2); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,.18); }
+  .contract-dl:active { transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="mark"><img src="../img/logo.png" width="43" height="43"></span>
+      <span>Man<span class="b">ara</span></span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" class="btn-back" data-i18n="nav.home">← Home</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="تبديل الوضع الداكن" title="الوضع الليلي">🌙</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="contract-dl-wrap">
+    <a class="contract-dl" href="../files/Manara-Safe-Contract-Agreement.pdf" download="Manara-Safe-Contract-Agreement.pdf" title="تحميل إقرار التعاقد الآمن">📄 تحميل إقرار التعاقد الآمن</a>
+  </div>
+  <div class="head">
+    <span class="badge" data-i18n="signup.badge">CREATE YOUR ACCOUNT</span>
+    <h1 data-i18n="signup.title">Create your <span class="accent">Account</span></h1>
+    <p data-i18n="signup.choose_role">هل أنت رياضي أم نادي؟ اختر نوع الحساب ✨</p>
+    <p style="margin-top:10px;font-size:13.5px;"><span data-i18n="signup.have_account">لديك حساب بالفعل؟</span> <a href="Sign_In.html" style="color:var(--primary);font-weight:800;text-decoration:none;" data-i18n="signup.login_link">سجّل الدخول ←</a></p>
+  </div>
+
+  <!-- Role selector -->
+  <div class="role-select">
+    <div class="role-card" data-role="player">
+      <div class="role-icon">🏅</div>
+      <h2 data-i18n="auth.player">رياضي</h2>
+      <p class="role-desc" data-i18n="auth.player_desc">سجّل كرياضي وابدأ رحلتك في الاحتراف</p>
+    </div>
+    <div class="role-card" data-role="coach">
+      <div class="role-icon">🏟️</div>
+      <h2 data-i18n="auth.club">نادي</h2>
+      <p class="role-desc" data-i18n="auth.club_desc">سجّل كمسؤول نادي واكتشف المواهب</p>
+    </div>
+  </div>
+
+  <!-- ========== PLAYER FORM ========== -->
+  <div class="form-card" id="playerForm">
+    <h2 style="font-family:'Inter',sans-serif;font-size:22px;font-weight:900;margin-bottom:18px;color:var(--dark);">🏅 ملف الرياضي</h2>
+
+    <form id="pForm">
+      <!-- Basic info -->
+      <div class="section">
+        <div class="section-title">المعلومات الأساسية</div>
+
+        <div class="photo-preview" id="photoPrev">👤</div>
+        <div class="file-zone" id="photoZone">
+          <input type="file" name="photo" accept="image/*" data-preview="photoPrev">
+          <div class="ico">📷</div>
+          <div class="txt">صورة اللاعب (شخصية واضحة)</div>
+          <div class="hint">PNG, JPG حتى 5MB</div>
+        </div>
+
+        <div class="row" style="margin-top:14px;">
+          <div class="field">
+            <label>الاسم الكامل <span class="req">*</span></label>
+            <input type="text" name="full_name" placeholder="اكتب اسمك الكامل" required>
+          </div>
+          <div class="field">
+            <label>الجنسية <span class="req">*</span></label>
+            <input type="text" name="nationality" placeholder="مصر / السعودية / المغرب..." required>
+          </div>
+        </div>
+
+        <div class="row three">
+          <div class="field">
+            <label>يوم الميلاد <span class="req">*</span></label>
+            <select name="day" required><option value="">اليوم</option></select>
+          </div>
+          <div class="field">
+            <label>الشهر <span class="req">*</span></label>
+            <select name="month" required>
+              <option value="">الشهر</option>
+              <option value="1">يناير</option><option value="2">فبراير</option>
+              <option value="3">مارس</option><option value="4">أبريل</option>
+              <option value="5">مايو</option><option value="6">يونيو</option>
+              <option value="7">يوليو</option><option value="8">أغسطس</option>
+              <option value="9">سبتمبر</option><option value="10">أكتوبر</option>
+              <option value="11">نوفمبر</option><option value="12">ديسمبر</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>السنة <span class="req">*</span></label>
+            <select name="year" required><option value="">السنة</option></select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sports info -->
+      <div class="section">
+        <div class="section-title">البيانات الرياضية</div>
+
+        <div class="row">
+          <div class="field">
+            <label>الرياضة <span class="req">*</span></label>
+            <select name="sport" id="pSport" required>
+              <option value="">اختار الرياضة</option>
+              <option>⚽ كرة القدم</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>المركز / التخصص <span class="req">*</span></label>
+            <input type="text" name="position" list="positions" placeholder="مثال: مهاجم / حارس مرمى / سباح حرة" required>
+            <datalist id="positions">
+              <option value="حارس مرمى (GK)"></option>
+              <option value="ظهير أيمن (RB)"></option>
+              <option value="ظهير أيسر (LB)"></option>
+              <option value="مدافع (CB)"></option>
+              <option value="ظهير خلفي (WB)"></option>
+              <option value="وسط دفاعي (CDM)"></option>
+              <option value="وسط محوري (CM)"></option>
+              <option value="صانع لعب (CAM)"></option>
+              <option value="جناح أيمن (RW)"></option>
+              <option value="جناح أيسر (LW)"></option>
+              <option value="مهاجم صريح (CF)"></option>
+              <option value="مهاجم (ST)"></option>
+              <option value="حارس مرمى - كرة سلة"></option>
+              <option value="ظهير (PG/SG)"></option>
+              <option value="جناح (SF/PF)"></option>
+              <option value="لاعب وسط (C)"></option>
+              <option value="مضرب فردي - تنس"></option>
+              <option value="مضرب زوجي - تنس"></option>
+              <option value="لاعب استقبال - طائرة"></option>
+              <option value="لاعب هجوم - طائرة"></option>
+              <option value="جناح - كرة يد"></option>
+              <option value="قلب دفاع - كرة يد"></option>
+              <option value="حارس مرمى - كرة يد"></option>
+              <option value="سباح حرة"></option>
+              <option value="سباح ظهر"></option>
+              <option value="كوميتيه - كاراتيه"></option>
+              <option value="كاتا - كاراتيه"></option>
+            </datalist>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>القدم المفضلة <span class="req">*</span></label>
+            <select name="foot" required>
+              <option value="">اختار</option>
+              <option>🦶 يمين</option>
+              <option>🦶 يسرى</option>
+              <option>🦶 كلتاهما</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row three">
+          <div class="field">
+            <label>الطول (سم) <span class="req">*</span></label>
+            <input type="number" name="height" placeholder="175" min="100" max="230" required>
+          </div>
+          <div class="field">
+            <label>الوزن (كجم) <span class="req">*</span></label>
+            <input type="number" name="weight" placeholder="70" min="30" max="150" required>
+          </div>
+          <div class="field">
+            <label>مستوى/فئة اللاعب <span class="req">*</span></label>
+            <select name="level" required>
+              <option value="">اختار الفئة</option>
+              <option>🌱 مبتدئ</option>
+              <option>⭐ هاوٍ</option>
+              <option>🏅 شبه محترف</option>
+              <option>🏆 محترف</option>
+              <option>💎 دولي</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row full">
+          <div class="field">
+            <label>النادي الحالي (إن وجد)</label>
+            <input type="text" name="current_club" placeholder="اكتب اسم ناديك الحالي أو اتركه فاضي">
+          </div>
+        </div>
+      </div>
+
+      <!-- Media & stats -->
+      <div class="section">
+        <div class="section-title">الوسائط والإحصائيات</div>
+
+        <div class="row full">
+          <div class="field">
+            <label>فيديوهات ومقاطع المباريات (اسحب وأفلت أو اختار)</label>
+            <div class="video-uploader" id="videoUploader">
+              <div class="video-drop" id="videoDrop">
+                <input type="file" id="videoInput" accept="video/*,.mkv" multiple>
+                <div class="ico">🎬</div>
+                <div class="txt">اسحب الفيديوهات هنا أو اضغط للاختيار</div>
+                <div class="hint">MP4, MOV, WEBM, MKV, 3GP — من دقيقة إلى 10 دقائق — حتى 100MB — بدون أي تعديل</div>
+                <span class="counter" id="videoCounter">0 / 6</span>
+              </div>
+              <div class="video-warning" id="videoWarn"></div>
+              <div class="video-list" id="videoList"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row full" style="margin-top:14px;">
+          <div class="field">
+            <label>نبذة عنك</label>
+            <textarea name="bio" placeholder="اكتب نبذة شخصية عنك: مسيرتك، إنجازاتك، مركزك المفضل، أهدافك..."></textarea>
+          </div>
+        </div>
+
+        <div class="row full" style="margin-top:14px;">
+          <div class="field">
+            <label>الإحصائيات</label>
+            <textarea name="stats" placeholder="عدد المباريات، الأهداف، التمريرات الحاسمة، إلخ..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Documents -->
+      <div class="section">
+        <div class="section-title">المستندات الرسمية</div>
+
+        <div class="row">
+          <div class="field">
+            <label>شهادة الميلاد</label>
+            <div class="file-zone" data-text="ارفع شهادة الميلاد">
+              <input type="file" name="birth_cert" accept="image/*,.pdf">
+              <div class="ico">📄</div>
+              <div class="txt">ارفع شهادة الميلاد</div>
+              <div class="hint">PDF أو صورة</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>صورة الإقرار</label>
+            <div class="file-zone" data-text="ارفع صورة الإقرار">
+              <input type="file" name="declaration" accept="image/*,.pdf">
+              <div class="ico">📜</div>
+              <div class="txt">ارفع صورة الإقرار</div>
+              <div class="hint">الإقرار الموقّع، PDF أو صورة</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>التقرير الطبي</label>
+            <div class="file-zone" data-text="ارفع التقرير الطبي">
+              <input type="file" name="medical" accept="image/*,.pdf">
+              <div class="ico">🏥</div>
+              <div class="txt">ارفع التقرير الطبي</div>
+              <div class="hint">حديث، PDF أو صورة</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div class="section">
+        <div class="section-title">معلومات التواصل</div>
+        <div class="row">
+          <div class="field">
+            <label>رقم الهاتف <span class="req">*</span></label>
+            <input type="tel" name="phone" placeholder="+20 1XX XXX XXXX" required>
+          </div>
+          <div class="field">
+            <label>البريد الإلكتروني <span class="req">*</span></label>
+            <input type="email" name="email" id="pEmail" placeholder="name@example.com" required>
+            <div class="ev-wrap" id="pEmailVerify">
+              <button type="button" class="ev-btn" id="pSendCode">📧 إرسال رمز التحقق</button>
+              <div class="ev-code-row" id="pCodeRow" style="display:none;">
+                <input type="text" class="ev-code-input" id="pCodeInput" placeholder="000000" maxlength="6" inputmode="numeric">
+                <button type="button" class="ev-btn" id="pVerifyCode">تحقق</button>
+              </div>
+              <div class="ev-status" id="pEmailStatus"></div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>كلمة المرور <span class="req">*</span></label>
+            <input type="password" name="password" placeholder="6 أحرف على الأقل" minlength="6" required>
+          </div>
+          <div class="field">
+            <label>تأكيد كلمة المرور <span class="req">*</span></label>
+            <input type="password" name="password_confirm" placeholder="أعد كتابة كلمة المرور" minlength="6" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>واتساب</label>
+            <input type="tel" name="whatsapp" placeholder="+20 1XX XXX XXXX">
+          </div>
+          <div class="field">
+            <label>حساب إنستجرام (اختياري)</label>
+            <input type="text" name="instagram" placeholder="@username">
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit">🏅 أرسل ملف الرياضي للمراجعة</button>
+    </form>
+  </div>
+
+  <!-- ========== COACH FORM ========== -->
+  <div class="form-card" id="coachForm">
+    <h2 style="font-family:'Inter',sans-serif;font-size:22px;font-weight:900;margin-bottom:18px;color:var(--dark);">🏟️ ملف النادي / الأكاديمية</h2>
+
+    <form id="cForm">
+      <!-- Club info -->
+      <div class="section">
+        <div class="section-title">بيانات النادي</div>
+
+        <div class="photo-preview" id="logoPrev">🏛️</div>
+        <div class="file-zone" id="logoZone">
+          <input type="file" name="logo" accept="image/*" data-preview="logoPrev">
+          <div class="ico">🖼️</div>
+          <div class="txt">شعار النادي</div>
+          <div class="hint">PNG شفاف أو JPG — حتى 2MB</div>
+        </div>
+
+        <div class="row" style="margin-top:14px;">
+          <div class="field">
+            <label>اسم النادي <span class="req">*</span></label>
+            <input type="text" name="club_name" placeholder="اسم النادي الرسمي" required>
+          </div>
+          <div class="field">
+            <label>نوع النادي <span class="req">*</span></label>
+            <select name="club_type" required>
+              <option value="">اختار النوع</option>
+              <option>🏟️ نادي محترف</option>
+              <option>🏫 أكاديمية</option>
+              <option>⚽ نادي هاوٍ</option>
+              <option>🎓 مركز تدريب</option>
+              <option>🏆 منتخب</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>الرياضة الأساسية <span class="req">*</span></label>
+            <select name="sport" required>
+              <option value="">اختار الرياضة</option>
+              <option>⚽ كرة القدم</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>المركز المطلوب</label>
+            <input type="text" name="needed_position" list="positions" placeholder="المركز الذي تبحث عنه (اختياري)">
+          </div>
+        </div>
+
+        <div class="row three">
+          <div class="field">
+            <label>الدولة <span class="req">*</span></label>
+            <input type="text" name="country" placeholder="مصر" required>
+          </div>
+          <div class="field">
+            <label>المدينة <span class="req">*</span></label>
+            <input type="text" name="city" placeholder="القاهرة" required>
+          </div>
+          <div class="field">
+            <label>سنة التأسيس <span class="req">*</span></label>
+            <input type="number" name="founded" placeholder="1995" min="1800" max="2025" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>الدوري / المسابقة <span class="req">*</span></label>
+            <input type="text" name="league" placeholder="الدوري المصري الممتاز" required>
+          </div>
+          <div class="field">
+            <label>الموقع الرسمي</label>
+            <input type="url" name="website" placeholder="https://www.example.com">
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div class="section">
+        <div class="section-title">بيانات التواصل</div>
+
+        <div class="row">
+          <div class="field">
+            <label>اسم المسؤول <span class="req">*</span></label>
+            <input type="text" name="contact_name" placeholder="اسم الشخص المسؤول" required>
+          </div>
+          <div class="field">
+            <label>المنصب</label>
+            <input type="text" name="contact_role" placeholder="مدير فني / مدير نادي">
+          </div>
+        </div>
+
+        <div class="row three">
+          <div class="field">
+            <label>البريد الرسمي <span class="req">*</span></label>
+            <input type="email" name="official_email" id="cEmail" placeholder="contact@club.com" required>
+            <div class="ev-wrap" id="cEmailVerify">
+              <button type="button" class="ev-btn" id="cSendCode">📧 إرسال رمز التحقق</button>
+              <div class="ev-code-row" id="cCodeRow" style="display:none;">
+                <input type="text" class="ev-code-input" id="cCodeInput" placeholder="000000" maxlength="6" inputmode="numeric">
+                <button type="button" class="ev-btn" id="cVerifyCode">تحقق</button>
+              </div>
+              <div class="ev-status" id="cEmailStatus"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>رقم التواصل <span class="req">*</span></label>
+            <input type="tel" name="phone" placeholder="+20 2X XXXX XXXX" required>
+          </div>
+          <div class="field">
+            <label>واتساب</label>
+            <input type="tel" name="whatsapp" placeholder="+20 1XX XXX XXXX">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>كلمة المرور <span class="req">*</span></label>
+            <input type="password" name="password" placeholder="6 أحرف على الأقل" minlength="6" required>
+          </div>
+          <div class="field">
+            <label>تأكيد كلمة المرور <span class="req">*</span></label>
+            <input type="password" name="password_confirm" placeholder="أعد كتابة كلمة المرور" minlength="6" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Proof -->
+      <div class="section">
+        <div class="section-title">إثبات أن الحساب تابع للنادي</div>
+
+        <div class="row">
+          <div class="field">
+            <label>خطاب رسمي من النادي</label>
+            <div class="file-zone" data-text="ارفع الخطاب الرسمي">
+              <input type="file" name="official_letter" accept="image/*,.pdf">
+              <div class="ico">📜</div>
+              <div class="txt">ارفع الخطاب الرسمي</div>
+              <div class="hint">موقّع ومختوم من إدارة النادي</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>رخصة النادي / السجل التجاري</label>
+            <div class="file-zone" data-text="ارفع الرخصة أو السجل">
+              <input type="file" name="license" accept="image/*,.pdf">
+              <div class="ico">🏛️</div>
+              <div class="txt">رخصة النادي / السجل التجاري</div>
+              <div class="hint">PDF أو صورة واضحة</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit">🏟️ أرسل ملف النادي للمراجعة</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ تم استلام طلبك بنجاح!</div>
+
+<script src="../js/api.js"></script>
+<script>
+    // Only football positions for now — non-football options stay in the source
+    // HTML so future updates can re-enable them by removing this filter.
+  (function () {
+    var dl = document.getElementById('positions');
+    if (!dl) return;
+    var foot = ['حارس مرمى (GK)', 'ظهير أيمن (RB)', 'ظهير أيسر (LB)', 'مدافع (CB)', 'ظهير خلفي (WB)', 'وسط دفاعي (CDM)', 'وسط محوري (CM)', 'صانع لعب (CAM)', 'جناح أيمن (RW)', 'جناح أيسر (LW)', 'مهاجم صريح (CF)', 'مهاجم (ST)'];
+    for (var i = dl.options.length - 1; i >= 0; i--) {
+      if (foot.indexOf(dl.options[i].value) === -1) dl.options[i].remove();
+    }
+  })();
+
+    // Populate day & year
+  const daySel = document.querySelector('#pForm select[name="day"]');
+  for (let d = 1; d <= 31; d++) {
+    const o = document.createElement('option');
+    o.value = d; o.textContent = d;
+    daySel.appendChild(o);
+  }
+  const yearSel = document.querySelector('#pForm select[name="year"]');
+  const thisYear = new Date().getFullYear();
+  for (let y = thisYear; y >= thisYear - 50; y--) {
+    const o = document.createElement('option');
+    o.value = y; o.textContent = y;
+    yearSel.appendChild(o);
+  }
+
+  // Role selector
+  const cards = document.querySelectorAll('.role-card');
+  const playerForm = document.getElementById('playerForm');
+  const coachForm = document.getElementById('coachForm');
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      cards.forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      const role = card.dataset.role;
+      if (role === 'player') {
+        playerForm.classList.add('show');
+        coachForm.classList.remove('show');
+        playerForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        coachForm.classList.add('show');
+        playerForm.classList.remove('show');
+        coachForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // File upload handlers
+  document.querySelectorAll('.file-zone input[type="file"]').forEach(input => {
+    input.addEventListener('change', (e) => {
+      const zone = input.closest('.file-zone');
+      const file = input.files[0];
+      if (!file) return;
+      zone.classList.add('has-file');
+      const txt = zone.querySelector('.txt');
+      const hint = zone.querySelector('.hint');
+      txt.textContent = `✅ ${file.name}`;
+      hint.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+
+      // Photo preview
+      const previewId = input.dataset.preview;
+      if (previewId && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const prev = document.getElementById(previewId);
+          prev.innerHTML = `<img src="${ev.target.result}" alt="">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  });
+
+  // ===== Multi-video upload system =====
+const MAX_VIDEOS = 6;
+const MAX_SIZE   = 100 * 1024 * 1024; // 100MB — same cap as the server/Cloudinary
+  const ACCEPTED   = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/x-matroska', 'video/3gpp', 'video/3gpp2', 'video/x-m4v'];
+  const videoStore = []; // {id, file, name, size, duration, thumb, status, progress}
+
+  const dropZone = document.getElementById('videoDrop');
+  const videoInput = document.getElementById('videoInput');
+  const videoList = document.getElementById('videoList');
+  const videoCounter = document.getElementById('videoCounter');
+  const videoWarn = document.getElementById('videoWarn');
+
+  // Drag & drop
+  ['dragenter', 'dragover'].forEach(ev => {
+    dropZone.addEventListener(ev, e => {
+      e.preventDefault(); e.stopPropagation();
+      dropZone.classList.add('drag-over');
+    });
+  });
+  ['dragleave', 'drop'].forEach(ev => {
+    dropZone.addEventListener(ev, e => {
+      e.preventDefault(); e.stopPropagation();
+      dropZone.classList.remove('drag-over');
+    });
+  });
+  dropZone.addEventListener('drop', e => {
+    const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('video/'));
+    handleVideoFiles(files);
+  });
+  videoInput.addEventListener('change', e => {
+    handleVideoFiles([...e.target.files]);
+    videoInput.value = '';
+  });
+
+  function showWarn(msg) {
+    videoWarn.textContent = msg;
+    videoWarn.classList.add('show');
+    setTimeout(() => videoWarn.classList.remove('show'), 3500);
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+  }
+  function formatDur(sec) {
+    if (!sec || isNaN(sec)) return '--:--';
+    const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
+  function handleVideoFiles(files) {
+    files.forEach(file => {
+      // validate type — some mobile browsers report empty MIME for gallery
+      // videos; let the extension+server decide in that case.
+      const mime = file.type || '';
+      const isVideoType = ACCEPTED.includes(mime) || mime.startsWith('video/') || /\.(mp4|mov|webm|ogg|ogv|mkv|3gp|3g2|m4v)$/i.test(file.name);
+      if (!isVideoType) {
+        showWarn(`❌ "${file.name}" مش فيديو مدعوم`);
+        return;
+      }
+      // limit count
+      if (videoStore.length >= MAX_VIDEOS) {
+        showWarn(`❌ وصلنا للحد الأقصى (${MAX_VIDEOS} فيديوهات)`);
+        return;
+      }
+      // limit size
+      if (file.size > MAX_SIZE) {
+        showWarn(`❌ "${file.name}" أكبر من 100MB`);
+        return;
+      }
+      // dedupe by name+size
+      if (videoStore.some(v => v.file.name === file.name && v.file.size === file.size)) {
+        showWarn(`⚠️ "${file.name}" متكرر`);
+        return;
+      }
+      addVideo(file);
+    });
+    renderList();
+  }
+
+  function addVideo(file) {
+    const id = 'v_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+    const item = {
+      id, file, name: file.name, size: file.size,
+      duration: 0, thumb: null,
+      status: 'uploading', progress: 0
+    };
+    videoStore.push(item);
+
+    // extract duration + thumbnail from video
+    const url = URL.createObjectURL(file);
+    const v = document.createElement('video');
+    v.preload = 'metadata';
+    v.muted = true;
+    v.src = url;
+    v.addEventListener('loadedmetadata', () => {
+      item.duration = v.duration;
+      // enforce 1-10 min right away so the server never has to reject it later
+      if (v.duration && (v.duration < 60 || v.duration > 600)) {
+        URL.revokeObjectURL(url);
+        const idx = videoStore.indexOf(item);
+        if (idx > -1) videoStore.splice(idx, 1);
+        showWarn(`❌ "${file.name}" غير مسموح — يجب أن يكون الفيديو من دقيقة إلى 10 دقائق`);
+        renderList();
+        return;
+      }
+      // seek a tiny bit in to avoid black first frame
+      v.currentTime = Math.min(0.5, v.duration * 0.05);
+    });
+    v.addEventListener('seeked', () => {
+      try {
+        const c = document.createElement('canvas');
+        c.width = 240; c.height = 140;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(v, 0, 0, c.width, c.height);
+        item.thumb = c.toDataURL('image/jpeg', 0.7);
+      } catch (e) { item.thumb = null; }
+      URL.revokeObjectURL(url);
+      renderList();
+    });
+
+    // No fake animation: the bar fills with REAL network progress during
+    // submit (handleSubmit -> uploadOne -> API.uploadRegister -> xhr.upload.onprogress)
+    item.status = 'ready';
+    item.progress = 0;
+    renderList();
+  }
+
+  function removeVideo(id) {
+    const idx = videoStore.findIndex(v => v.id === id);
+    if (idx > -1) {
+      videoStore.splice(idx, 1);
+      renderList();
+    }
+  }
+
+  function renderList() {
+    videoCounter.textContent = `${videoStore.length} / ${MAX_VIDEOS}`;
+    if (videoStore.length === 0) {
+      videoList.innerHTML = '';
+      return;
+    }
+    videoList.innerHTML = videoStore.map(v => {
+      const safeName = v.name.replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+      const thumb = v.thumb || '';
+      return `
+        <div class="video-card ${v.status === 'uploading' ? 'uploading' : ''}" data-id="${v.id}">
+          <button class="video-remove" type="button" data-remove="${v.id}" title="حذف">✕</button>
+          <div class="video-thumb">
+            ${thumb ? `<img src="${thumb}" alt="">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#fff;font-size:30px;">🎥</div>`}
+            <div class="play">▶</div>
+            <span class="duration">${formatDur(v.duration)}</span>
+          </div>
+          <div class="video-info">
+            <div class="video-name" title="${safeName}">${safeName}</div>
+            <div class="video-meta">
+              <span>${formatSize(v.size)}</span>
+              <span class="video-status ${v.status}">${v.status === 'uploading' ? 'جاري الرفع ' + Math.round(v.progress) + '%' : '✓ تم الرفع'}</span>
+            </div>
+            <div class="video-progress"><div style="width:${v.progress}%"></div></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // bind remove buttons
+    videoList.querySelectorAll('[data-remove]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        removeVideo(btn.dataset.remove);
+      });
+    });
+  }
+
+  // ===== Email verification for both forms =====
+  const emailVerified = { player: false, club: false };
+  const emailVerifyIds = {
+    player: { email: 'pEmail', sendBtn: 'pSendCode', codeRow: 'pCodeRow', codeInput: 'pCodeInput', verifyBtn: 'pVerifyCode', status: 'pEmailStatus' },
+    club:   { email: 'cEmail', sendBtn: 'cSendCode', codeRow: 'cCodeRow', codeInput: 'cCodeInput', verifyBtn: 'cVerifyCode', status: 'cEmailStatus' }
+  };
+
+  function setupEmailVerify(role) {
+    const ids = emailVerifyIds[role];
+    const sendBtn = document.getElementById(ids.sendBtn);
+    const codeRow = document.getElementById(ids.codeRow);
+    const codeInput = document.getElementById(ids.codeInput);
+    const verifyBtn = document.getElementById(ids.verifyBtn);
+    const status = document.getElementById(ids.status);
+    let verificationId = null;
+
+    sendBtn.addEventListener('click', async () => {
+      const email = document.getElementById(ids.email).value.trim();
+      if (!email) { status.className = 'ev-status err'; status.textContent = 'أدخل البريد الإلكتروني أولاً'; return; }
+      sendBtn.disabled = true; sendBtn.textContent = 'جاري الإرسال...';
+      status.textContent = ''; status.className = 'ev-status';
+      try {
+        const res = await window.API.sendVerification(email);
+        verificationId = res.verificationId;
+        codeRow.style.display = 'flex';
+        if (res.devCode) {
+          codeInput.value = res.devCode;
+          status.className = 'ev-status ok';
+          status.textContent = '⚠️ فشل إرسال البريد — في وضع التطوير، استخدم هذا الرمز: ' + res.devCode;
+        } else {
+          status.className = 'ev-status ok';
+          status.textContent = '✅ تم إرسال الرمز إلى بريدك — أدخل الرمز المكوّن من 6 أرقام';
+        }
+      } catch (err) {
+        status.className = 'ev-status err';
+        status.textContent = '❌ ' + (err.message || 'تعذر الإرسال');
+      } finally {
+        sendBtn.disabled = false; sendBtn.textContent = '📧 إرسال رمز التحقق';
+      }
+    });
+
+    verifyBtn.addEventListener('click', async () => {
+      const code = codeInput.value.trim();
+      if (!code || code.length !== 6) { status.className = 'ev-status err'; status.textContent = 'أدخل الرمز المكوّن من 6 أرقام'; return; }
+      verifyBtn.disabled = true; verifyBtn.textContent = 'جاري التحقق...';
+      try {
+        await window.API.verifyEmail(verificationId, code);
+        emailVerified[role] = true;
+        status.className = 'ev-status ok';
+        status.textContent = '✅ تم التحقق من البريد بنجاح';
+        sendBtn.style.display = 'none';
+        codeRow.style.display = 'none';
+        codeInput.value = '';
+        document.getElementById(ids.email).readOnly = true;
+        document.getElementById(ids.email).style.opacity = '0.7';
+      } catch (err) {
+        status.className = 'ev-status err';
+        status.textContent = '❌ ' + (err.message || 'الرمز غير صحيح');
+      } finally {
+        verifyBtn.disabled = false; verifyBtn.textContent = 'تحقق';
+      }
+    });
+  }
+  setupEmailVerify('player');
+  setupEmailVerify('club');
+
+  // ===== Form submit
+  // New review flow: every file (photo, proof documents, videos) is uploaded
+  // via the no-auth /api/upload/register-upload endpoint, then the whole
+  // request is submitted. The account stays PENDING until an admin approves
+  // the proof documents — the player waits for the accept / reject response.
+  function resetForm(form) {
+    form.reset();
+    form.querySelectorAll('.file-zone').forEach(z => {
+      z.classList.remove('has-file');
+      const txt = z.querySelector('.txt');
+      const hint = z.querySelector('.hint');
+      txt.textContent = z.dataset.text || 'ارفع ملف';
+      hint.textContent = 'PNG, JPG, PDF حتى 5MB';
+    });
+    ['photoPrev', 'logoPrev'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = id === 'photoPrev' ? '👤' : '🏛️';
+    });
+    if (typeof videoStore !== 'undefined') {
+      videoStore.length = 0;
+      renderList();
+    }
+  }
+
+  function showToast(msg, isError) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    if (isError) t.style.background = '#ef4444';
+    else t.style.background = '';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 5000);
+  }
+
+  async function uploadOne(file, purpose, onProgress) {
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await window.API.uploadRegister(fd, purpose, onProgress);
+    return (res && res.file) || null;
+  }
+
+  const DOC_KEYS = {
+    player: ['birth_cert', 'medical', 'declaration'],
+    club: ['official_letter', 'license']
+  };
+  const DOC_NAMES = {
+    birth_cert: 'شهادة الميلاد', medical: 'التقرير الطبي', declaration: 'صورة الإقرار',
+    official_letter: 'الخطاب الرسمي', license: 'الرخصة أو السجل التجاري'
+  };
+
+  async function handleSubmit(formId, role, submitText) {
+    const form = document.getElementById(formId);
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type="submit"]');
+      if (!window.API) {
+        showToast('⚠️ السيرفر غير متصل — شغّل node server.js أولاً', true);
+        return;
+      }
+
+      // Check email verification
+      if (!emailVerified[role]) {
+        showToast('❌ يجب التحقق من البريد الإلكتروني أولاً — اضغط "إرسال رمز التحقق" وأدخل الرمز', true);
+        return;
+      }
+
+      // 0) the proof documents are mandatory (admin reviews them)
+      const missing = DOC_KEYS[role].filter(k => {
+        const inp = form.querySelector(`input[name="${k}"]`);
+        return !(inp && inp.files && inp.files[0]);
+      });
+      if (missing.length) {
+        showToast('❌ ارفق ' + missing.map(k => DOC_NAMES[k]).join('، ') + ' — ستراجعها الإدارة قبل تفعيل حسابك', true);
+        return;
+      }
+
+      // a player MUST attach at least one 1-10 min highlight video
+      if (role === 'player' && videoStore.length === 0) {
+        showToast('❌ يجب رفع فيديو واحد على الأقل (من دقيقة إلى 10 دقائق) لعرض مهاراتك', true);
+        return;
+      }
+
+      btn.disabled = true;
+      try {
+        // 1) upload every file without auth (photo/logo + documents + videos)
+        btn.textContent = 'جاري رفع الملفات...';
+        const urls = {};
+        for (const input of form.querySelectorAll('input[type="file"]')) {
+          const file = input.files && input.files[0];
+          if (!file) continue;
+          btn.textContent = 'جاري رفع ' + file.name + '...';
+          const up = await uploadOne(file, null, (pct) => {
+            btn.textContent = 'جاري رفع ' + file.name + ' ' + pct + '%';
+          });
+          if (up) urls[input.name] = up.url;
+        }
+        const videos = [];
+        for (const v of videoStore) {
+          btn.textContent = 'جاري رفع ' + v.file.name + '...';
+          v.status = 'uploading';
+          v.progress = 0;
+          renderList();
+          let lastPainted = -100;
+          try {
+            const up = await uploadOne(v.file, 'player_video', (pct) => {
+              // real network progress — repaint sparingly to avoid flicker
+              if (pct - lastPainted >= 4 || pct >= 100) {
+                lastPainted = pct;
+                v.progress = pct;
+                renderList();
+              }
+            });
+            v.status = 'done';
+            v.progress = 100;
+            if (up) videos.push({ url: up.url, name: up.name, size: up.size, duration: Math.round(v.duration) });
+          } catch (err) {
+            v.status = 'ready';
+            v.progress = 0;
+            throw err;
+          }
+          renderList();
+        }
+
+        // 2) submit the request for admin review
+        btn.textContent = 'جاري إرسال الطلب للمراجعة...';
+        const data = Object.fromEntries(new FormData(form).entries());
+        data.files = [...form.querySelectorAll('input[type="file"]')].map(i => i.files[0]?.name).filter(Boolean);
+        data.videos = videos;
+        data.role = role;
+        if (role === 'player' && urls.photo) data.photo = urls.photo;
+        if (role === 'club' && urls.logo) data.logo = urls.logo;
+        const docs = {};
+        DOC_KEYS[role].forEach(k => { if (urls[k]) docs[k] = urls[k]; });
+        data.documents = docs;
+
+        const res = await window.API.register(data, role);
+        try {
+          localStorage.setItem('manara_reg', JSON.stringify({
+            registrationId: res.registrationId,
+            statusToken: res.statusToken,
+            email: (data.email || data.official_email || ''),
+            role: role
+          }));
+        } catch (e) {}
+        showToast('✅ ' + (res.message || 'تم استلام طلبك — بانتظار مراجعة الإدارة'));
+        resetForm(form);
+        let dest = 'pending.html?role=' + role;
+        if (res.registrationId && res.statusToken) {
+          dest += '&id=' + encodeURIComponent(res.registrationId)
+                + '&token=' + encodeURIComponent(res.statusToken)
+                + '&email=' + encodeURIComponent(data.email || data.official_email || '');
+        }
+        setTimeout(() => { window.location.href = dest; }, 1600);
+      } catch (err) {
+        if (err.status === 429) {
+          showToast('⏳ ' + (err.message || 'أرفق الملفات بشكل صحيح وأعد المحاولة بعد 15 دقيقة'), true);
+        } else if (err.status === 409) {
+          showToast('ℹ️ ' + (err.message || 'طلبك قيد المراجعة بالفعل'), true);
+        } else {
+          showToast('❌ ' + (err.message || 'حدث خطأ، حاول مرة أخرى'), true);
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = submitText;
+      }
+    });
+  }
+  handleSubmit('pForm', 'player', '🏅 أرسل ملف الرياضي للمراجعة');
+  handleSubmit('cForm', 'club', '🏟️ أرسل ملف النادي للمراجعة');
+</script>
+
+</body>
+</html>

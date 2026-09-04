@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<script>document.documentElement.classList.add('js')</script>
+<meta charset="utf-8">
+<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ابحث عن أندية — تصفح الأندية والأكاديميات | منارة</title>
+  <meta name="description" content="ابحث عن أندية وأكاديميات في منارة. تصفح الأندية حسب الرياضة والبلد والنوع.">
+  <meta property="og:title" content="ابحث عن أندية | منارة">
+  <meta property="og:description" content="منصة منارة للبحث عن الأندية والأكاديميات. تصفية حسب الرياضة والبلد والنوع.">
+<meta name="description" content="Browse the Manara club board. Filter verified clubs and academies by sport, country and type — built on Bootstrap 5 with vanilla JavaScript.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/vendor/bootstrap.min.css">
+<link rel="stylesheet" href="css/style.css">
+<script src="js/theme.js"></script>
+<script src="js/lang.js"></script>
+<link rel="canonical" href="https://manara.app/clubs.html">
+</head>
+<body>
+<a class="skip-link" href="#board">Skip to content</a>
+
+<!-- ============================================================ Navbar -->
+ <div data-partial="nav.53be93"></div> 
+
+<!-- ============================================================ Board -->
+<main id="board" class="board">
+  <div class="container-x">
+
+    <button class="btn btn-outline-ink btn-pill filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="filtersPanel">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+      Filters
+    </button>
+
+    <div class="board-grid">
+      <!-- Sidebar filters -->
+      <aside class="filters is-collapsed" id="filtersPanel" aria-label="Club filters">
+        <div class="filters-head">
+          <h2>Filters</h2>
+          <button type="button" id="clearFilters">Clear all</button>
+        </div>
+        <div class="filters-body">
+          <!-- keyword -->
+          <div class="fgroup">
+            <h3>Keyword</h3>
+            <label class="field" style="position:relative">
+              <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%)" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b7488" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" id="fKeyword" class="fsearch" style="padding-left:38px" placeholder="Name, city, league">
+            </label>
+          </div>
+          <!-- sport -->
+          <div class="fgroup">
+            <h3>Sport</h3>
+            <label class="check"><input type="checkbox" class="f-cat" value="Football"> Football <span class="cnt">0</span></label>
+          </div>
+          <!-- type -->
+          <div class="fgroup">
+            <h3>Type</h3>
+            <label class="check"><input type="checkbox" class="f-type" value="Professional club"> Professional club</label>
+            <label class="check"><input type="checkbox" class="f-type" value="Academy"> Academy</label>
+            <label class="check"><input type="checkbox" class="f-type" value="National federation"> National federation</label>
+          </div>
+          <!-- country -->
+          <div class="fgroup">
+            <h3>Country</h3>
+            <label class="field" style="position:relative">
+              <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%)" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b7488" stroke-width="2" stroke-linecap="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              <input type="text" id="fCountry" class="fsearch" style="padding-left:38px" placeholder="Egypt, Poland…">
+            </label>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Results -->
+      <div class="board-main">
+        <div class="result-line">
+          <div class="count">Showing <b id="resultCount">0</b> of <b id="totalCount">0</b> clubs</div>
+          <div class="board-sort">
+            <label for="sortBy">Sort by</label>
+            <select id="sortBy">
+              <option value="recent">Most recent</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="job-list" id="clubList">
+          <!-- rendered by js/clubs.js -->
+        </div>
+
+        <div class="no-results" id="noResults">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <h3>No clubs match those filters</h3>
+          <p>Try clearing a sport or changing your keyword to see more clubs.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ============================================================ Footer -->
+<div data-partial="foot.75ab0d"></div>
+<script src="js/partials.js"></script>
+
+<script src="js/vendor/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/search-utils.js"></script>
+<script src="js/nav-auth.js"></script>
+<script src="js/clubs.js"></script>
+</body>
+</html>

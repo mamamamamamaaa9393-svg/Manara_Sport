@@ -1,0 +1,169 @@
+﻿<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<script>document.documentElement.classList.add('js')</script>
+<meta charset="utf-8">
+<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ابحث عن لاعبين — تصفية حسب الرياضة والموقع | منارة</title>
+  <meta name="description" content="ابحث عن لاعبين محترفين في منارة. تصفية حسب الرياضة والموقع والمستوى.">
+  <meta property="og:title" content="ابحث عن لاعبين | منارة">
+  <meta property="og:description" content="منصة منارة للبحث عن مواهب رياضية. تصفية حسب الرياضة والموقع والمستوى.">
+<meta name="description" content="Browse the Manara player board. Filter verified athletes instantly by sport, level, availability — built on Bootstrap 5 with vanilla JavaScript.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/vendor/bootstrap.min.css">
+<link rel="stylesheet" href="css/style.css">
+<script src="js/theme.js"></script>
+<script src="js/lang.js"></script>
+<link rel="canonical" href="https://manara.app/jobs.html">
+</head>
+<body>
+<a class="skip-link" href="#board">Skip to content</a>
+
+<!-- ============================================================ Navbar -->
+ <div data-partial="nav.95911d"></div> 
+
+<!-- ============================================================ Page head -->
+<!-- <section class="page-head">
+  <div class="container-x">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="index.html">Home</a>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span>Browse jobs</span>
+    </nav>
+    <h1>Browse open jobs</h1>
+    <p>Filter the whole board by category, type and availability — results update as you go.</p>
+  </div>
+</section> -->
+
+<!-- ============================================================ Board -->
+<main id="board" class="board">
+  <div class="container-x">
+
+<button class="btn btn-outline-ink btn-pill filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="filtersPanel">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+      Filters
+    </button>
+
+    <div class="search-tabs" id="searchTabs">
+      <button class="search-tab active" data-mode="all" data-i18n="search.all">الكل</button>
+      <button class="search-tab" data-mode="players" data-i18n="search.players">لاعبون</button>
+      <button class="search-tab" data-mode="clubs" data-i18n="search.clubs">أندية</button>
+    </div>
+
+    <div class="board-grid">
+      <!-- Sidebar filters -->
+      <aside class="filters is-collapsed" id="filtersPanel" aria-label="Job filters">
+        <div class="filters-head">
+          <h2>Filters</h2>
+          <button type="button" id="clearFilters">Clear all</button>
+        </div>
+        <div class="filters-body">
+          <!-- keyword -->
+          <div class="fgroup">
+            <h3>Keyword</h3>
+            <label class="field" style="position:relative">
+              <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%)" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b7488" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" id="fKeyword" class="fsearch" style="padding-left:38px" placeholder="Name, position, club">
+            </label>
+          </div>
+          <!-- sport -->
+          <div class="fgroup">
+            <h3>Sport</h3>
+            <label class="check"><input type="checkbox" class="f-cat" value="Football"> Football <span class="cnt">3</span></label>
+            <label class="check is-disabled"><input type="checkbox" class="f-cat" value="Basketball" disabled> Basketball <span class="soon-badge sm" data-i18n="cat.soon">Coming soon</span></label>
+            <label class="check is-disabled"><input type="checkbox" class="f-cat" value="Tennis" disabled> Tennis <span class="soon-badge sm" data-i18n="cat.soon">Coming soon</span></label>
+            <label class="check is-disabled"><input type="checkbox" class="f-cat" value="Volleyball" disabled> Volleyball <span class="soon-badge sm" data-i18n="cat.soon">Coming soon</span></label>
+            <label class="check is-disabled"><input type="checkbox" class="f-cat" value="Handball" disabled> Handball <span class="soon-badge sm" data-i18n="cat.soon">Coming soon</span></label>
+            <label class="check is-disabled"><input type="checkbox" class="f-cat" value="Golf" disabled> Golf <span class="soon-badge sm" data-i18n="cat.soon">Coming soon</span></label>
+            <label class="check is-disabled"><input type="checkbox" class="f-cat" value="Karate" disabled> Karate <span class="soon-badge sm" data-i18n="cat.soon">Coming soon</span></label>
+            <label class="check is-disabled"><input type="checkbox" class="f-cat" value="Swimming" disabled> Swimming <span class="soon-badge sm" data-i18n="cat.soon">Coming soon</span></label>
+          </div>
+          <!-- position -->
+          <div class="fgroup">
+            <h3>Position</h3>
+            <label class="field" style="position:relative">
+              <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%)" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b7488" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" id="fPosition" class="fsearch" style="padding-left:38px" placeholder="Striker, Goalkeeper, Winger…">
+            </label>
+          </div>
+          <!-- level -->
+          <div class="fgroup">
+            <h3>Level</h3>
+            <select id="fLevel" class="fselect">
+              <option value="">All levels</option>
+              <option value="international">International</option>
+              <option value="pro">Pro</option>
+              <option value="semi-pro">Semi-pro</option>
+              <option value="amateur">Amateur</option>
+              <option value="beginner">Beginner</option>
+            </select>
+          </div>
+          <!-- age -->
+          <div class="fgroup">
+            <h3>Age</h3>
+            <div class="range-pair">
+              <input type="number" id="fAgeMin" min="14" max="50" placeholder="Min" class="fnum">
+              <span>–</span>
+              <input type="number" id="fAgeMax" min="14" max="50" placeholder="Max" class="fnum">
+            </div>
+          </div>
+          <!-- height -->
+          <div class="fgroup">
+            <h3>Height (cm)</h3>
+            <div class="range-pair">
+              <input type="number" id="fHeightMin" min="140" max="220" placeholder="Min" class="fnum">
+              <span>–</span>
+              <input type="number" id="fHeightMax" min="140" max="220" placeholder="Max" class="fnum">
+            </div>
+          </div>
+          <!-- country -->
+          <div class="fgroup">
+            <h3>Country</h3>
+            <label class="field" style="position:relative">
+              <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%)" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b7488" stroke-width="2" stroke-linecap="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              <input type="text" id="fCountry" class="fsearch" style="padding-left:38px" placeholder="Egypt, Portugal…">
+            </label>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Results -->
+      <div class="board-main">
+<div class="result-line">
+          <div class="count">Showing <b id="resultCount">0</b> of <b id="totalCount">0</b> <span id="countUnit">نتائج</span></div>
+          <div class="board-sort">
+            <label for="sortBy">Sort by</label>
+            <select id="sortBy">
+              <option value="recent">Most recent</option>
+              <option value="rating">Most rated</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="job-list" id="jobList"><!-- populated from the live API --></div>
+
+        <div class="no-results" id="noResults">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <h3>No players match those filters</h3>
+          <p>Try clearing a sport or changing your keyword to see more athletes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ============================================================ Footer -->
+<div data-partial="foot.75ab0d"></div>
+<script src="js/partials.js"></script>
+
+<script src="js/vendor/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/search-utils.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

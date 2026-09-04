@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ar" data-default-lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>لوحة الإدارة — طلبات التسجيل | Manara</title>
+<meta name="description" content="لوحة الإدارة — مراجعة طلبات التسجيل وتفعيل الحسابات.">
+<meta property="og:title" content="لوحة الإدارة — طلبات التسجيل | منارة">
+<meta property="og:description" content="لوحة الإدارة — مراجعة طلبات التسجيل وتفعيل الحسابات.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manara.app/">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/vendor/porfile.css">
+  <script src="js/theme.js"></script>
+<script src="js/lang.js"></script>
+  <script src="js/nav.js"></script>
+<style>
+  .admin-wrap { margin-top: 22px; }
+  .admin-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+  .admin-head h1 { margin: 0; font-size: 22px; font-weight: 900; color: var(--dark); }
+  .admin-head p { margin: 4px 0 0; font-size: 13px; color: var(--gray-500); font-weight: 600; }
+
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .tab { border: 1px solid var(--gray-200); background: var(--surface); color: var(--gray-600); font-weight: 800; font-size: 13px; padding: 9px 16px; border-radius: 12px; cursor: pointer; font-family: inherit; transition: all .15s; }
+  .tab:hover { border-color: var(--primary); color: var(--primary); }
+  .tab.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .tab .n { background: rgba(0,0,0,.12); border-radius: 10px; padding: 1px 8px; margin-right: 6px; font-size: 11.5px; }
+
+  .reg-list { display: flex; flex-direction: column; gap: 16px; }
+  .reg-card { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 16px; overflow: hidden; }
+  .reg-head { padding: 16px 20px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; border-bottom: 1px solid var(--gray-100); }
+  .reg-ava { width: 52px; height: 52px; border-radius: 12px; background: var(--gray-100); display: grid; place-items: center; font-size: 26px; flex: none; overflow: hidden; }
+  .reg-ava img { width: 100%; height: 100%; object-fit: cover; }
+  .reg-who { flex: 1; min-width: 180px; }
+  .reg-who b { font-size: 15.5px; font-weight: 900; color: var(--dark); }
+  .reg-who .reg-email { font-size: 12px; color: var(--gray-500); font-weight: 700; direction: ltr; text-align: right; }
+  .badge { font-size: 11px; font-weight: 800; padding: 4px 11px; border-radius: 20px; }
+  .badge.role-player { background: var(--primary-light); color: var(--primary); }
+  .badge.role-club { background: #eef6ff; color: #1d6fd1; }
+  .badge.st-pending { background: #fef3c7; color: #b45309; }
+  .badge.st-approved { background: #d1fae5; color: #047857; }
+  .badge.st-rejected { background: #fee2e2; color: #b91c1c; }
+  .reg-sub { font-size: 11.5px; color: var(--gray-400); font-weight: 700; }
+
+  /* مؤقتاً: إخفاء مراجعة مدفوعات الإيصالات اليدوية — يُعاد التفعيل لاحقاً */
+  .mode-btn[data-mode="transactions"], #txPanel { display: none !important; }
+
+  .reg-body { padding: 16px 20px; }
+  .reg-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px 18px; margin-bottom: 14px; }
+  .reg-meta div { font-size: 12.5px; font-weight: 700; color: var(--gray-600); }
+  .reg-meta div span { color: var(--gray-400); display: block; font-size: 11px; margin-bottom: 2px; }
+
+  .docs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .doc-card { border: 1px solid var(--gray-200); border-radius: 12px; overflow: hidden; background: var(--gray-50); }
+  .doc-card a { text-decoration: none; color: inherit; }
+  .doc-preview { height: 130px; background: var(--surface); display: grid; place-items: center; position: relative; border-bottom: 1px solid var(--gray-100); overflow: hidden; }
+  .doc-preview img { width: 100%; height: 100%; object-fit: contain; }
+  .doc-preview .pdf-ico { font-size: 40px; }
+  .doc-label { padding: 8px 12px; font-size: 12px; font-weight: 800; color: var(--gray-600); display: flex; justify-content: space-between; align-items: center; }
+  .doc-label .open { font-size: 10.5px; color: var(--primary); }
+
+  .vids { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .vid-link { font-size: 11.5px; font-weight: 800; color: var(--primary); background: var(--primary-light); border-radius: 10px; padding: 6px 12px; text-decoration: none; }
+
+  .reg-note { margin-top: 12px; padding: 10px 14px; border-radius: 12px; font-size: 12.5px; font-weight: 700; line-height: 1.7; }
+  .reg-note.rejected { background: #fee2e2; border: 1px solid #fecaca; color: #b91c1c; }
+  .reg-note.ok { background: #d1fae5; border: 1px solid #a7f3d0; color: #047857; }
+
+  .reg-actions { padding: 14px 20px; border-top: 1px solid var(--gray-100); display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-act { border: none; border-radius: 12px; padding: 11px 22px; font-weight: 800; font-size: 13.5px; cursor: pointer; font-family: inherit; }
+  .btn-approve { background: #10b981; color: #fff; }
+  .btn-approve:hover { background: #059669; }
+  .btn-reject { background: var(--surface); color: #dc2626; border: 1px solid #fecaca; }
+  .btn-reject:hover { background: #fef2f2; }
+  .empty { text-align: center; padding: 40px 16px; color: var(--gray-500); font-weight: 700; font-size: 13.5px; }
+
+  .err-bar { background: #fdecea; border: 1px solid #f5b5ad; color: #b3261e; font-weight: 700; font-size: 13px; padding: 12px 16px; border-radius: 12px; margin-bottom: 14px; }
+
+  .admin-modes { display: inline-flex; gap: 6px; background: var(--gray-100); padding: 5px; border-radius: 14px; margin-bottom: 18px; }
+  .mode-btn { border: none; background: transparent; color: var(--gray-600); font-family: inherit; font-weight: 800; font-size: 13px; padding: 9px 18px; border-radius: 10px; cursor: pointer; transition: all .15s; }
+  .mode-btn.active { background: var(--surface); color: var(--primary); box-shadow: var(--shadow-sm); }
+
+  /* Transactions */
+  .tx-card { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 16px; overflow: hidden; }
+  .tx-head { padding: 15px 20px; display: flex; align-items: center; gap: 13px; flex-wrap: wrap; border-bottom: 1px solid var(--gray-100); }
+  .tx-ava { width: 48px; height: 48px; border-radius: 12px; background: var(--gray-100); display: grid; place-items: center; font-size: 23px; flex: none; }
+  .tx-who { flex: 1; min-width: 170px; }
+  .tx-who b { font-size: 15px; font-weight: 900; color: var(--dark); }
+  .tx-who .tx-email { font-size: 12px; color: var(--gray-500); font-weight: 700; direction: ltr; text-align: right; }
+  .tx-amount { font-size: 19px; font-weight: 900; color: var(--primary); }
+  .tx-amount small { font-size: 11px; color: var(--gray-500); font-weight: 700; }
+  .tx-method { font-size: 11px; font-weight: 800; padding: 4px 11px; border-radius: 20px; background: var(--primary-light); color: var(--primary); }
+  .tx-body { padding: 14px 20px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .tx-shot { width: 120px; height: 88px; border-radius: 10px; border: 1px solid var(--gray-200); background: var(--gray-50); overflow: hidden; display: grid; place-items: center; }
+  .tx-shot img { width: 100%; height: 100%; object-fit: contain; }
+  .tx-shot span { font-size: 26px; }
+  .tx-detail { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; font-weight: 700; color: var(--gray-600); }
+  .tx-detail b { color: var(--gray-900); font-weight: 800; }
+  .tx-note { margin: 0 20px 12px; padding: 9px 13px; border-radius: 10px; font-size: 12px; font-weight: 700; background: #fee2e2; color: #b91c1c; }
+  .tx-actions { padding: 13px 20px; border-top: 1px solid var(--gray-100); display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-tx { border: none; border-radius: 11px; padding: 10px 20px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .btn-tx.approve { background: #10b981; color: #fff; }
+  .btn-tx.approve:hover { background: #059669; }
+  .btn-tx.reject { background: var(--surface); color: #dc2626; border: 1px solid #fecaca; }
+  .btn-tx.reject:hover { background: #fef2f2; }
+  .badge.st-pending { background: #fef3c7; color: #b45309; }
+  .badge.st-approved { background: #d1fae5; color: #047857; }
+  .badge.st-rejected { background: #fee2e2; color: #b91c1c; }
+
+  /* Inquiries */
+  .inq-card { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 16px; overflow: hidden; }
+  .inq-head { padding: 15px 20px; display: flex; align-items: center; gap: 13px; flex-wrap: wrap; border-bottom: 1px solid var(--gray-100); }
+  .inq-ava { width: 48px; height: 48px; border-radius: 12px; background: var(--gray-100); display: grid; place-items: center; font-size: 23px; flex: none; }
+  .inq-who { flex: 1; min-width: 170px; }
+  .inq-who b { font-size: 15px; font-weight: 900; color: var(--dark); }
+  .inq-who .inq-email { font-size: 12px; color: var(--gray-500); font-weight: 700; direction: ltr; text-align: right; }
+  .inq-body { padding: 14px 20px; }
+  .inq-msg { background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: 12px; padding: 12px 14px; font-size: 13px; font-weight: 700; line-height: 1.7; color: var(--gray-700); white-space: pre-wrap; }
+  .inq-msg .lbl { display: block; font-size: 11px; color: var(--gray-400); margin-bottom: 4px; }
+  .inq-reply { margin-top: 12px; }
+  .inq-reply textarea { width: 100%; min-height: 90px; resize: vertical; border: 1px solid var(--gray-200); border-radius: 12px; padding: 11px 13px; font-family: inherit; font-size: 13px; font-weight: 700; color: var(--gray-800); }
+  .inq-reply textarea:focus { outline: none; border-color: var(--primary); }
+  .inq-answered { margin-top: 12px; padding: 11px 14px; border-radius: 12px; background: #ecfeff; border: 1px solid #a5f3fc; font-size: 13px; font-weight: 700; line-height: 1.7; color: #0e7490; white-space: pre-wrap; }
+  .inq-answered .lbl { display: block; font-size: 11px; color: #0891b2; margin-bottom: 4px; }
+  .inq-actions { padding: 0 20px 16px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-inq { border: none; border-radius: 12px; padding: 10px 22px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; background: var(--primary); color: #fff; }
+  .btn-inq:hover { background: var(--primary-dark, #4338ca); }
+  .btn-inq:disabled { opacity: .6; cursor: default; }
+
+  /* Audit log of account deletions */
+  .log-section { margin-top: 30px; padding-top: 20px; border-top: 2px dashed var(--gray-200); }
+  .log-section h2 { font-size: 18px; font-weight: 900; color: var(--dark); margin: 0 0 4px; }
+  .log-section > p { font-size: 12.5px; color: var(--gray-500); font-weight: 600; margin: 0 0 14px; }
+  .log-card { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 14px; padding: 14px 18px; margin-bottom: 12px; }
+  .log-head { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .log-head b { font-size: 14.5px; font-weight: 900; color: #b91c1c; }
+  .log-time { font-size: 11.5px; color: var(--gray-400); font-weight: 700; }
+  .log-sub { font-size: 12.5px; color: var(--gray-600); font-weight: 700; margin-top: 4px; }
+  .log-meta, .log-extra { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px 14px; margin-top: 10px; }
+  .log-meta div { font-size: 12px; font-weight: 700; color: var(--gray-600); }
+  .log-extra div { font-size: 12px; font-weight: 800; color: #b45309; }
+
+  /* Mobile-friendly modal dialogs (replace confirm/prompt) */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(2,6,23,.6); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .modal-box { width: 100%; max-width: 440px; background: var(--surface); border-radius: 16px; padding: 18px; box-shadow: 0 24px 60px rgba(0,0,0,.45); }
+  .modal-msg { font-size: 14px; font-weight: 800; line-height: 1.7; color: var(--dark); white-space: pre-wrap; }
+  .modal-input { width: 100%; min-height: 84px; resize: vertical; border: 1px solid var(--gray-200); border-radius: 12px; padding: 11px 13px; font-family: inherit; font-size: 13px; font-weight: 700; color: var(--gray-800); margin-top: 12px; }
+  .modal-input:focus { outline: none; border-color: var(--primary); }
+  .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .modal-btn { flex: 1; border: none; border-radius: 12px; padding: 13px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; }
+  .modal-cancel { background: var(--gray-100); color: var(--gray-700); }
+  .modal-ok { background: var(--primary); color: #fff; }
+  .modal-ok.modal-danger { background: #dc2626; color: #fff; }
+</style>
+</head>
+<body>
+
+<div data-partial="nav.214504"></div>
+
+<div class="container admin-wrap">
+  <div class="admin-head">
+    <div>
+      <h1>🛡️ لوحة مراجعة طلبات التسجيل</h1>
+      <p>اعرض شهادة الميلاد والتقرير الطبي وصورة الإقرار — قبول يفعل الحساب، رفض يُطلب إرفاق الملفات بشكل صحيح مع انتظار 15 دقيقة.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <a href="admin-declarations.html" style="background:var(--dark);color:#fff;padding:10px 18px;border-radius:12px;font-weight:800;font-size:13px;text-decoration:none;display:inline-flex;gap:6px;align-items:center;">🔐 خزنة الإقرارات</a>
+      <span class="btn-msg" style="background:var(--gray-100);color:var(--gray-600);box-shadow:none;">مرحباً <b id="adminName">…</b></span>
+    </div>
+  </div>
+
+  <div id="errBar" class="err-bar" style="display:none"></div>
+
+  <div class="admin-modes">
+    <button class="mode-btn active" data-mode="registrations">🛡️ طلبات التسجيل</button>
+    <button class="mode-btn" data-mode="transactions">💳 معاملات الدفع <span id="txBadge" style="color:var(--orange);">0</span></button>
+    <button class="mode-btn" data-mode="inquiries">💬 الاستفسارات <span id="inqBadge" style="color:var(--orange);">0</span></button>
+  </div>
+
+  <div id="regPanel">
+    <div class="tabs" id="tabs">
+      <button class="tab" data-status="pending">⏳ بانتظار المراجعة <span class="n" id="c-pending">0</span></button>
+      <button class="tab" data-status="approved">✅ مقبول <span class="n" id="c-approved">0</span></button>
+      <button class="tab" data-status="rejected">❌ مرفوض <span class="n" id="c-rejected">0</span></button>
+      <button class="tab active" data-status="all">📋 الكل</button>
+    </div>
+    <div id="regList" class="reg-list"></div>
+  </div>
+
+  <div id="txPanel" style="display:none;">
+    <div class="tabs" id="txTabs">
+      <button class="tab active" data-status="pending">⏳ بانتظار المراجعة <span class="n" id="tc-pending">0</span></button>
+      <button class="tab" data-status="approved">✅ مقبول <span class="n" id="tc-approved">0</span></button>
+      <button class="tab" data-status="rejected">❌ مرفوض <span class="n" id="tc-rejected">0</span></button>
+      <button class="tab" data-status="all">📋 الكل</button>
+    </div>
+    <div id="txList" class="reg-list"></div>
+  </div>
+
+  <div id="inqPanel" style="display:none;">
+    <div class="tabs" id="inqTabs">
+      <button class="tab active" data-status="open">⏳ بانتظار الرد <span class="n" id="ic-open">0</span></button>
+      <button class="tab" data-status="answered">✅ تم الرد <span class="n" id="ic-answered">0</span></button>
+      <button class="tab" data-status="all">📋 الكل</button>
+    </div>
+    <div id="inqList" class="reg-list"></div>
+  </div>
+
+  <div class="log-section">
+    <h2>🗑️ سجل عمليات حذف الحسابات</h2>
+    <p>يُسجَّل هنا كل حذف نهائي للحساب — من قام به، متى، وما البيانات التي حُذفت.</p>
+    <div id="auditList" class="reg-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ تم تنفيذ الإجراء</div>
+
+<!-- partials.js MUST run BEFORE the page script: it injects the navbar
+     markup synchronously, so handlers bound to #logoutBtn actually attach. -->
+<script src="js/partials.js"></script>
+<script src="js/api.js?v=2"></script>
+<script src="js/admin.js?v=2"></script>
+<div data-partial="foot.b25e1b"></div>
+</body>
+</html>

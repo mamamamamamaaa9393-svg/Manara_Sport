@@ -1,0 +1,286 @@
+/* ==========================================================================
+   Manara — Unified design tokens (single source of truth).
+   Loaded FIRST on every page, before the page stylesheet. Defines ONE
+   canonical palette + font system for BOTH design families (the landing
+   template `style.css` variables and the app pages `--gray-*` variables)
+   in light and dark mode, plus the theme toggle and shared base styles.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* ---- Canonical surfaces / neutrals ---- */
+  --surface: #ffffff;
+  --nav-bg: rgba(255, 255, 255, 0.88);
+  --band: #0b1120;               /* always-dark sections (footer / flow) */
+
+  /* ---- Family A — landing template (style.css) ---- */
+  --ink: #111a2e;
+  --ink-2: #384156;
+  --muted: #6b7488;
+  --faint: #98a0b3;
+  --line: #e6e9f2;
+  --line-2: #eef1f7;
+  --bg: #ffffff;
+  --bg-soft: #f4f6fb;
+  --bg-soft-2: #eef2fb;
+
+  --primary: #2a4bd8;
+  --primary-ink: #1e37a8;
+  --primary-2: #4364e6;
+  --primary-soft: #eaeefc;
+  --primary-glow: rgba(42, 75, 216, 0.28);
+
+  --accent: #ffb020;
+  --accent-ink: #b57400;
+  --accent-soft: #fff3d6;
+
+  --green: #12a870;
+  --green-ink: #0c7a51;
+  --green-soft: #def3ea;
+
+  --violet: #7c5cf0;
+  --rose: #f0567f;
+  --teal: #10a4b0;
+
+  /* ---- Family B — app pages (Style_Sig / porfile) ---- */
+  --dark: #0f172a;
+  --gray-900: #1e293b;
+  --gray-700: #475569;
+  --gray-500: #64748b;
+  --gray-300: #cbd5e1;
+  --gray-200: #e2e8f0;
+  --gray-100: #f1f5f9;
+  --gray-50: #f8fafc;
+  --white: #ffffff;
+  --primary-light: #eef2ff;
+  --green-bg: #d1fae5;
+  --orange: #f59e0b;
+  --orange-bg: #fef3c7;
+
+  /* ---- Typography ---- */
+  --font-display: "Plus Jakarta Sans", "Cairo", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-body: "Figtree", "Cairo", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-app: "Cairo", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* ---- Radii / shadows / layout ---- */
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --shadow-xs: 0 1px 2px rgba(17, 26, 46, 0.06);
+  --shadow-sm: 0 4px 14px rgba(17, 26, 46, 0.06);
+  --shadow-md: 0 14px 34px rgba(17, 26, 46, 0.08);
+  --shadow-lg: 0 30px 70px rgba(17, 26, 46, 0.14);
+  --shadow-primary: 0 16px 34px rgba(42, 75, 216, 0.28);
+
+  --container: 1200px;
+  --nav-h: 76px;
+}
+
+/* ==========================================================================
+   DARK MODE
+   ========================================================================== */
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --surface: #151c31;
+  --nav-bg: rgba(13, 19, 38, 0.82);
+  --band: #0b1120;
+
+  --ink: #eef2ff;
+  --ink-2: #c7d0e4;
+  --muted: #94a0bf;
+  --faint: #6b789a;
+  --line: #26304c;
+  --line-2: #1f2840;
+  --bg: #0e1426;
+  --bg-soft: #161e34;
+  --bg-soft-2: #1c2440;
+
+  --primary: #4a6cf7;
+  --primary-ink: #6b87ff;
+  --primary-2: #3d5ce0;
+  --primary-soft: #1b2444;
+  --primary-glow: rgba(74, 108, 247, 0.35);
+
+  --accent: #ffc24d;
+  --accent-ink: #ffd988;
+  --accent-soft: #3a2d10;
+
+  --green: #34d399;
+  --green-ink: #7fe8bd;
+  --green-soft: #0c2a21;
+
+  --violet: #8f76ff;
+  --rose: #f06a92;
+  --teal: #2fc3cf;
+
+  --dark: #eef2ff;
+  --gray-900: #eef2ff;
+  --gray-700: #c3cce1;
+  --gray-500: #94a0bf;
+  --gray-300: #5b6785;
+  --gray-200: #2a3352;
+  --gray-100: #1c2440;
+  --gray-50: #161e34;
+  --white: #0e1426;
+  --primary-light: #1c2440;
+  --green-bg: #0c2a21;
+  --orange: #fbbf24;
+  --orange-bg: #2b2110;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.32);
+  --shadow-md: 0 14px 34px rgba(0, 0, 0, 0.42);
+  --shadow-lg: 0 30px 70px rgba(0, 0, 0, 0.55);
+  --shadow-primary: 0 16px 34px rgba(74, 108, 247, 0.32);
+}
+
+/* App-page body background in dark (overrides the pastel light gradients) */
+html[data-theme="dark"] body {
+  background:
+    radial-gradient(ellipse 900px 600px at 85% 5%, rgba(74, 108, 247, 0.13), transparent 55%),
+    radial-gradient(ellipse 800px 500px at 10% 90%, rgba(255, 194, 77, 0.05), transparent 55%),
+    radial-gradient(ellipse 1000px 700px at 50% 50%, rgba(143, 118, 255, 0.06), transparent 60%),
+    #0e1426;
+}
+
+/* ==========================================================================
+   Theme toggle button
+   ========================================================================== */
+.theme-toggle {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  font-family: inherit;
+}
+.theme-toggle:hover { border-color: var(--primary); background: var(--primary-soft); }
+.theme-toggle:active { transform: scale(0.94); }
+.theme-toggle:focus-visible { outline: 3px solid var(--primary-glow); outline-offset: 2px; }
+
+/* Language toggle button (injected next to the theme toggle) */
+.lang-toggle {
+  width: auto;
+  min-width: 42px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+/* ==========================================================================
+   Footer (shared — available on every page regardless of stylesheet)
+   ========================================================================== */
+.container-x { width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: 22px; }
+.site-footer { background: var(--band); color: rgba(255, 255, 255, 0.68); padding-top: 68px; margin-top: auto; }
+.site-footer a { color: rgba(255, 255, 255, 0.68); text-decoration: none; }
+.site-footer a:hover { color: #fff; text-decoration: none; }
+.footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 32px; padding-bottom: 46px; }
+.footer-brand .brand { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; color: #fff; margin-bottom: 16px; letter-spacing: -0.03em; }
+.footer-brand .brand b { color: var(--primary); }
+.footer-brand .brand-mark { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, var(--primary), var(--primary-2)); display: grid; place-items: center; box-shadow: var(--shadow-primary); flex: none; }
+.footer-brand .brand-mark img { width: 26px; height: 26px; object-fit: contain; }
+.footer-brand p { max-width: 300px; font-size: 0.96rem; }
+.footer-col h4 { color: #fff; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; margin-bottom: 18px; }
+.footer-col ul { display: grid; gap: 11px; list-style: none; margin: 0; padding: 0; }
+.footer-col a { font-size: 0.96rem; }
+.footer-bottom { border-top: 1px solid rgba(255, 255, 255, 0.1); padding: 22px 0; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; font-size: 0.9rem; }
+.footer-bottom .legal { display: flex; gap: 22px; flex-wrap: wrap; }
+@media (max-width: 860px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; } .footer-brand { grid-column: 1 / -1; } }
+@media (max-width: 520px) { .footer-grid { grid-template-columns: 1fr; } }
+
+/* ==========================================================================
+   Shared base polish (focus ring, selection, scrollbar)
+   ========================================================================== */
+::selection { background: var(--primary); color: #fff; }
+
+:focus-visible {
+  outline: 3px solid var(--primary-glow);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+* { scrollbar-width: thin; scrollbar-color: var(--gray-300) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 999px; border: 2px solid transparent; background-clip: content-box; }
+*::-webkit-scrollbar-thumb:hover { background-color: var(--gray-500); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* ==========================================================================
+   Loading states / skeleton screens / spinner
+   ========================================================================== */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 8px;
+  min-height: 14px;
+}
+.dark .skeleton {
+  background: linear-gradient(90deg, var(--gray-700) 25%, var(--gray-600) 50%, var(--gray-700) 75%);
+  background-size: 200% 100%;
+}
+
+.spinner {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 3px solid var(--gray-300);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+}
+.spinner-sm { width: 14px; height: 14px; border-width: 2px; }
+
+.loading-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  color: var(--gray-500);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.loading-overlay.hidden { display: none; }
+
+/* Skeleton card placeholder for lists */
+.skeleton-card {
+  background: var(--surface, #fff);
+  border: 1px solid var(--gray-200, #e5e7eb);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 12px;
+}
+.skeleton-card .skeleton-line { margin-bottom: 10px; }
+.skeleton-card .skeleton-line:last-child { margin-bottom: 0; }
+.skeleton-card .skeleton-avatar {
+  width: 48px; height: 48px; border-radius: 50%; margin-bottom: 12px;
+}

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ar" data-default-lang="ar">
+<head>
+<meta charset="UTF-8" />
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#0b1220">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="../icons/icon-180.png">
+<link rel="icon" type="image/x-icon" href="../img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>تسجيل الدخول — Manara</title>
+<meta name="description" content="تسجيل الدخول إلى منارة — منصة اكتشاف المواهب الرياضية.">
+<meta property="og:title" content="تسجيل الدخول — Manara | منارة">
+<meta property="og:description" content="تسجيل الدخول إلى منارة — منصة اكتشاف المواهب الرياضية.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manara.app/">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/vendor/Style_Sig.css">
+<script src="../js/theme.js"></script>
+<script src="../js/lang.js"></script>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('../sw.js').catch(function () {}); }); }</script>
+<style>
+  .login-box { max-width: 460px; margin: 0 auto; }
+  .form-card.show { display: block; }
+  .form-card { animation: rise 0.4s ease-out; }
+  .forgot { text-align: center; margin-top: 14px; font-size: 13px; color: var(--gray-500); }
+  .forgot a { color: var(--primary); font-weight: 800; text-decoration: none; }
+  .switch { text-align: center; margin-top: 22px; font-size: 14px; color: var(--gray-500); }
+  .switch a { color: var(--primary); font-weight: 800; text-decoration: none; }
+  .pending-notice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 13px 15px;
+    border-radius: 12px;
+    background: var(--primary-light);
+    border: 1px solid #dbe3ff;
+    font-size: 13px;
+    color: var(--gray-700);
+    line-height: 1.7;
+  }
+  .pending-notice[hidden] { display: none; }
+  .pending-notice.rejected {
+    background: #fee2e2;
+    border-color: #fecaca;
+  }
+  .pending-notice.rejected b { color: #991b1b; }
+  .pending-notice.rejected a { color: #b91c1c; }
+  .pending-notice .np-ico { font-size: 22px; }
+  .pending-notice b { display: block; color: var(--dark); }
+  .pending-notice a {
+    margin-inline-start: auto;
+    color: var(--primary);
+    font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+    font-size: 12.5px;
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="mark"><img src="../img/logo.png" width="43" height="43"></span>
+      <span>Man<span class="b">ara</span></span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" class="btn-back" data-i18n="nav.home">← Home</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="تبديل الوضع الداكن" title="الوضع الليلي">🌙</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="head">
+    <span class="badge">WELCOME BACK</span>
+    <h1 data-i18n="auth.signin_title"><span class="accent">سجّل</span> الدخول</h1>
+    <p data-i18n="auth.welcome">أهلاً بعودتك إلى Manara — منصة المواهب الرياضية ✨</p>
+  </div>
+
+  <div class="login-box">
+    <div class="form-card show">
+      <form id="loginForm" autocomplete="on">
+        <div class="section">
+          <div class="section-title">بيانات الحساب</div>
+
+          <div class="row full">
+            <div class="field">
+              <label data-i18n="auth.email">البريد الإلكتروني <span class="req">*</span></label>
+              <input type="email" name="email" placeholder="name@example.com" required>
+            </div>
+          </div>
+          <div class="row full">
+            <div class="field">
+              <label data-i18n="auth.password">كلمة المرور <span class="req">*</span></label>
+              <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit" data-i18n="auth.login_btn">🔐 تسجيل الدخول</button>
+
+        <div class="forgot" id="forgotBtn" style="cursor:pointer;" data-i18n="auth.forgot">نسيت كلمة المرور؟</div>
+      </form>
+    </div>
+
+    <div class="form-card" id="forgotForm" style="display:none;">
+      <form id="resetRequestForm">
+        <div class="section">
+          <div class="section-title">إعادة تعيين كلمة المرور</div>
+          <p style="font-size:12.5px;color:var(--gray-500);font-weight:600;margin-bottom:14px;">أدخل بريدك الإلكتروني وسنرسل لك رمزاً لإعادة تعيين كلمة المرور.</p>
+          <div class="row full">
+            <div class="field">
+              <label>البريد الإلكتروني <span class="req">*</span></label>
+              <input type="email" name="email" placeholder="name@example.com" required>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="submit">📧 إرسال رمز إعادة التعيين</button>
+        <div class="switch" style="margin-top:12px;"><a href="#" id="backToLogin">← العودة لتسجيل الدخول</a></div>
+      </form>
+    </div>
+
+    <div class="form-card" id="resetForm" style="display:none;">
+      <form id="resetPasswordForm">
+        <input type="hidden" name="email" id="resetEmail">
+        <div class="section">
+          <div class="section-title">كلمة مرور جديدة</div>
+          <p style="font-size:12.5px;color:var(--gray-500);font-weight:600;margin-bottom:14px;">أدخل الرمز المكون من 6 أرقام المرسل إلى بريدك الإلكتروني.</p>
+          <div class="row full">
+            <div class="field">
+              <label>الرمز <span class="req">*</span></label>
+              <input type="text" name="code" placeholder="000000" required maxlength="6" pattern="\d{6}" inputmode="numeric" style="text-align:center;font-size:20px;letter-spacing:6px;">
+            </div>
+          </div>
+          <div class="row full">
+            <div class="field">
+              <label>كلمة المرور الجديدة <span class="req">*</span></label>
+              <input type="password" name="newPassword" placeholder="6 أحرف على الأقل" required minlength="6">
+            </div>
+          </div>
+          <div class="row full">
+            <div class="field">
+              <label>تأكيد كلمة المرور <span class="req">*</span></label>
+              <input type="password" name="newPasswordConfirm" placeholder="أعد إدخال كلمة المرور" required>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="submit">✅ إعادة تعيين كلمة المرور</button>
+        <div class="switch" style="margin-top:12px;"><a href="#" id="backToLogin2">← العودة لتسجيل الدخول</a></div>
+      </form>
+    </div>
+
+    <div class="pending-notice" id="statusNotice" hidden>
+      <span class="np-ico" id="noticeIco">⏳</span>
+      <div>
+        <b id="noticeTitle">طلبك قيد مراجعة الإدارة</b>
+        <span id="noticeText">سنفعّل حسابك فور موافقة الإدارة على مستنداتك.</span>
+      </div>
+      <a href="pending.html" id="noticeLink">تفاصيل أكثر ←</a>
+    </div>
+
+    <div class="switch">ليس لديك حساب؟ <a href="Sign_Up.html">أنشئ حساباً جديداً ←</a></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ تم تسجيل الدخول بنجاح!</div>
+
+<script src="../js/api.js"></script>
+<script>
+  function showToast(msg, isError) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    if (isError) t.style.background = '#ef4444';
+    else t.style.background = '';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 4000);
+  }
+
+  // Check connection on load so the user sees the reason before submitting
+  (function checkConnection() {
+    const box = document.createElement('div');
+    box.style.cssText = 'text-align:center;font-size:12.5px;font-weight:700;margin-top:14px;padding:10px 14px;border-radius:10px;';
+    if (window.location.protocol === 'file:') {
+      box.textContent = '⚠️ الموقع مفتوح من الملف مباشرة. شغّل السيرفر ثم افتح http://localhost:5000/Sign/Sign_In.html';
+      box.style.background = '#fef3c7'; box.style.color = '#b45309';
+      document.querySelector('.login-box').prepend(box);
+      return;
+    }
+    fetch((window.API ? window.API.base : '/api') + '/health')
+      .then(r => r.json())
+      .then(() => {
+        box.textContent = '✓ الخادم متصل — يمكنك تسجيل الدخول';
+        box.style.background = '#d1fae5'; box.style.color = '#047857';
+      })
+      .catch(() => {
+        box.textContent = '✗ الخادم غير متصل — شغّل `npm start` داخل مجلد server';
+        box.style.background = '#fee2e2'; box.style.color = '#b91c1c';
+      })
+      .finally(() => document.querySelector('.login-box').prepend(box));
+  })();
+
+  const form = document.getElementById('loginForm');
+  const notice = document.getElementById('statusNotice');
+  const noticeIco = document.getElementById('noticeIco');
+  const noticeTitle = document.getElementById('noticeTitle');
+  const noticeText = document.getElementById('noticeText');
+  const noticeLink = document.getElementById('noticeLink');
+
+  function showStatusNotice(kind, msg) {
+    if (!notice) return;
+    notice.classList.remove('rejected');
+    if (kind === 'pending') {
+      notice.hidden = false;
+      noticeIco.textContent = '⏳';
+      noticeTitle.textContent = 'طلبك قيد مراجعة الإدارة';
+      noticeText.textContent = 'سنفعّل حسابك فور موافقة الإدارة على مستنداتك.';
+      noticeLink.textContent = 'تفاصيل أكثر ←';
+      noticeLink.href = 'pending.html';
+    } else if (kind === 'rejected') {
+      notice.hidden = false;
+      notice.classList.add('rejected');
+      noticeIco.textContent = '❌';
+      noticeTitle.textContent = 'تم رفض طلبك';
+      noticeText.textContent = msg || 'المستندات غير صحيحة — أعد إرسالها ثم قدّم طلباً جديداً.';
+      noticeLink.textContent = 'أعد التسجيل ←';
+      noticeLink.href = 'Sign_Up.html';
+    } else {
+      notice.hidden = true;
+    }
+  }
+
+  const redirectTo = (function () {
+    const r = new URLSearchParams(window.location.search).get('redirect');
+    if (r && !/^https?:\/\//i.test(r) && r.indexOf('//') !== 0) return r;
+    return null;
+  })();
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+    const btn = form.querySelector('button[type="submit"]');
+    showStatusNotice(null);
+
+    if (!window.API) {
+      showToast('⚠️ السيرفر غير متصل — شغّل node server.js أولاً', true);
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'جاري التحقق...';
+    try {
+      const res = await window.API.login(data.email, data.password);
+      showToast('✅ مرحباً بعودتك يا ' + (res.user.name || '') + '!');
+      const isAdmin = res.user && res.user.role === 'admin';
+      setTimeout(() => { window.location.href = isAdmin ? '../admin.html' : (redirectTo || '../index.html'); }, 900);
+    } catch (err) {
+      const st = err && err.data && err.data.status;
+      if (st === 'pending') {
+        showStatusNotice('pending');
+        showToast('⏳ ' + (err.message || 'طلبك قيد المراجعة — بانتظار موافقة الإدارة'));
+      } else if (st === 'rejected') {
+        showStatusNotice('rejected', err.message || '');
+        showToast('❌ ' + (err.message || 'تم رفض طلبك'), true);
+      } else {
+        showToast('❌ ' + (err.message || 'البريد أو كلمة المرور غير صحيحة'), true);
+      }
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🔐 تسجيل الدخول';
+    }
+  });
+
+  // --- Forgot password flow ---
+  document.getElementById('forgotBtn').addEventListener('click', function () {
+    document.querySelector('.form-card.show').style.display = 'none';
+    document.getElementById('forgotForm').style.display = 'block';
+  });
+  document.getElementById('backToLogin').addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById('forgotForm').style.display = 'none';
+    document.querySelector('.form-card.show').style.display = 'block';
+  });
+  document.getElementById('backToLogin2').addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById('resetForm').style.display = 'none';
+    document.getElementById('forgotForm').style.display = 'block';
+  });
+
+  document.getElementById('resetRequestForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const email = new FormData(this).get('email');
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true; btn.textContent = 'جاري الإرسال...';
+    try {
+      const r = await fetch((window.API ? window.API.base : '/api') + '/auth/forgot-password', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email })
+      });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error || 'تعذر الإرسال');
+      showToast('✅ ' + (j.message || 'تم الإرسال'));
+      if (j.devCode) {
+        const codeField = document.querySelector('#resetForm input[name="code"]') ||
+          document.querySelector('#resetForm input');
+        if (codeField) codeField.value = j.devCode;
+      }
+      const resetEmail = document.getElementById('resetEmail');
+      if (resetEmail) resetEmail.value = email;
+      document.getElementById('forgotForm').style.display = 'none';
+      document.getElementById('resetForm').style.display = 'block';
+    } catch (err) { showToast('❌ ' + (err.message || 'تعذر الإرسال'), true); }
+    finally { btn.disabled = false; btn.textContent = '📧 إرسال رمز إعادة التعيين'; }
+  });
+
+  document.getElementById('resetPasswordForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(this).entries());
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true; btn.textContent = 'جاري إعادة التعيين...';
+    try {
+      const r = await fetch((window.API ? window.API.base : '/api') + '/auth/reset-password', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error || 'تعذر إعادة التعيين');
+      showToast('✅ ' + j.message + ' — يمكنك تسجيل الدخول الآن');
+      setTimeout(() => {
+        document.getElementById('resetForm').style.display = 'none';
+        document.querySelector('.form-card.show').style.display = 'block';
+      }, 1500);
+    } catch (err) { showToast('❌ ' + err.message, true); }
+    finally { btn.disabled = false; btn.textContent = '✅ إعادة تعيين كلمة المرور'; }
+  });
+</script>
+
+</body>
+</html>

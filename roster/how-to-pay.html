@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ar" data-default-lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b1220">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>كيف تدفع؟ — خطوات الاشتراك | Manara</title>
+<meta name="description" content="كيف تدفع اشتراكك في منارة؟ خطوات بسيطة: حوّل المبلغ لمحفظة منارة، ارفع صورة الإيصال، ويُفعَّل اشتراكك خلال ساعات.">
+<meta property="og:title" content="كيف تدفع؟ — خطوات الاشتراك | منارة">
+<meta property="og:description" content="خطوات بسيطة: حوّل المبلغ لمحفظة منارة، ارفع صورة الإيصال، ويُفعَّل اشتراكك خلال ساعات.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manara.app/how-to-pay.html">
+<meta property="og:image" content="https://manara.app/img/logo.png">
+<meta property="og:site_name" content="Manara">
+<meta name="twitter:card" content="summary_large_image">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/vendor/porfile.css">
+<script src="js/theme.js"></script>
+<script src="js/lang.js"></script>
+<script src="js/nav.js"></script>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); }</script>
+<style>
+  .how-wrap { max-width: 860px; margin: 26px auto; }
+  .how-hero { text-align: center; margin-bottom: 26px; }
+  .how-hero .eyebrow { display: inline-block; background: var(--primary-light); color: var(--primary); font-weight: 800; font-size: 12px; padding: 5px 14px; border-radius: 20px; margin-bottom: 12px; }
+  .how-hero h1 { font-size: 27px; font-weight: 900; color: var(--dark); margin: 0 0 8px; line-height: 1.4; }
+  .how-hero p { color: var(--gray-500); font-weight: 600; font-size: 14px; margin: 0; line-height: 1.8; }
+  .wallet-hero { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; background: var(--primary-light); border: 2px dashed var(--primary); border-radius: 16px; padding: 16px 20px; margin-bottom: 26px; }
+  .wallet-hero .wl-label { font-size: 13px; font-weight: 800; color: var(--primary); }
+  .wallet-hero .wl-num { font-size: 26px; font-weight: 900; color: var(--dark); letter-spacing: 1px; }
+  .wallet-hero .wl-copy { border: none; background: var(--primary); color: #fff; font-family: inherit; font-weight: 800; font-size: 12.5px; padding: 8px 14px; border-radius: 10px; cursor: pointer; }
+  .steps { display: flex; flex-direction: column; gap: 14px; }
+  .step { display: flex; gap: 16px; align-items: flex-start; background: var(--surface); border: 1px solid var(--gray-200); border-radius: 16px; padding: 18px 20px; }
+  .step .s-num { flex: none; width: 42px; height: 42px; border-radius: 50%; background: var(--primary); color: #fff; display: grid; place-items: center; font-weight: 900; font-size: 17px; }
+  .step .s-body { flex: 1; }
+  .step h3 { margin: 0 0 6px; font-size: 15.5px; font-weight: 900; color: var(--dark); }
+  .step p { margin: 0; color: var(--gray-600); font-size: 13px; font-weight: 600; line-height: 1.8; }
+  .step .mini { display: inline-block; background: var(--green-bg); border: 1px solid var(--gray-200); color: var(--green-ink); font-size: 11.5px; font-weight: 800; padding: 4px 10px; border-radius: 20px; margin-top: 8px; }
+  .cta-row { text-align: center; margin: 28px 0 8px; }
+  .cta-btn { display: inline-block; border: none; border-radius: 14px; padding: 14px 34px; font-family: inherit; font-weight: 900; font-size: 15px; cursor: pointer; background: var(--primary); color: #fff; text-decoration: none; }
+  .cta-btn:hover { background: var(--primary-2); }
+  .faq { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 16px; padding: 18px 20px; margin-top: 22px; }
+  .faq h3 { margin: 0 0 12px; font-size: 16px; font-weight: 900; color: var(--dark); }
+  .faq details { padding: 10px 2px; border-top: 1px dashed var(--gray-200); }
+  .faq summary { cursor: pointer; font-weight: 800; font-size: 13.5px; color: var(--gray-700); }
+  .faq p { margin: 8px 0 0; color: var(--gray-500); font-weight: 600; font-size: 13px; line-height: 1.8; }
+  .toast { position: fixed; bottom: 24px; right: 50%; transform: translateX(50%); background: var(--green); color: #fff; font-weight: 800; font-size: 13.5px; padding: 13px 22px; border-radius: 12px; box-shadow: var(--shadow-md); opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 3000; }
+  .toast.show { opacity: 1; }
+</style>
+<link rel="canonical" href="https://manara.app/how-to-pay.html">
+</head>
+<body>
+
+<div data-partial="nav.79a5a7"></div>
+
+<div class="container how-wrap">
+  <div class="how-hero">
+    <span class="eyebrow" data-i18n="pay.eyebrow">💳 طريقة الدفع الموثّقة</span>
+    <h1 data-i18n="pay.title">كيف تدفع اشتراكك في منارة؟</h1>
+    <p data-i18n="pay.sub">5 خطوات بسيطة وتُفعَّل اشتراكك تلقائياً خلال دقائق — أو بمراجعة الإدارة خلال ساعات.</p>
+  </div>
+
+  <div class="wallet-hero" dir="ltr">
+    <span class="wl-label" data-i18n="pay.wallet_label">محفظة منارة الرسمية</span>
+    <span class="wl-num">0122 940 9393</span>
+    <button class="wl-copy" id="copyWallet" type="button" data-i18n="pay.copy">📋 نسخ الرقم</button>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="s-num">1</div>
+      <div class="s-body">
+        <h3 data-i18n="pay.s1_title">اختر خطتك</h3>
+        <p data-i18n="pay.s1_text">لاعب (39 ج.م شهرياً) أو نادي (299 ج.م شهرياً) — من صفحة الاشتراك. أول 7 أيام تجربة مجانية بالكامل، وأول دفعة تُسجَّل فقط بعد انتهاء التجربة.</p>
+        <a class="mini" href="subscribe.html" data-i18n="pay.s1_link">الانتقال إلى الاشتراك ←</a>
+      </div>
+    </div>
+    <div class="step">
+      <div class="s-num">2</div>
+      <div class="s-body">
+        <h3 data-i18n="pay.s2_title">حوّل المبلغ لمحفظة منارة</h3>
+        <p data-i18n="pay.s2_text">افتح تطبيق فودافون كاش أو فوري وحوّل المبلغ إلى الرقم <b dir="ltr">0122 940 9393</b>. تأكد من كتابة الرقم بالكامل وأن المبلغ يطابق سعر خطتك بالضبط.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="s-num">3</div>
+      <div class="s-body">
+        <h3 data-i18n="pay.s3_title">التقط صورة الإيصال</h3>
+        <p data-i18n="pay.s3_text">بعد إتمام التحويل، التقط صورة واضحة لإيصال العملية من التطبيق — تُظهر المبلغ ورقم المحفظة المرسَل إليه والتاريخ. النظام يتحقق من الإيصال تلقائياً.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="s-num">4</div>
+      <div class="s-body">
+        <h3 data-i18n="pay.s4_title">أدخل البيانات وارفع الإيصال</h3>
+        <p data-i18n="pay.s4_text">في صفحة الاشتراك: أدخل المبلغ المدفوع، ورقم محفظتك (الرقم المرجعي)، وارفع صورة الإيصال ثم اضغط «تأكيد الدفع».</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="s-num">5</div>
+      <div class="s-body">
+        <h3 data-i18n="pay.s5_title">يُفعَّل اشتراكك</h3>
+        <p data-i18n="pay.s5_text">عند تطابق البيانات والتحقق التلقائي من الإيصال يُفعَّل اشتراكك فوراً. وإذا احتاجت العملية مراجعة يدوية، تتم خلال ساعات وستصلك رسالة عند الموافقة.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-row">
+    <a class="cta-btn" href="subscribe.html" data-i18n="pay.cta">الاشتراك الآن ←</a>
+  </div>
+
+  <div class="faq">
+    <h3 data-i18n="pay.faq_title">أسئلة شائعة</h3>
+    <details>
+      <summary data-i18n="pay.faq1_q">هل هناك رسوم إضافية على التحويل؟</summary>
+      <p data-i18n="pay.faq1_a">لا — سعر الاشتراك هو كل ما تدفعه (39 ج.م للاعب / 299 ج.م للنادي). أي رسوم تحويل يفرضها تطبيق المحفظة خارج منارة.</p>
+    </details>
+    <details>
+      <summary data-i18n="pay.faq2_q">ماذا لو أرسلت المبلغ لرقم خاطئ؟</summary>
+      <p data-i18n="pay.faq2_a">إذا كان رقم المحفظة في الإيصال غير مطابق لمحفظة منارة الرسمية، سيُرفض الطلب تلقائياً مع رسالة توضيحية، ولن يُخصم منك أي اشتراك.</p>
+    </details>
+    <details>
+      <summary data-i18n="pay.faq3_q">هل يمكنني إلغاء الاشتراك؟</summary>
+      <p data-i18n="pay.faq3_a">نعم، يمكنك إلغاء التجديد التلقائي في أي وقت — تبقى المزايا مفعّلة حتى نهاية الفترة المدفوعة. وهناك ضمان استرداد 7 أيام لأول دفعة.</p>
+    </details>
+  </div>
+</div>
+
+<div class="toast" id="toast">تم نسخ الرقم</div>
+
+<div data-partial="foot.e9288b"></div>
+<script src="js/partials.js"></script>
+
+<script src="js/api.js"></script>
+<script>
+  (function () {
+    var copyBtn = document.getElementById("copyWallet");
+    var toastEl = document.getElementById("toast");
+    function flashToast() {
+      toastEl.classList.add("show");
+      setTimeout(function () { toastEl.classList.remove("show"); }, 2000);
+    }
+    copyBtn.addEventListener("click", function () {
+      var num = "01229409393";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(num).then(flashToast).catch(function () {});
+      } else {
+        var ta = document.createElement("textarea");
+        ta.value = num;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); flashToast(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+    });
+  })();
+</script>
+</body>
+</html>

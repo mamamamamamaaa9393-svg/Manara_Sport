@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ar" data-default-lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b1220">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>الاشتراك — افتح تجربتك | Manara</title>
+<meta name="description" content="اشترك في منارة — خطط اشتراك مرنة للأندية والرياضيين مع تجربة مجانية.">
+<meta property="og:title" content="الاشتراك — افتح تجربتك | منارة">
+<meta property="og:description" content="اشترك في منارة — خطط اشتراك مرنة للأندية والرياضيين مع تجربة مجانية.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manara.app/">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/vendor/porfile.css">
+  <script src="js/theme.js"></script>
+<script src="js/lang.js"></script>
+  <script src="js/nav.js"></script>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); }</script>
+<style>
+  .sub-wrap { margin-top: 22px; }
+
+  .mode-switch { display: inline-flex; gap: 6px; background: var(--gray-100); padding: 5px; border-radius: 14px; margin-bottom: 22px; }
+  .mode-pill { border: none; background: transparent; color: var(--gray-600); font-family: inherit; font-weight: 800; font-size: 13.5px; padding: 9px 20px; border-radius: 10px; cursor: pointer; transition: all .15s; }
+  .mode-pill.active { background: var(--surface); color: var(--primary); box-shadow: var(--shadow-sm); }
+
+  .card { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 18px; padding: 22px; }
+  .eyebrow { display: inline-block; background: var(--primary-light); color: var(--primary); font-weight: 800; font-size: 12px; padding: 5px 13px; border-radius: 20px; margin-bottom: 12px; }
+  .hero-title { font-size: 26px; font-weight: 900; color: var(--dark); margin: 0 0 8px; line-height: 1.4; }
+  .hero-sub { color: var(--gray-500); font-weight: 600; font-size: 14px; margin: 0 0 22px; line-height: 1.8; }
+  .grid { display: grid; gap: 18px; align-items: start; }
+  @media (min-width: 940px) { .grid.split { grid-template-columns: 1.15fr 1fr; } }
+
+  /* Chat thread */
+  .chat-box { max-width: 640px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+  .bubble { max-width: 88%; padding: 13px 16px; border-radius: 18px; font-size: 14px; line-height: 1.9; font-weight: 600; }
+  .bubble.me { align-self: flex-start; background: var(--primary); color: #fff; border-bottom-right-radius: 5px; }
+  .bubble.ai { align-self: flex-end; background: var(--gray-100); border: 1px solid var(--gray-200); color: var(--gray-700); border-bottom-left-radius: 5px; }
+  .bubble.ai .who { display: block; font-size: 11.5px; font-weight: 900; color: var(--primary); margin-bottom: 4px; }
+  .bubble.ai .visible { font-weight: 700; }
+  .bubble.ai .blurred { filter: blur(6px); color: transparent; text-shadow: 0 0 9px var(--gray-400); user-select: none; }
+  .bubble.ai .blur-wrap { position: relative; }
+  .bubble.ai .blur-wrap::after { content: ""; position: absolute; inset: auto 0 0 0; height: 55%; background: linear-gradient(180deg, transparent, var(--gray-100)); pointer-events: none; }
+
+  .composer { display: flex; gap: 10px; max-width: 640px; }
+  .composer textarea { flex: 1; resize: none; border: 1.5px solid var(--gray-200); border-radius: 14px; padding: 12px 14px; font-family: inherit; font-size: 14px; font-weight: 600; background: var(--surface); color: var(--dark); min-height: 58px; }
+  .composer textarea:focus { outline: none; border-color: var(--primary); }
+  .composer .send { border: none; border-radius: 14px; padding: 0 22px; font-family: inherit; font-weight: 900; font-size: 14px; cursor: pointer; background: var(--primary); color: #fff; }
+  .composer .send:hover { background: var(--primary-2); }
+  .composer .send:disabled { opacity: .6; cursor: wait; }
+
+  /* Plan / payment card */
+  .price-card { position: relative; overflow: hidden; border: 2px solid var(--primary); }
+  .price-card .flag { position: absolute; top: 14px; left: 14px; background: var(--primary); color: #fff; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 20px; }
+  .price-tag { display: flex; align-items: baseline; gap: 6px; margin: 4px 0 14px; }
+  .price-tag .num { font-size: 44px; font-weight: 900; color: var(--dark); line-height: 1; }
+  .price-tag .cur { font-size: 20px; font-weight: 800; color: var(--primary); }
+  .price-tag .per { color: var(--gray-500); font-weight: 700; font-size: 13px; }
+  .feat { list-style: none; padding: 0; margin: 0 0 18px; display: flex; flex-direction: column; gap: 9px; }
+  .feat li { display: flex; gap: 9px; align-items: flex-start; font-size: 13.5px; color: var(--gray-700); font-weight: 700; line-height: 1.6; }
+  .feat li::before { content: "✓"; color: var(--green); font-weight: 900; flex: none; }
+
+  .pay-title { font-size: 13px; font-weight: 900; color: var(--gray-700); margin: 0 0 10px; }
+  .wallet-box { border: 1.5px dashed var(--primary); background: var(--primary-light); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 3px; }
+  .wallet-box .wallet-label { font-size: 11.5px; font-weight: 800; color: var(--primary); }
+  .wallet-box .wallet-num { font-size: 20px; font-weight: 900; color: var(--dark); letter-spacing: 1px; }
+  .wallet-box .wallet-hint { font-size: 11.5px; font-weight: 700; color: var(--gray-500); }
+  .pay-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 9px; margin-bottom: 14px; }
+  .pay-chip { border: 1.5px solid var(--gray-200); background: var(--surface); border-radius: 12px; padding: 11px 10px; cursor: pointer; text-align: center; font-family: inherit; font-weight: 800; font-size: 12.5px; color: var(--gray-700); transition: all .15s; }
+  .pay-chip .ico { display: block; font-size: 19px; margin-bottom: 4px; }
+  .pay-chip.active, .pay-chip:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+  .field label { display: block; font-size: 12px; font-weight: 800; color: var(--gray-700); margin: 12px 0 6px; }
+  .field input[type="text"], .field input[type="tel"] { width: 100%; border: 1.5px solid var(--gray-200); border-radius: 11px; padding: 11px 13px; font-family: inherit; font-size: 13.5px; font-weight: 600; background: var(--surface); color: var(--dark); }
+  .field input:focus { outline: none; border-color: var(--primary); }
+  .file-btn { display: block; border: 1.5px dashed var(--gray-300); border-radius: 12px; padding: 14px; text-align: center; font-family: inherit; font-weight: 800; font-size: 12.5px; color: var(--gray-500); cursor: pointer; transition: all .15s; }
+  .file-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .file-btn.ready { border-style: solid; border-color: var(--green); color: var(--green-ink); }
+
+  .btn-sub { width: 100%; border: none; border-radius: 14px; padding: 14px; font-family: inherit; font-weight: 900; font-size: 15.5px; cursor: pointer; background: var(--primary); color: #fff; transition: transform .12s ease, background .15s; margin-top: 16px; }
+  .btn-sub:hover { background: var(--primary-2); }
+  .btn-sub:active { transform: scale(.98); }
+  .btn-sub:disabled { opacity: .6; cursor: wait; }
+
+  /* Kashier online payment */
+  .btn-online { width: 100%; border: none; border-radius: 14px; padding: 14px; font-family: inherit; font-weight: 900; font-size: 15px; cursor: pointer; background: linear-gradient(90deg, var(--primary), var(--primary-2)); color: #fff; box-shadow: var(--shadow-primary); transition: transform .12s ease, filter .15s; }
+  .btn-online:hover { filter: brightness(1.07); }
+  .btn-online:active { transform: scale(.98); }
+  .btn-online:disabled { opacity: .65; cursor: wait; }
+  .online-note { text-align: center; font-size: 11.5px; color: var(--gray-500); font-weight: 700; margin: 8px 0 2px; line-height: 1.7; }
+  .divider { display: flex; align-items: center; gap: 10px; margin: 16px 0 12px; color: var(--gray-500); font-size: 11.5px; font-weight: 800; }
+  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--gray-200); }
+  .fine { font-size: 11px; color: var(--gray-500); font-weight: 600; text-align: center; margin: 10px 0 0; line-height: 1.7; }
+
+  /* مؤقتاً: إخفاء التحقق اليدوي من الإيصالات — يُعاد التفعيل لاحقاً */
+  .price-card .pay-title,
+  .price-card .divider,
+  .price-card .wallet-box,
+  .price-card .how-link,
+  .price-card .pay-grid,
+  .price-card .field,
+  .price-card #paySubmit,
+  .price-card .fine { display: none !important; }
+
+  .guarantee { display: flex; gap: 10px; align-items: flex-start; background: var(--green-bg); border: 1px solid var(--gray-200); border-radius: 12px; padding: 12px 14px; margin-top: 14px; }
+  .guarantee b { color: var(--green-ink); font-size: 12.5px; font-weight: 900; }
+  .guarantee span { color: var(--gray-600); font-size: 12px; font-weight: 700; line-height: 1.6; }
+
+  .social-proof { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 16px; }
+  .proof { flex: 1; min-width: 130px; text-align: center; }
+  .proof b { display: block; font-size: 19px; font-weight: 900; color: var(--dark); }
+  .proof span { font-size: 11.5px; color: var(--gray-500); font-weight: 700; }
+
+  .roi-box { background: var(--primary-light); border: 1px dashed var(--primary); border-radius: 16px; padding: 16px 18px; margin-bottom: 16px; }
+  .roi-box h4 { margin: 0 0 10px; font-size: 14.5px; font-weight: 900; color: var(--primary); }
+  .roi-row { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--gray-700); padding: 6px 0; border-bottom: 1px dashed var(--gray-200); }
+  .roi-row:last-of-type { border-bottom: none; }
+  .roi-row .minus { color: var(--rose); }
+  .roi-row .plus { color: var(--green-ink); font-weight: 900; }
+
+  .case-study { border: 1px solid var(--gray-200); border-radius: 16px; padding: 16px 18px; background: var(--surface); margin-bottom: 16px; }
+  .case-study .cs-logo { width: 44px; height: 44px; border-radius: 12px; background: var(--primary); color: #fff; display: grid; place-items: center; font-size: 21px; font-weight: 900; margin-bottom: 10px; }
+  .case-study b { color: var(--dark); font-size: 14px; font-weight: 900; }
+  .case-study p { color: var(--gray-500); font-size: 12.5px; font-weight: 600; line-height: 1.8; margin: 6px 0 10px; }
+  .stars { color: var(--orange); font-size: 14px; }
+
+  .btn-ghost { width: 100%; border: 1.5px solid var(--gray-300); background: var(--surface); border-radius: 14px; padding: 13px; font-family: inherit; font-weight: 800; font-size: 14px; cursor: pointer; color: var(--gray-700); transition: all .15s; }
+  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+  .demo-note { text-align: center; font-size: 11.5px; color: var(--gray-500); font-weight: 600; margin-top: 10px; line-height: 1.7; }
+
+  /* Status views */
+  .status-view { max-width: 520px; margin: 30px auto; text-align: center; }
+  .status-view .big { font-size: 52px; margin-bottom: 12px; }
+  .status-view h2 { color: var(--dark); font-weight: 900; font-size: 22px; margin: 0 0 10px; }
+  .status-view p { color: var(--gray-500); font-weight: 600; font-size: 13.5px; line-height: 1.8; margin: 0 auto 18px; }
+  .status-view .chip { display: inline-block; background: var(--primary-light); color: var(--primary); font-weight: 900; font-size: 13px; padding: 8px 18px; border-radius: 20px; margin-bottom: 18px; }
+
+  .auth-prompt { max-width: 460px; margin: 40px auto; text-align: center; }
+  .auth-prompt .big { font-size: 48px; margin-bottom: 12px; }
+
+  /* Demo modal */
+  .modal-mask { display: none; position: fixed; inset: 0; background: rgba(10, 14, 28, .55); z-index: 2000; align-items: center; justify-content: center; padding: 18px; }
+  .modal-mask.open { display: flex; }
+  .modal { background: var(--surface); border-radius: 18px; padding: 24px; width: 100%; max-width: 430px; box-shadow: var(--shadow-lg); }
+  .modal h3 { margin: 0 0 6px; font-size: 18px; font-weight: 900; color: var(--dark); }
+  .modal .m-sub { color: var(--gray-500); font-weight: 600; font-size: 12.5px; margin: 0 0 18px; line-height: 1.7; }
+  .modal label { display: block; font-size: 12px; font-weight: 800; color: var(--gray-700); margin: 12px 0 6px; }
+  .modal input { width: 100%; border: 1.5px solid var(--gray-200); border-radius: 11px; padding: 11px 13px; font-family: inherit; font-size: 13.5px; font-weight: 600; background: var(--surface); color: var(--dark); }
+  .modal input:focus { outline: none; border-color: var(--primary); }
+  .modal .m-actions { display: flex; gap: 10px; margin-top: 18px; }
+  .modal .btn-close2 { border: 1.5px solid var(--gray-200); background: var(--surface); border-radius: 12px; padding: 11px 16px; font-family: inherit; font-weight: 800; font-size: 13px; cursor: pointer; color: var(--gray-600); }
+  .modal .btn-send { flex: 1; border: none; border-radius: 12px; padding: 11px; font-family: inherit; font-weight: 900; font-size: 13.5px; cursor: pointer; background: var(--primary); color: #fff; }
+  .modal .btn-send:hover { background: var(--primary-2); }
+
+  .toast { position: fixed; bottom: 24px; right: 50%; transform: translateX(50%); background: var(--green); color: #fff; font-weight: 800; font-size: 13.5px; padding: 13px 22px; border-radius: 12px; box-shadow: var(--shadow-md); opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 3000; }
+  .toast.show { opacity: 1; }
+
+  .spin-dot { display: inline-block; width: 14px; height: 14px; border: 2.5px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; vertical-align: -2px; animation: rot .7s linear infinite; }
+  @keyframes rot { to { transform: rotate(360deg); } }
+
+  /* Trial / status banners (same design language as the rest of the page) */
+  .trial-banner { display: flex; gap: 14px; align-items: center; background: linear-gradient(135deg, var(--primary-light), var(--green-bg)); border: 1px solid var(--primary); border-radius: 16px; padding: 16px 18px; margin-bottom: 22px; }
+  .trial-banner.warn { background: var(--gray-100); border-color: var(--orange); }
+  .trial-banner.warn .trial-ico { filter: saturate(.9); }
+  .trial-ico { font-size: 30px; flex: none; }
+  .trial-title { font-size: 15px; font-weight: 900; color: var(--dark); }
+  .trial-sub { font-size: 12.5px; color: var(--gray-600); font-weight: 700; margin-top: 4px; line-height: 1.7; }
+  .count-pill { display: inline-block; background: var(--primary); color: #fff; font-weight: 900; padding: 2px 11px; border-radius: 20px; font-size: 12px; }
+  .manage-card { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 14px; padding: 14px 16px; margin: 16px auto 0; text-align: right; max-width: 420px; }
+  .manage-card .row { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; color: var(--gray-600); padding: 6px 0; border-bottom: 1px dashed var(--gray-200); }
+  .manage-card .row:last-of-type { border-bottom: none; }
+  .manage-card .row b { color: var(--dark); }
+  .m-actions { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+  .m-actions .btn-ghost { width: auto; padding: 11px 18px; }
+  .cancel-note { font-size: 11px; color: var(--gray-500); font-weight: 600; text-align: center; margin-top: 10px; line-height: 1.7; }
+</style>
+<link rel="canonical" href="https://manara.app/subscribe.html">
+</head>
+<body>
+
+<div data-partial="nav.d1d0fa"></div>
+
+<div class="container sub-wrap">
+
+  <div id="authPrompt" class="auth-prompt" style="display:none;">
+    <div class="big">🔐</div>
+    <h2 style="font-weight:900;color:var(--dark);font-size:20px;margin:0 0 10px;" data-i18n="sub.auth_title">سجّل الدخول أولاً</h2>
+    <p style="color:var(--gray-500);font-weight:600;line-height:1.8;" data-i18n="sub.auth_sub">للاشتراك وإرسال رسالتك المجانية، تحتاج حساباً موثّقاً في منارة.</p>
+    <a href="Sign/Sign_In.html" class="btn-sub" style="display:inline-block;max-width:240px;text-decoration:none;margin-top:8px;" data-i18n="sub.auth_btn">تسجيل الدخول ←</a>
+  </div>
+
+  <div id="subBody" style="display:none;">
+    <!-- Trial / expiry status banner -->
+    <div id="trialBanner" class="trial-banner" style="display:none;">
+      <div class="trial-ico">🎁</div>
+      <div>
+        <div class="trial-title" id="trialTitle"></div>
+        <div class="trial-sub" id="trialSub"></div>
+      </div>
+    </div>
+    <div id="warnBanner" class="trial-banner warn" style="display:none;">
+      <div class="trial-ico">⏰</div>
+      <div>
+        <div class="trial-title" id="warnTitle"></div>
+        <div class="trial-sub" id="warnSub"></div>
+      </div>
+    </div>
+
+    <div class="mode-switch">
+      <button class="mode-pill active" data-mode="gamer">🎮 لاعب</button>
+      <button class="mode-pill" data-mode="club">🏟️ نادي</button>
+    </div>
+
+    <!-- ============ GAMER VIEW ============ -->
+    <section id="gamerView">
+      <div class="grid split">
+        <div>
+          <span class="eyebrow" data-i18n="sub.gamer_eyebrow">⚡ ردّك مجاني لأول مرة</span>
+          <h1 class="hero-title" data-i18n="sub.gamer_title">أرسل رسالتك الأولى مجاناً —<br>الرد الذكي بانتظارك</h1>
+          <p class="hero-sub" data-i18n="sub.gamer_sub">أول رسالة مجانية بالكامل. رد المساعد يُجهَّز لك فوراً، لكنه يُعرض مقفلاً (مقتطف فقط) حتى تفتح اشتراكك بـ 39 ج.م شهرياً.</p>
+
+          <div id="chatArea" class="chat-box"></div>
+
+          <div class="composer">
+            <textarea id="chatInput" rows="2" placeholder="اكتب رسالتك… مثال: كيف أختار النادي المناسب لمستواي؟" data-i18n-ph="sub.gamer_ph"></textarea>
+            <button class="send" id="sendChatBtn" type="button" data-i18n="sub.send">إرسال</button>
+          </div>
+
+          <div class="social-proof">
+            <div class="proof"><b>٤٠٬٢٠٠+</b><span data-i18n="sub.proof_replied">رد وصل اليوم</span></div>
+            <div class="proof"><b>٩٢٪</b><span data-i18n="sub.proof_activate">يفعّلون خلال دقيقة</span></div>
+            <div class="proof"><b>٤٫٨</b><span data-i18n="sub.proof_rating">تقييم المساعد</span></div>
+          </div>
+        </div>
+
+        <div id="gamerPayAnchor"></div>
+      </div>
+    </section>
+
+    <!-- ============ CLUB VIEW ============ -->
+    <section id="clubView" style="display:none;">
+      <div class="grid split">
+        <div>
+          <span class="eyebrow" data-i18n="sub.club_eyebrow">🏟️ بوابة تواصل النادي</span>
+          <h1 class="hero-title" data-i18n="sub.club_title">أول رسالة من لاعب<br>تصل إليك بعد التفعيل مباشرة</h1>
+          <p class="hero-sub" data-i18n="sub.club_sub">فعّل اشتراك النادي (299 ج.م شهرياً) لاستقبال طلبات اللاعبين والتواصل معهم وتقييم ملفاتهم بالفيديو والوثائق.</p>
+
+          <div class="roi-box">
+            <h4>💰 احسب التوفير بنفسك</h4>
+            <div class="roi-row"><span>بدون منارة — ساعات سكاوتنج شهرياً</span><span class="minus">~ ٢٬٠٠٠ ج.م</span></div>
+            <div class="roi-row"><span>بدون منارة — وسطاء وتنسيقات</span><span class="minus">~ ٨٠٠ ج.م</span></div>
+            <div class="roi-row"><span>اشتراك منارة للنادي</span><span class="plus">- ٢٩٩ ج.م</span></div>
+            <div class="roi-row"><span style="font-weight:900;color:var(--dark);">وفّر شهرياً</span><span class="plus">≈ ٢٬٥٠٠ ج.م</span></div>
+          </div>
+
+          <div class="case-study">
+            <div class="cs-logo">ني</div>
+            <b>نادي النيل — القسم الأول</b>
+            <div class="stars">★★★★★</div>
+            <p>"كنا بنقضي شهر كامل في البحث عن حارس. من خلال منارة تواصلنا مع ١٤ حارس معتمد بالوثائق الكاملة في أسبوع واحد، ووقعنا مع حارسنا الجديد خلال ١٢ يوماً فقط."</p>
+            <span style="font-size:11.5px;color:var(--green-ink);font-weight:800;">— مدير الكرة، نادي النيل</span>
+          </div>
+        </div>
+
+        <div id="clubPayAnchor"></div>
+      </div>
+      <div style="max-width:460px;margin:20px auto 0;">
+        <button class="btn-ghost" id="demoBtn" type="button" data-i18n="sub.demo">📞 اطّلع أولاً — اطلب عرضاً توضيحياً</button>
+        <p class="demo-note">فريق منارة يشرح لك البوابة على مكالمة قصيرة (١٥ دقيقة) قبل أي دفع.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ PENDING VIEW ============ -->
+  <div id="pendingView" class="status-view" style="display:none;">
+    <div class="big">⏳</div>
+    <h2 data-i18n="sub.pending_title">طلب الدفع بانتظار المراجعة</h2>
+    <p id="pendingMsg">أرسلنا طلبك للإدارة للمراجعة اليدوية للإيصال — عادة تتم خلال ساعات.</p>
+    <span class="chip" id="pendingChip">#---</span>
+    <br>
+    <button class="btn-sub" style="max-width:280px;margin:0 auto;" id="checkStatusBtn" type="button">🔄 تحديث الحالة</button>
+  </div>
+
+  <!-- ============ ACTIVE VIEW ============ -->
+  <div id="activeView" class="status-view" style="display:none;">
+    <div class="big">🎉</div>
+    <h2 id="activeTitle" data-i18n="sub.active_title">اشتراكك نشط</h2>
+    <p id="activeMsg">الرد تم فتحه بالكامل ويمكنك إرسال المزيد بلا حدود.</p>
+    <span class="chip" id="activeChip">نشط حتى —</span>
+    <div class="manage-card" id="manageCard" style="display:none;"></div>
+    <div class="m-actions">
+      <button class="btn-ghost" id="cancelBtn" type="button">⛔ إيقاف التجديد التلقائي</button>
+      <button class="btn-ghost" id="resumeBtn" type="button" style="display:none;">✅ إعادة تفعيل التجديد</button>
+    </div>
+    <p class="cancel-note" id="cancelNote"></p>
+    <div id="activeChats" style="margin-top:20px;text-align:right;"></div>
+    <button class="btn-ghost" style="max-width:280px;margin:18px auto 0;" id="goHomeBtn" type="button">العودة للرئيسية</button>
+  </div>
+
+</div>
+
+<!-- Shared payment card (moved into the active view by JS) -->
+<div id="payCardWrap" style="display:none;">
+  <div class="price-card card">
+    <span class="flag" id="payFlag">🎮 خطة اللاعب</span>
+    <h3 id="payTitle" style="margin:0;font-size:16px;font-weight:900;color:var(--gray-700);">الوصول الكامل للمساعد الذكي</h3>
+    <div class="price-tag">
+      <span class="num" id="payNum">39</span><span class="cur">ج.م</span><span class="per">/ شهرياً — تجديد تلقائي</span>
+    </div>
+    <ul class="feat" id="payFeats"></ul>
+
+    <p class="pay-title" data-i18n="sub.pay_method">طريقة الدفع (تحويل لمحفظة منارة)</p>
+    <button class="btn-online" id="payOnlineBtn" type="button" data-i18n="sub.online_btn">💳 ادفع أونلاين الآن (كارت / محفظة)</button>
+    <p class="online-note" data-i18n="sub.online_note">بوابة كاشير الآمنة — فيزا/ماستركارد + فودافون كاش والمحافظ. تفعيل فوري بدون رفع إيصال.</p>
+    <div class="divider"><span data-i18n="sub.online_or">أو ادفع يدوياً</span></div>
+    <div class="wallet-box" dir="ltr">
+      <span class="wallet-label" data-i18n="sub.wallet_label">محفظة منارة الرسمية</span>
+      <span class="wallet-num">0122 940 9393</span>
+      <span class="wallet-hint" data-i18n="sub.wallet_hint">حوّل المبلغ إلى هذا الرقم ثم أرفق صورة الإيصال</span>
+    </div>
+    <a href="how-to-pay.html" class="how-link" data-i18n="sub.how_link" style="display:inline-block;font-size:12.5px;font-weight:800;color:var(--primary);text-decoration:none;margin-bottom:12px;">📘 كيف أدفع؟ — خطوات مفصّلة ←</a>
+    <div class="pay-grid">
+      <button class="pay-chip active" data-method="fawry"><span class="ico">🏧</span>فوري</button>
+      <button class="pay-chip" data-method="vodafone_cash"><span class="ico">💵</span>فودافون كاش</button>
+    </div>
+
+    <div class="field">
+      <label data-i18n="sub.amount_label">المبلغ المدفوع (ج.م)</label>
+      <input type="text" id="payAmount" inputmode="decimal" placeholder="مثال: 39" value="39" data-i18n-ph="sub.amount_ph">
+    </div>
+    <div class="field">
+      <label data-i18n="sub.ref_label">رقم المحفظة/الرقم المرجعي للتحقق</label>
+      <input type="text" id="payRef" placeholder="مثال: 01012345678" data-i18n-ph="sub.ref_ph">
+    </div>
+    <div class="field">
+      <label data-i18n="sub.receipt_label">صورة إيصال الدفع</label>
+      <label class="file-btn" id="payFileBtn" for="payFile" data-i18n="sub.receipt_btn">📎 اضغط لرفع صورة الإيصال</label>
+      <input type="file" id="payFile" accept="image/*" style="display:none;">
+    </div>
+
+    <button class="btn-sub" id="paySubmit" type="button"><span class="txt" data-i18n="sub.pay_btn">🔒 تأكيد الدفع وإرساله للمراجعة</span><span class="spin"><span class="spin-dot"></span> جاري الإرسال...</span></button>
+    <p class="fine">🔒 دفع يدوي عبر المحافظ المصرية (فودافون كاش / فوري) يتحقق منه الأدمن خلال ساعات · أول دفعة تُسجَّل فقط بعد انتهاء فترة التجربة المجانية · التجديد شهرياً، ويمكنك الإلغاء في أي وقت وتبقى المزايا حتى نهاية الفترة المدفوعة.</p>
+
+    <div class="guarantee">
+      <div>🛡️</div>
+      <div><b>ضمان استرداد ٧ أيام</b><br><span>إذا لم يعجبك أول رد، نعيد لك المبلغ بالكامل — بلا أسئلة.</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Demo modal -->
+<div class="modal-mask" id="demoModal">
+  <div class="modal">
+    <h3>📞 طلب عرض توضيحي</h3>
+    <p class="m-sub">املأ البيانات وسيتواصل معك فريق منارة خلال ٢٤ ساعة لترتيب مكالمة قصيرة.</p>
+    <label for="dName">اسم النادي</label>
+    <input id="dName" type="text" placeholder="مثال: نادي النيل">
+    <label for="dEmail">البريد الرسمي</label>
+    <input id="dEmail" type="email" placeholder="club@example.com">
+    <label for="dPhone">رقم الهاتف (واتساب)</label>
+    <input id="dPhone" type="tel" placeholder="01xxxxxxxxx">
+    <div class="m-actions">
+      <button class="btn-close2" id="demoClose" type="button">إلغاء</button>
+      <button class="btn-send" id="demoSend" type="button">إرسال الطلب</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">تم بنجاح</div>
+
+<script src="js/api.js"></script>
+<script src="js/subscribe.js"></script>
+<div data-partial="foot.b25e1b"></div>
+<script src="js/partials.js"></script>
+</body>
+</html>

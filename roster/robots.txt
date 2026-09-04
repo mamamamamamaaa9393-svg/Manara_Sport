@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin.html
+Disallow: /admin-declarations.html
+Disallow: /Sign/
+Disallow: /messages.html
+
+Sitemap: https://manara.app/sitemap.xml

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ar" data-default-lang="ar" dir="rtl">
+<head>
+<script>document.documentElement.classList.add('js')</script>
+<meta charset="utf-8">
+<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>متابعة الاستفسار | منارة</title>
+<meta name="description" content="تابع رد الإدارة على استفسارك عبر رابط التتبّع الخاص بك.">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/vendor/bootstrap.min.css">
+<link rel="stylesheet" href="css/style.css">
+<script src="js/theme.js"></script>
+<script src="js/lang.js"></script>
+<style>
+  .track-wrap { max-width: 760px; margin: 0 auto; }
+  .track-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 22px;
+  }
+  .track-card h2 { font-size: 1.4rem; margin: 0 0 6px; }
+  .track-card > p { color: var(--muted); margin-bottom: 22px; }
+  .track-input { display: flex; gap: 10px; flex-wrap: wrap; }
+  .track-input input {
+    flex: 1; min-width: 220px;
+    border: 1px solid var(--line); background: var(--bg-soft);
+    border-radius: var(--radius-sm); padding: 12px 14px;
+    font-family: var(--font-body); font-size: 1rem; color: var(--ink);
+  }
+  .track-input input:focus { outline: none; border-color: var(--primary); background: var(--surface); }
+  .track-msg {
+    border-radius: 14px; padding: 16px 18px; margin-top: 18px;
+    font-size: 1rem; line-height: 1.8; white-space: pre-wrap; font-weight: 600;
+  }
+  .track-msg.q { background: var(--bg-soft); border: 1px solid var(--line); color: var(--ink); }
+  .track-msg.a { background: var(--primary-soft, #eef2ff); border: 1px solid var(--primary-soft, #c7d2fe); color: var(--ink); }
+  .track-msg .lbl { display: block; font-size: .82rem; font-weight: 800; margin-bottom: 6px; color: var(--muted); }
+  .track-status { display: inline-block; font-size: .8rem; font-weight: 800; padding: 5px 12px; border-radius: 20px; margin-bottom: 14px; }
+  .track-status.open { background: #fef3c7; color: #b45309; }
+  .track-status.answered { background: #d1fae5; color: #047857; }
+  .track-err { color: #dc2626; font-weight: 700; margin-top: 14px; }
+  .track-meta { font-size: .82rem; color: var(--faint); margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ Navbar -->
+<div data-partial="nav.5fda14"></div>
+
+<!-- ============================================================ Page Head -->
+<section class="page-head">
+  <div class="container-x">
+    <div class="crumbs">
+      <a href="index.html">الرئيسية</a>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span>متابعة الاستفسار</span>
+    </div>
+    <h1>متابعة الاستفسار</h1>
+    <p>أدخل استفسارك و انتظر رد الإدارة على استفسارك.</p>
+  </div>
+</section>
+
+<!-- ============================================================ Main -->
+<main id="main">
+  <section class="section">
+    <div class="container-x">
+      <div class="track-wrap">
+
+        <div class="track-card" id="entryCard">
+          <h2>عرض الاستفسار</h2>
+          <p>الصق رابط التتبّع أو أدخل رمز التتبّع الذي حصلت عليه بعد الإرسال.</p>
+          <div class="track-input">
+            <input type="text" id="tokenInput" placeholder="الصق رابط أو رمز التتبّع هنا..." dir="ltr">
+            <button class="btn btn-primary btn-pill" id="trackBtn">عرض</button>
+          </div>
+          <div class="track-err" id="trackErr" style="display:none"></div>
+        </div>
+
+        <div id="result" style="display:none"></div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============================================================ Footer -->
+<div data-partial="foot.b25e1b"></div>
+<script src="js/partials.js"></script>
+<script src="js/vendor/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script>
+(function () {
+  var input = document.getElementById("tokenInput");
+  var btn = document.getElementById("trackBtn");
+  var err = document.getElementById("trackErr");
+  var result = document.getElementById("result");
+
+  function extractToken(val) {
+    val = (val || "").trim();
+    if (!val) return "";
+    var m = val.match(/[?&]token=([^&\s]+)/);
+    if (m) return decodeURIComponent(m[1]);
+    return val;
+  }
+
+  function render(data) {
+    var subj = ({
+      general: "استفسار عام", support: "دعم فني", partnership: "شراكة",
+      billing: "فواتير واشتراكات", feedback: "ملاحظات", other: "أخرى"
+    })[data.subject] || data.subject || "استفسار";
+    var answered = data.status === "answered" && data.reply;
+    var answeredHtml = answered
+      ? '<div class="track-msg a"><span class="lbl">رد الإدارة' + (data.repliedAt ? " — " + new Date(data.repliedAt).toLocaleString("ar-EG") : "") + '</span>' + escapeHtml(data.reply) + '</div>'
+      : '<div class="track-status open">⏳ بانتظار رد الإدارة</div><p class="track-meta">تم استلام استفسارك — ستظهر الإجابة هنا فور رد الإدارة.</p>';
+    result.innerHTML =
+      '<div class="track-card">' +
+        '<span class="track-status ' + (answered ? "answered" : "open") + '">' + (answered ? "✅ تم الرد" : "⏳ بانتظار الرد") + '</span>' +
+        '<div class="track-msg q"><span class="lbl">استفسارك (' + escapeHtml(subj) + ')</span>' + escapeHtml(data.message) + '</div>' +
+        answeredHtml +
+        '<div class="track-meta">رقم الاستفسار: #' + escapeHtml(String(data.id)) + (data.createdAt ? " — أُرسل في " + new Date(data.createdAt).toLocaleString("ar-EG") : "") + '</div>' +
+      '</div>';
+    result.style.display = "block";
+    document.getElementById("entryCard").style.display = "none";
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function go() {
+    var token = extractToken(input.value);
+    if (!token) { err.style.display = "block"; err.textContent = "الرجاء إدخال رابط أو رمز التتبّع."; return; }
+    err.style.display = "none";
+    btn.disabled = true; btn.textContent = "جارٍ التحميل...";
+    window.API.getInquiryByToken(token).then(function (data) {
+      render(data);
+    }).catch(function (e) {
+      err.style.display = "block";
+      err.textContent = "⚠️ " + (e.message || "الاستفسار غير موجود");
+    }).finally(function () {
+      btn.disabled = false; btn.textContent = "عرض";
+    });
+  }
+
+  btn.addEventListener("click", go);
+  input.addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
+
+  // Auto-load if token is present in the URL (?token=...)
+  var params = new URLSearchParams(window.location.search);
+  var fromUrl = params.get("token");
+  if (fromUrl) { input.value = fromUrl; go(); }
+})();
+</script>
+</body>
+</html>

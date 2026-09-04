@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="ar" data-default-lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>الرسائل | Manara</title>
+<meta name="description" content="الرسائل — تواصل مباشراً بين الأندية واللاعبين عبر منصة منارة.">
+<meta property="og:title" content="الرسائل | منارة">
+<meta property="og:description" content="الرسائل — تواصل مباشراً بين الأندية واللاعبين عبر منصة منارة.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manara.app/">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/vendor/porfile.css">
+  <script src="js/theme.js"></script>
+<script src="js/lang.js"></script>
+  <script src="js/nav.js"></script>
+<style>
+  .chat-wrap { display: grid; grid-template-columns: 320px 1fr; gap: 18px; align-items: stretch; margin-top: 22px; }
+  .chat-side { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; max-height: calc(100vh - 140px); }
+  .chat-side-head { padding: 16px 18px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .chat-side-head h2 { margin: 0; font-size: 17px; font-weight: 900; color: var(--dark); }
+  .chat-side-head span { font-size: 11.5px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 5px 10px; border-radius: 20px; }
+  .thread-list { overflow-y: auto; flex: 1; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+  .thread-item { display: flex; align-items: center; gap: 11px; width: 100%; text-align: right; border: none; background: transparent; padding: 11px 10px; border-radius: 12px; cursor: pointer; font-family: inherit; transition: background .15s; }
+  .thread-item:hover { background: var(--gray-50); }
+  .thread-item.active { background: var(--primary-light); }
+  .thread-ava { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: #fff; display: grid; place-items: center; font-weight: 900; font-size: 16px; flex: none; }
+  .thread-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .thread-body b { font-size: 13px; font-weight: 800; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .thread-body .thread-name { display: block; }
+  .thread-body .thread-player { display: block; font-size: 11.5px; font-weight: 700; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .thread-last { font-size: 12px; color: var(--gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+  .thread-time { font-size: 10.5px; color: var(--gray-300); flex: none; font-weight: 700; }
+  .thread-empty { padding: 30px 16px; text-align: center; color: var(--gray-500); font-weight: 700; font-size: 13px; line-height: 1.9; }
+
+  .chat-main { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; min-height: 520px; max-height: calc(100vh - 140px); }
+  .chat-head { padding: 15px 20px; border-bottom: 1px solid var(--gray-100); }
+  .chat-head-title { font-size: 15px; font-weight: 900; color: var(--dark); }
+  .chat-head-title small { color: var(--primary); font-weight: 700; }
+  .chat-msgs { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; background: var(--gray-50); }
+  .chat-empty { margin: auto; text-align: center; color: var(--gray-500); font-weight: 700; font-size: 13.5px; padding: 30px; }
+  .bubble-wrap { display: flex; flex-direction: column; max-width: 78%; }
+  .bubble-wrap.mine { align-self: flex-end; align-items: flex-end; }
+  .bubble-wrap.theirs { align-self: flex-start; align-items: flex-start; }
+  .bubble { padding: 11px 15px; border-radius: 14px; font-size: 13.5px; line-height: 1.7; font-weight: 600; word-break: break-word; }
+  .bubble.sent { background: var(--primary); color: #fff; border-bottom-left-radius: 4px; }
+  .bubble.recv { background: var(--surface); border: 1px solid var(--gray-200); color: var(--dark); border-bottom-right-radius: 4px; }
+  .bubble-meta { font-size: 10.5px; color: var(--gray-500); font-weight: 700; margin-top: 4px; }
+
+  .reply-notice { margin: 0 16px; padding: 10px 14px; border: 1px dashed var(--primary); background: var(--primary-light); color: var(--primary-ink, var(--primary)); font-size: 12.5px; font-weight: 700; border-radius: 12px; text-align: center; }
+  .chat-err { margin: 0 16px; padding: 10px 14px; border-radius: 12px; background: #fdecea; border: 1px solid #f5b5ad; color: #b3261e; font-size: 12.5px; font-weight: 700; line-height: 1.7; }
+  .composer { display: flex; gap: 10px; padding: 14px 16px; border-top: 1px solid var(--gray-100); align-items: flex-end; }
+  .composer textarea { flex: 1; resize: none; border: 1px solid var(--gray-200); border-radius: 12px; padding: 11px 14px; font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--dark); background: var(--surface); min-height: 44px; max-height: 120px; }
+  .composer textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+  .composer button { flex: none; background: var(--primary); color: #fff; border: none; border-radius: 12px; padding: 12px 22px; font-weight: 800; font-size: 13.5px; cursor: pointer; font-family: inherit; }
+  .composer button:hover { background: var(--primary-2); }
+  .composer button:disabled { opacity: .5; cursor: not-allowed; }
+
+  @media (max-width: 860px) {
+    .chat-wrap { grid-template-columns: 1fr; }
+    .chat-side { max-height: 260px; }
+    .chat-main { min-height: 60vh; max-height: none; }
+  }
+</style>
+</head>
+<body>
+
+<div data-partial="nav.6099a2"></div>
+
+<div class="container chat-wrap">
+  <aside class="chat-side" id="chatSide">
+    <div class="chat-side-head">
+      <h2>💬 الرسائل</h2>
+      <span id="roleBadge"></span>
+    </div>
+    <div id="threadList" class="thread-list"></div>
+    <div style="padding:12px 14px;border-top:1px solid var(--gray-100);">
+      <a id="findPeopleBtn" href="jobs.html" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px 14px;border-radius:12px;background:var(--primary);color:#fff;font-weight:800;font-size:13px;text-decoration:none;">🔍 البحث عن لاعبين</a>
+    </div>
+  </aside>
+
+  <section class="chat-main">
+    <div class="chat-head" id="chatHead">
+      <span class="chat-head-title">اختر محادثة من القائمة</span>
+    </div>
+    <div id="chatMsgs" class="chat-msgs">
+      <div class="chat-empty">جاري التحميل…</div>
+    </div>
+    <div id="replyNotice" class="reply-notice" style="display:none">🔒 حساب اللاعب: يمكنك الرد فقط على رسائل النادي — لا يمكنك بدء محادثة جديدة</div>
+    <div id="chatErr" class="chat-err" style="display:none"></div>
+    <form id="composer" class="composer" autocomplete="off">
+      <textarea id="msgInput" rows="1" placeholder="اكتب رسالتك…" maxlength="2000"></textarea>
+      <button id="sendBtn" type="submit">إرسال</button>
+    </form>
+  </section>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/messages.js"></script>
+<div data-partial="foot.b25e1b"></div>
+<script src="js/partials.js"></script>
+</body>
+</html>

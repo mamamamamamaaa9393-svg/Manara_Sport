@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# Database — anywhere in the tree (the app lives in server/, and these files
+# contain real user data / secrets; they must never be committed)
+**/data/db.json
+**/data/db.json.*.bak
+**/data/db.json.bak*
+**/data/db.json.*backup
+**/data/db.json.backup*
+**/data/.dev_secret
+data/db.json
+data/db.json.bak*
+data/db.json.*.bak
+data/db.json.*backup
+data/.dev_secret
+
+# Encrypted vault (passphrase is in env — vault files must never be committed)
+declarations/
+
+# Uploaded files
+uploads/
+!uploads/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+*.err
+npm-debug.log*
+
+# OCR language data (tesseract.js downloads these to a cache on first use;
+# the local copies are orphaned runtime artifacts, not needed by the repo)
+*.traineddata
+
+# Test artifacts
+test-*.js
+lifecycle-*.json

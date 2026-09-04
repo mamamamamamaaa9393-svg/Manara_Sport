@@ -1,0 +1,28 @@
+{
+  "name": "منارة — منصة اكتشاف المواهب الرياضية",
+  "short_name": "منارة",
+  "description": "منصة منارة تربط الرياضيين الشباب بالأندية والأكاديميات. سجّل ملفك الرياضي واعرض مهاراتك للعالم.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "categories": ["sports", "social"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
