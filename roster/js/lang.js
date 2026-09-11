@@ -110,35 +110,6 @@
     "err.msg": { ar: "الرابط الذي حاولت الوصول إليه غير موجود أو تم نقله.", en: "The page you are looking for doesn't exist or has been moved." },
     "err.home": { ar: "العودة للرئيسية", en: "Back to home" },
 
-    // Footer
-    "footer.how_to_pay": { ar: "كيف تدفع؟", en: "How to pay?" },
-
-    // How-to-pay page
-    "pay.eyebrow": { ar: "💳 طريقة الدفع الموثّقة", en: "💳 The official payment method" },
-    "pay.title": { ar: "كيف تدفع اشتراكك في منارة؟", en: "How do I pay for my Manara subscription?" },
-    "pay.sub": { ar: "5 خطوات بسيطة وتُفعَّل اشتراكك تلقائياً خلال دقائق — أو بمراجعة الإدارة خلال ساعات.", en: "5 simple steps — your subscription activates automatically within minutes, or by admin review within hours." },
-    "pay.wallet_label": { ar: "محفظة منارة الرسمية", en: "Manara official wallet" },
-    "pay.copy": { ar: "📋 نسخ الرقم", en: "📋 Copy number" },
-    "pay.s1_title": { ar: "اختر خطتك", en: "Choose your plan" },
-    "pay.s1_text": { ar: "لاعب (39 ج.م شهرياً) أو نادي (299 ج.م شهرياً) — من صفحة الاشتراك. فترة التجربة المجانية بالكامل، وأول دفعة تُسجَّل فقط بعد انتهاء التجربة.", en: "Player (39 EGP/month) or club (299 EGP/month) — from the subscribe page. The trial period is completely free, and the first charge only follows the trial." },
-    "pay.s1_link": { ar: "الانتقال إلى الاشتراك ←", en: "Go to subscribe →" },
-    "pay.s2_title": { ar: "حوّل المبلغ لمحفظة منارة", en: "Transfer the amount to Manara's wallet" },
-    "pay.s2_text": { ar: "افتح تطبيق فودافون كاش أو فوري وحوّل المبلغ إلى الرقم 0122 940 9393. تأكد من كتابة الرقم بالكامل وأن المبلغ يطابق سعر خطتك بالضبط.", en: "Open Vodafone Cash or Fawry and transfer to 0122 940 9393. Make sure the number is entered fully and the amount matches your plan exactly." },
-    "pay.s3_title": { ar: "التقط صورة الإيصال", en: "Take a screenshot of the receipt" },
-    "pay.s3_text": { ar: "بعد إتمام التحويل، التقط صورة واضحة لإيصال العملية من التطبيق — تُظهر المبلغ ورقم المحفظة المرسَل إليه والتاريخ. النظام يتحقق من الإيصال تلقائياً.", en: "After the transfer, take a clear screenshot of the receipt showing the amount, destination wallet and date. The system verifies it automatically." },
-    "pay.s4_title": { ar: "أدخل البيانات وارفع الإيصال", en: "Enter the details and upload the receipt" },
-    "pay.s4_text": { ar: "في صفحة الاشتراك: أدخل المبلغ المدفوع، ورقم محفظتك (الرقم المرجعي)، وارفع صورة الإيصال ثم اضغط «تأكيد الدفع».", en: "On the subscribe page: enter the paid amount, your wallet number (reference), upload the receipt screenshot and press “Confirm payment”." },
-    "pay.s5_title": { ar: "يُفعَّل اشتراكك", en: "Your subscription activates" },
-    "pay.s5_text": { ar: "عند تطابق البيانات والتحقق التلقائي من الإيصال يُفعَّل اشتراكك فوراً. وإذا احتاجت العملية مراجعة يدوية، تتم خلال ساعات وستصلك رسالة عند الموافقة.", en: "When the data matches and the receipt passes automatic verification, your subscription activates instantly. Manual reviews take a few hours and you'll be notified on approval." },
-    "pay.cta": { ar: "الاشتراك الآن ←", en: "Subscribe now →" },
-    "pay.faq_title": { ar: "أسئلة شائعة", en: "FAQ" },
-    "pay.faq1_q": { ar: "هل هناك رسوم إضافية على التحويل؟", en: "Are there extra transfer fees?" },
-    "pay.faq1_a": { ar: "لا — سعر الاشتراك هو كل ما تدفعه (39 ج.م للاعب / 299 ج.م للنادي). أي رسوم تحويل يفرضها تطبيق المحفظة خارج منارة.", en: "No — the subscription price is all you pay (39 EGP player / 299 EGP club). Any transfer fees charged by the wallet app are outside Manara." },
-    "pay.faq2_q": { ar: "ماذا لو أرسلت المبلغ لرقم خاطئ؟", en: "What if I sent the money to the wrong number?" },
-    "pay.faq2_a": { ar: "إذا كان رقم المحفظة في الإيصال غير مطابق لمحفظة منارة الرسمية، سيُرفض الطلب تلقائياً مع رسالة توضيحية، ولن يُخصم منك أي اشتراك.", en: "If the wallet number on the receipt doesn't match Manara's official wallet, the request is auto-rejected with a clear message and you're never charged." },
-    "pay.faq3_q": { ar: "هل يمكنني إلغاء الاشتراك؟", en: "Can I cancel my subscription?" },
-    "pay.faq3_a": { ar: "نعم، يمكنك إلغاء التجديد التلقائي في أي وقت — تبقى المزايا مفعّلة حتى نهاية الفترة المدفوعة. وهناك ضمان استرداد 7 أيام لأول دفعة.", en: "Yes — cancel auto-renewal anytime; benefits stay until the end of the paid period. There's also a 7-day refund guarantee on the first charge." },
-
     // Subscribe page
     "sub.auth_title": { ar: "سجّل الدخول أولاً", en: "Sign in first" },
     "sub.auth_sub": { ar: "للاشتراك وإرسال رسالتك المجانية، تحتاج حساباً موثّقاً في منارة.", en: "To subscribe and send your free message, you need a verified Manara account." },

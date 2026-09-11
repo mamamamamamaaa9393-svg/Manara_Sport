@@ -79,17 +79,32 @@ function hasAny(text, list) {
   return false;
 }
 
+// Off-topic negation must be word-boundary-aware for ASCII terms so the
+// "game" block does not catch "gamer", "pay" does not catch "payment", etc.
+// Arabic terms stay substring-based (white-spaced, often ال-prefixed).
+const ASCII_RE = /^[a-z0-9 /-]+$/;
+function hasTerm(text, list) {
+  for (const term of list) {
+    if (ASCII_RE.test(term) && !/\s/.test(term)) {
+      const re = new RegExp("(^|[^a-z0-9])" + term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "([^a-z0-9]|$)", "i");
+      if (re.test(text)) return true;
+    } else if (text.indexOf(term) !== -1) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Returns { inScope: boolean, reason: string }.
 function classifyScope(rawText) {
   const text = " " + String(rawText || "").toLowerCase() + " ";
   const injection = hasAny(text, INJECTION);
-  const deny = hasAny(text, DENY);
   const allow = hasAny(text, ALLOW);
 
   if (injection && !allow) return { inScope: false, reason: "injection" };
   // Off-topic dominates for safety: reject even if a Manara word slips in
   // alongside a clearly off-platform topic.
-  if (deny) return { inScope: false, reason: "offtopic" };
+  if (hasTerm(text, DENY)) return { inScope: false, reason: "offtopic" };
   if (allow) return { inScope: true, reason: "allow" };
   return { inScope: false, reason: "ambiguous" };
 }

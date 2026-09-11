@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar" data-default-lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>لوحة المعرفة — الأسئلة ومعلمات المنصة | Manara</title>
+<meta name="description" content="لوحة الإدارة — إدارة أسئلة وأجوبة المساعد الذكي ومعلمات المنصة.">
+<meta property="og:title" content="لوحة المعرفة — الأسئلة ومعلمات المنصة | منارة">
+<meta property="og:description" content="إدارة محتوى المساعد الذكي ومعلمات المنصة.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manara.app/">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/vendor/porfile.css">
+<script src="js/theme.js"></script>
+<script src="js/lang.js"></script>
+<script src="js/nav.js"></script>
+<style>
+  .admin-wrap { margin-top: 22px; }
+  .admin-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+  .admin-head h1 { margin: 0; font-size: 22px; font-weight: 900; color: var(--dark); }
+  .admin-head p { margin: 4px 0 0; font-size: 13px; color: var(--gray-500); font-weight: 600; }
+
+  .admin-modes { display: inline-flex; gap: 6px; background: var(--gray-100); padding: 5px; border-radius: 14px; margin-bottom: 16px; }
+  .mode-btn { border: none; background: transparent; color: var(--gray-600); font-family: inherit; font-weight: 800; font-size: 13px; padding: 9px 18px; border-radius: 10px; cursor: pointer; transition: all .15s; }
+  .mode-btn.active { background: var(--surface); color: var(--primary); box-shadow: var(--shadow-sm); }
+
+  .err-bar { background: #fdecea; border: 1px solid #f5b5ad; color: #b3261e; font-weight: 700; font-size: 13px; padding: 12px 16px; border-radius: 12px; margin-bottom: 14px; }
+
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+  .toolbar input[type="search"], .toolbar select {
+    border: 1px solid var(--gray-200); background: var(--surface); color: var(--gray-800);
+    border-radius: 12px; padding: 10px 14px; font-family: inherit; font-size: 13px; font-weight: 700;
+  }
+  .toolbar input[type="search"] { flex: 1; min-width: 200px; }
+  .toolbar input:focus, .toolbar select:focus { outline: none; border-color: var(--primary); }
+  .btn-primary { border: none; background: var(--primary); color: #fff; border-radius: 12px; padding: 11px 20px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .btn-primary:hover { opacity: .92; }
+  .btn-primary:disabled { opacity: .6; cursor: default; }
+  .btn-ghost { border: 1px solid var(--gray-200); background: var(--surface); color: var(--gray-700); border-radius: 12px; padding: 10px 16px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-ghost:disabled { opacity: .6; cursor: default; }
+
+  .stats-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .stat-pill { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 12px; padding: 8px 14px; font-size: 12.5px; font-weight: 800; color: var(--gray-600); }
+  .stat-pill b { color: var(--dark); }
+  .stat-pill.stale { border-color: #f5b5ad; color: #b45309; background: #fefce8; }
+
+  .faq-list { display: flex; flex-direction: column; gap: 14px; }
+  .faq-card { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 16px; overflow: hidden; }
+  .faq-head { padding: 14px 18px; display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--gray-100); }
+  .faq-q { flex: 1; min-width: 220px; }
+  .faq-q b { color: var(--dark); font-weight: 900; font-size: 15px; line-height: 1.6; }
+  .faq-q .q-en { display: block; color: var(--gray-400); font-size: 12px; font-weight: 600; direction: ltr; text-align: right; margin-top: 3px; }
+  .badge { font-size: 11px; font-weight: 800; padding: 4px 11px; border-radius: 20px; white-space: nowrap; }
+  .badge.cat { background: var(--primary-light); color: var(--primary); }
+  .badge.st-on { background: #d1fae5; color: #047857; }
+  .badge.st-off { background: #fee2e2; color: #b91c1c; }
+  .badge.st-stale { background: #fef3c7; color: #b45309; }
+  .badge.st-manual { background: #e0e7ff; color: #4338ca; }
+  .badge.st-auto { background: #e2e8f0; color: #475569; }
+  .faq-body { padding: 12px 18px 16px; }
+  .faq-a { font-size: 13px; font-weight: 700; color: var(--gray-700); line-height: 1.7; white-space: pre-wrap; }
+  .faq-meta { font-size: 11.5px; color: var(--gray-400); font-weight: 700; margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .faq-actions { padding: 12px 18px; border-top: 1px solid var(--gray-100); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .btn-sm { border: 1px solid var(--gray-200); background: var(--surface); color: var(--gray-700); border-radius: 10px; padding: 8px 14px; font-weight: 800; font-size: 12px; cursor: pointer; font-family: inherit; }
+  .btn-sm:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-sm.danger { color: #dc2626; border-color: #fecaca; }
+  .btn-sm.danger:hover { background: #fef2f2; }
+  .btn-sm:disabled { opacity: .6; cursor: default; }
+  .switch { position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; font-weight: 800; color: var(--gray-600); margin-inline-start: auto; }
+  .switch input { display: none; }
+  .switch .track { width: 42px; height: 24px; border-radius: 20px; background: var(--gray-200); position: relative; transition: all .18s; }
+  .switch .track::after { content: ""; position: absolute; top: 3px; inset-inline-start: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: var(--shadow-sm); transition: all .18s; }
+  .switch input:checked + .track { background: var(--primary); }
+  .switch input:checked + .track::after { inset-inline-start: 21px; }
+
+  .empty { text-align: center; padding: 40px 16px; color: var(--gray-500); font-weight: 700; font-size: 13.5px; }
+
+  /* Platform params */
+  .stale-banner { display: none; background: #fefce8; border: 1px solid #fde68a; color: #92400e; border-radius: 12px; padding: 12px 16px; font-size: 13px; font-weight: 700; margin-bottom: 14px; line-height: 1.8; }
+  .stale-banner.show { display: block; }
+  .params-list { display: flex; flex-direction: column; gap: 10px; }
+  .param-row { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 14px; padding: 13px 16px; display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .param-row.stale { border-color: #fde68a; background: #fffbeb; }
+  .param-key { font-family: 'Inter', monospace; direction: ltr; font-size: 12.5px; font-weight: 800; color: var(--primary); min-width: 150px; }
+  .param-label { flex: 1; min-width: 170px; font-size: 13px; font-weight: 800; color: var(--gray-700); }
+  .param-label small { display: block; color: var(--gray-400); font-weight: 600; direction: ltr; text-align: right; }
+  .param-value { direction: ltr; font-family: 'Inter', monospace; font-size: 13px; font-weight: 800; color: var(--dark); background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: 8px; padding: 5px 10px; }
+  .param-old { text-decoration: line-through; color: #b45309; }
+  .param-new { color: #047857; }
+  .param-ref { font-size: 10.5px; color: var(--gray-400); font-weight: 700; direction: ltr; font-family: monospace; }
+  .param-actions { display: flex; gap: 6px; }
+
+  .report-msg { font-size: 12.5px; font-weight: 800; color: var(--gray-600); line-height: 1.8; margin-top: 8px; }
+  .report-msg b.ok { color: #047857; }
+  .report-msg b.warn { color: #b45309; }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(2,6,23,.6); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 16px; overflow-y: auto; }
+  .modal-box { width: 100%; max-width: 560px; background: var(--surface); border-radius: 16px; padding: 20px; box-shadow: 0 24px 60px rgba(0,0,0,.45); max-height: 92vh; overflow-y: auto; }
+  .modal-box.narrow { max-width: 440px; }
+  .modal-msg { font-size: 14px; font-weight: 800; line-height: 1.7; color: var(--dark); white-space: pre-wrap; }
+  .modal-field { display: block; margin-bottom: 12px; }
+  .modal-field label { display: block; font-size: 12px; font-weight: 900; color: var(--gray-500); margin-bottom: 4px; }
+  .modal-field input, .modal-field select, .modal-field textarea {
+    width: 100%; border: 1px solid var(--gray-200); border-radius: 12px; padding: 10px 13px; font-family: inherit; font-size: 13px; font-weight: 700; color: var(--gray-800); resize: vertical;
+  }
+  .modal-field input:focus, .modal-field select:focus, .modal-field textarea:focus { outline: none; border-color: var(--primary); }
+  .modal-row { display: flex; gap: 10px; }
+  .modal-row .modal-field { flex: 1; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .modal-btn { flex: 1; border: none; border-radius: 12px; padding: 13px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; }
+  .modal-cancel { background: var(--gray-100); color: var(--gray-700); }
+  .modal-ok { background: var(--primary); color: #fff; }
+  .modal-ok.danger { background: #dc2626; color: #fff; }
+  .modal-ok:disabled { opacity: .6; cursor: default; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--primary); color: #fff; font-weight: 800; font-size: 13.5px; padding: 13px 22px; border-radius: 14px; box-shadow: 0 12px 36px rgba(0,0,0,.28); z-index: 20000; opacity: 0; transition: all .22s; pointer-events: none; max-width: 90vw; text-align: center; }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* AI assistant preview (mirrors ai-assistant.html) */
+  .ai-preview { background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: 14px; padding: 14px; margin-top: 12px; display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; }
+  .ai-msg { max-width: 88%; padding: 10px 13px; border-radius: 14px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; font-size: 13px; font-weight: 700; }
+  .ai-msg.user { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+  .ai-msg.bot { align-self: flex-start; background: var(--surface); border: 1px solid var(--gray-200); color: var(--gray-800); border-bottom-left-radius: 4px; }
+  .ai-msg.bot.error { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+  .ai-note { font-size: 11px; color: var(--gray-400); font-weight: 700; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<div data-partial="nav.214504"></div>
+
+<div class="container admin-wrap">
+  <div class="admin-head">
+    <div>
+      <h1>🧠 لوحة المعرفة — تغذية المساعد الذكي</h1>
+      <p>أضف أسئلة وأجوبة المنصة، وتابع معلمات المنصة المُستخرجة من الإعدادات، وأدر حالة المزامنة.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <a href="admin.html" style="background:var(--dark);color:#fff;padding:10px 18px;border-radius:12px;font-weight:800;font-size:13px;text-decoration:none;display:inline-flex;gap:6px;align-items:center;">🛡️ لوحة الطلبات</a>
+      <span class="btn-msg" style="background:var(--gray-100);color:var(--gray-600);box-shadow:none;">مرحباً <b id="adminName">…</b></span>
+    </div>
+  </div>
+
+  <div id="errBar" class="err-bar" style="display:none"></div>
+
+  <div class="admin-modes">
+    <button class="mode-btn active" data-mode="faq">💬 الأسئلة والأجوبة</button>
+    <button class="mode-btn" data-mode="params">⚙️ معلمات المنصة</button>
+  </div>
+
+  <div id="faqPanel">
+    <div class="toolbar">
+      <input type="search" id="faqSearch" placeholder="🔎 بحث في السؤال أو الإجابة...">
+      <select id="faqCat" title="الفئة">
+        <option value="">كل الفئات</option>
+      </select>
+      <select id="faqStatus" title="الحالة">
+        <option value="">الكل</option>
+        <option value="on">نشط فقط</option>
+        <option value="off">معطّل</option>
+      </select>
+      <button class="btn-primary" id="addFaqBtn">➕ إضافة سؤال/جواب</button>
+    </div>
+    <div class="stats-bar" id="faqStats"></div>
+    <div id="faqList" class="faq-list"></div>
+  </div>
+
+  <div id="paramsPanel" style="display:none;">
+    <div class="toolbar">
+      <button class="btn-ghost" id="reconcileBtn">🔍 فحص التغييرات</button>
+      <button class="btn-ghost" id="applyAllBtn">✔️ تطبيق كل القيم من الإعدادات</button>
+      <button class="btn-ghost" id="exportBtn">📤 تصدير حزمة المعرفة (JSON)</button>
+    </div>
+    <div class="stale-banner" id="staleBanner"></div>
+    <div id="reportBox"></div>
+    <div id="paramsList" class="params-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ تم تنفيذ الإجراء</div>
+
+<!-- partials.js MUST run BEFORE the page script: it injects the navbar
+     markup synchronously so handlers bound to #logoutBtn actually attach. -->
+<script src="js/partials.js"></script>
+<script src="js/api.js?v=3"></script>
+<script src="js/admin-faq.js?v=1"></script>
+<div data-partial="foot.b25e1b"></div>
+</body>
+</html>

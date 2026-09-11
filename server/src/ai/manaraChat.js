@@ -2,8 +2,10 @@
    Manara AI Assistant — chat orchestrator.
    - Runs the Manara-only guard first (classify.js). Off-topic / injection
      questions never reach the model.
-   - Retrieves relevant knowledge-base chunks (retrieve.js) and injects real
-     platform facts from config, so the model answers from verified context.
+   - Retrieves relevant knowledge-base chunks (context.js sections 5/6) and
+     injects real platform facts from config, so the model answers from
+     verified context: the admin-curated FAQ + platform params + static
+     defaults when the DB base is empty.
    - Calls an OpenAI-compatible chat completion (LLM_API_KEY / LLM_BASE_URL /
      LLM_MODEL). If no provider is configured, falls back to a grounded,
      KB-based Arabic reply so the feature still works offline.
@@ -12,12 +14,21 @@
    ========================================================================== */
 require("dotenv").config();
 const config = require("../config");
-const { retrieve } = require("./retrieve");
+const { buildContext } = require("./context");
 const { classifyScope } = require("./classify");
 const { runMatch, formatReply } = require("./matchTool");
 
 const REJECT_MESSAGE =
   "عذرًا، أنا مساعد Manara ومخصص فقط للإجابة عن الأسئلة المتعلقة بالمنصة.";
+
+const NO_INFO_MESSAGE =
+  "عذرًا، لا أملك معلومات كافية عن هذا الموضوع في منصة منارة. يمكنك مراجعة صفحة الأسئلة الشائعة أو التواصل مع فريق الدعم.";
+
+// Lightweight language detection: any Arabic script → Arabic, else English.
+const ARABIC_RE = /[\u0600-\u06FF]/;
+function detectLang(text) {
+  return ARABIC_RE.test(String(text || "")) ? "ar" : "en";
+}
 
 function buildSystemPrompt() {
   const facts = [
@@ -47,8 +58,8 @@ function buildSystemPrompt() {
   ].join("\n");
 }
 
-function buildMessages(userMessage, contextChunks, history) {
-  const system = buildSystemPrompt().replace("<<KB>>", contextChunks.join("\n\n"));
+function buildMessages(userMessage, contextString, history) {
+  const system = buildSystemPrompt().replace("<<KB>>", contextString || "");
   const msgs = [{ role: "system", content: system }];
   if (Array.isArray(history)) {
     for (const h of history.slice(-8)) {
@@ -77,17 +88,34 @@ async function callLlm(messages) {
   return text ? String(text).trim() : null;
 }
 
-// Offline / no-provider fallback: ground the reply in the retrieved KB chunk(s).
-function fallbackReply(contextChunks) {
-  const chunk = contextChunks[0] || "";
-  if (!chunk) {
-    return "عذرًا، لا أملك معلومات كافية عن هذا الموضوع في منصة منارة. يمكنك مراجعة صفحة الأسئلة الشائعة أو التواصل مع فريق الدعم.";
+// Offline / no-provider fallback: ground the reply in the retrieved KB
+// (top FAQ entries + relevant params), formatted with the user's language.
+function offlineReply(kb) {
+  if (!kb) return NO_INFO_MESSAGE;
+  const pick = (obj) => {
+    if (!obj) return "";
+    return obj[kb.lang] || obj.ar || obj.en || "";
+  };
+  const lines = [];
+  const seen = new Set();
+  for (const f of kb.faqs || []) {
+    if (seen.has(f.id)) continue;
+    seen.add(f.id);
+    const q = pick(f.question);
+    const a = pick(f.answer);
+    if (q && a) lines.push("س: " + q + "\nج: " + a);
   }
-  return "بناءً على ما أعرفه عن منصة منارة:\n\n" + chunk +
+  for (const p of kb.params || []) {
+    const lab = pick(p.label) || p.key;
+    lines.push(lab + ": " + p.display);
+  }
+  const body = lines.join("\n\n");
+  if (!body) return NO_INFO_MESSAGE;
+  return "بناءً على ما أعرفه عن منصة منارة:\n\n" + body +
     "\n\nإذا احتجت تفاصيل أدق، راسل فريق الدعم عبر صفحة التواصل.";
 }
 
-async function manaraChat({ message, history, user }) {
+async function manaraChat({ message, history, user, store }) {
   const guard = classifyScope(message);
   if (!guard.inScope) {
     return { reply: REJECT_MESSAGE, scope: "offtopic", provider: "guard", reason: guard.reason };
@@ -103,8 +131,12 @@ async function manaraChat({ message, history, user }) {
     if (formatted) return formatted;
   }
 
-  const contextChunks = retrieve(message, 4);
-  const messages = buildMessages(message, contextChunks, history);
+  // RAG: retrieve the top relevant admin-curated FAQ answers + platform
+  // params from the live knowledge base (sections 5/6). `store` is passed in
+  // by tests; production reads the real db.
+  const lang = detectLang(message);
+  const kb = buildContext(message, { lang, k: 5, store });
+  const messages = buildMessages(message, kb.context, history);
 
   let reply = null;
   let provider = "fallback";
@@ -115,8 +147,8 @@ async function manaraChat({ message, history, user }) {
     reply = null;
   }
 
-  if (!reply) reply = fallbackReply(contextChunks);
-  return { reply: reply, scope: "manara", provider: provider };
+  if (!reply) reply = offlineReply(kb);
+  return { reply: reply, scope: "manara", provider: provider, lang: lang };
 }
 
-module.exports = { manaraChat, REJECT_MESSAGE, classifyScope, buildMessages };
+module.exports = { manaraChat, REJECT_MESSAGE, classifyScope, buildMessages, detectLang, offlineReply, NO_INFO_MESSAGE };

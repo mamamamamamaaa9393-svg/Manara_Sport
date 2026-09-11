@@ -264,7 +264,6 @@ function buildSitemap() {
   add(SITE_URL + "/contact.html", "monthly", "0.5");
   add(SITE_URL + "/plans.html", "monthly", "0.6");
   add(SITE_URL + "/subscribe.html", "monthly", "0.6");
-  add(SITE_URL + "/how-to-pay.html", "monthly", "0.5");
   add(SITE_URL + "/privacy.html", "yearly", "0.3");
   add(SITE_URL + "/terms.html", "yearly", "0.3");
   add(SITE_URL + "/ai-assistant.html", "monthly", "0.5");

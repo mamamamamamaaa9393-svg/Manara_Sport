@@ -32,7 +32,7 @@
   function initNav() {
     var toggle = document.getElementById("navToggle");
     if (!toggle) return;
-    var nav = toggle.closest("nav");
+    var nav = toggle.closest("nav") || document.getElementById("siteNav");
     if (!nav) return;
 
     var setOpen = function (open) {

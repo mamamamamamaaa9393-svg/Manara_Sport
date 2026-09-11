@@ -11,6 +11,9 @@
      7. Track endpoint now shows the reply (private, only via token)
 */
 const http = require("http");
+const BASE = process.env.MANARA_BASE_URL || "http://localhost:5000";
+const HOST = new URL(BASE).hostname;
+const PORT = Number(new URL(BASE).port || 80);
 const ADMIN_EMAIL = "admin@manara.app";
 const ADMIN_PASS = "AAMzTqUix%GFxa8DYS";
 
@@ -25,8 +28,8 @@ function req(method, p, body, token) {
     const data = body ? JSON.stringify(body) : null;
     const opts = {
       method,
-      hostname: "localhost",
-      port: 5000,
+      hostname: HOST,
+      port: PORT,
       path: p,
       headers: { "Content-Type": "application/json", "Accept": "application/json" }
     };

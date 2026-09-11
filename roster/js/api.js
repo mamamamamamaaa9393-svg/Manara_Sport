@@ -289,6 +289,37 @@
     },
     adminLogs: function () {
       return request("GET", "/admin/logs", null, true);
+    },
+    knowledgeFaqs: function () {
+      return request("GET", "/knowledge/faq", null, true);
+    },
+    knowledgeCreateFaq: function (data) {
+      return request("POST", "/knowledge/faq", data, true);
+    },
+    knowledgeUpdateFaq: function (id, data) {
+      return request("PUT", "/knowledge/faq/" + encodeURIComponent(id), data, true);
+    },
+    knowledgeDeleteFaq: function (id) {
+      return request("DELETE", "/knowledge/faq/" + encodeURIComponent(id), null, true);
+    },
+    knowledgeParams: function () {
+      return request("GET", "/knowledge/params", null, true);
+    },
+    knowledgeReconcile: function (apply) {
+      return request("POST", "/knowledge/params/reconcile", { apply: !!apply }, true);
+    },
+    knowledgeApplyParam: function (key) {
+      return request("POST", "/knowledge/params/apply", { key: key }, true);
+    },
+    knowledgeExport: function () {
+      return request("GET", "/knowledge/export", null, true);
+    },
+    // Public, auth-free read: active FAQs + public platform facts for the AI.
+    knowledgePublic: function () {
+      return request("GET", "/knowledge/public", null, false);
+    },
+    knowledgePreview: function (question) {
+      return request("POST", "/knowledge/preview", { question: question }, true, 30000);
     }
   };
 })();

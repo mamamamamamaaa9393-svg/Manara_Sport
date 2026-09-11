@@ -265,6 +265,7 @@ app.use("/api/admin", require("./routes/admin.routes"));
 app.use("/api/admin/inquiries", require("./routes/inquiries.routes"));
 app.use("/api/inquiries", require("./routes/inquiries.routes"));
 app.use("/api/ai", require("./routes/ai.routes"));
+app.use("/api/knowledge", require("./routes/knowledge.routes"));
 app.use("/api/match", require("./routes/matching.routes"));
 
 // ---------------------------------------------------------------------------

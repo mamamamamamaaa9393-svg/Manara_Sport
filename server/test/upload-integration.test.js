@@ -5,7 +5,9 @@ const fs = require("fs");
 const path = require("path");
 const zlib = require("zlib");
 
-const BASE = "http://localhost:5000";
+const BASE = process.env.MANARA_BASE_URL || "http://localhost:5000";
+const HOST = new URL(BASE).hostname;
+const PORT = Number(new URL(BASE).port || 80);
 const ADMIN_EMAIL = "admin@manara.app";
 const ADMIN_PASS = "AAMzTqUix%GFxa8DYS";
 
@@ -18,7 +20,7 @@ function ok(name, cond, extra) {
 function req(method, p, body, token) {
   return new Promise((resolve, reject) => {
     const data = body ? JSON.stringify(body) : null;
-    const opts = { method, hostname: "localhost", port: 5000, path: p, headers: { "Content-Type": "application/json" } };
+    const opts = { method, hostname: HOST, port: PORT, path: p, headers: { "Content-Type": "application/json" } };
     if (token) opts.headers["Authorization"] = "Bearer " + token;
     const r = http.request(opts, (res) => {
       let d = "";
@@ -46,7 +48,7 @@ function upload(purpose, filePath, token) {
     let tail = crlf + "--" + boundary + "--" + crlf;
     const body = Buffer.concat([Buffer.from(head, "latin1"), content, Buffer.from(tail, "latin1")]);
     const opts = {
-      method: "POST", hostname: "localhost", port: 5000, path: "/api/upload",
+      method: "POST", hostname: HOST, port: PORT, path: "/api/upload",
       headers: {
         "Content-Type": "multipart/form-data; boundary=" + boundary,
         "Content-Length": body.length,

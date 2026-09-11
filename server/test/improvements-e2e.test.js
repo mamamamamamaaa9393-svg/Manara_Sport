@@ -1,6 +1,5 @@
-/* E2E smoke test for the 7 new improvements (runs against live server:5000).
+/* E2E smoke test for the new improvements (runs against live server:5000).
    Covers:
-     - how-to-pay page served + footer link
      - club rates a player (review endpoint + aggregate rating)
      - in-app notifications (payment approval pushed + drained on status)
      - SEO/shareable meta helpers (page titles)
@@ -62,13 +61,8 @@ async function registerAndApprove(email, role, extra) {
 async function run() {
   console.log("\n=== New improvements E2E smoke test ===");
 
-  // [1] how-to-pay page served
-  console.log("\n[1] how-to-pay page");
-  const page = await req("GET", "/how-to-pay.html");
-  ok("how-to-pay.html serves 200", page.status === 200);
-
-  // [2] register club + player
-  console.log("\n[2] Register club + player");
+  // [1] register club + player
+  console.log("\n[1] Register club + player");
   const clubToken = await registerAndApprove(CLUB_EMAIL, "club", {
     club_name: "Test Club " + NOW, sport: "Football", country: "Egypt",
     official_email: CLUB_EMAIL,
@@ -83,23 +77,23 @@ async function run() {
   const player = d0.players.find((p) => p.userId === (d0.users.find((u) => u.email === PLAYER_EMAIL) || {}).id);
   ok("club + player created", !!clubToken && !!playerToken && !!player);
 
-  // [3] club rates the player
-  console.log("\n[3] Club reviews the player");
+  // [2] club rates the player
+  console.log("\n[2] Club reviews the player");
   const r1 = await req("POST", "/api/players/" + player.slug + "/review", { stars: 4, comment: "مستوى جيد" }, clubToken);
   ok("review accepted", r1.status === 200 && r1.data.review.stars === 4, r1);
   ok("aggregate rating 4.0", r1.data.rating === 4.0 && r1.data.reviews === 1, r1.data);
   const r2 = await req("POST", "/api/players/" + player.slug + "/review", { stars: 5 }, clubToken);
   ok("re-rating updates in place (no duplicate)", r2.data.reviews === 1 && r2.data.rating === 5, r2.data);
 
-  // [4] player profile now exposes reviews
-  console.log("\n[4] Player profile shows reviews");
+  // [3] player profile now exposes reviews
+  console.log("\n[3] Player profile shows reviews");
   const view = await req("GET", "/api/players/" + player.slug, null, playerToken);
   ok("GET player returns reviews + myReview", Array.isArray(view.data.reviews) && view.data.reviews.length === 1, view.data);
   const clubView = await req("GET", "/api/players/" + player.slug, null, clubToken);
   ok("club sees own myReview", clubView.data.myReview && clubView.data.myReview.stars === 5, clubView.data.myReview);
 
-  // [5] in-app notification on payment approval (admin approve path)
-  console.log("\n[5] In-app notifications (payment result)");
+  // [4] in-app notification on payment approval (admin approve path)
+  console.log("\n[4] In-app notifications (payment result)");
   const st0 = await req("GET", "/api/subscription/status", null, playerToken);
   const baseStatus = st0.data.status; // trialing
   const pay = await req("POST", "/api/subscription/submit-payment", {
@@ -117,8 +111,8 @@ async function run() {
   const st2 = await req("GET", "/api/subscription/status", null, playerToken);
   ok("notifications drained once (empty next call)", !st2.data.notifications.length, st2.data.notifications);
 
-  // [6] cleanup test records
-  console.log("\n[6] Cleanup");
+  // [5] cleanup test records
+  console.log("\n[5] Cleanup");
   const store = db();
   const ids = [];
   const uClub = store.users.find((u) => u.email === CLUB_EMAIL);
