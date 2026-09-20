@@ -15,7 +15,9 @@
 <meta property="og:title" content="أنشئ حسابك في Manara — رياضي أو نادي | منارة">
 <meta property="og:description" content="سجّل حسابك في منارة — لاعب أو نادي. ابدأ الآن واستفد من التجربة المجانية.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://manara.app/">
+<meta property="og:url" content="https://manarasport.com/Sign/Sign_Up.html">
+<meta property="og:image" content="https://manarasport.com/img/logo.png">
+<link rel="canonical" href="https://manarasport.com/Sign/Sign_Up.html">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/tokens.css">
 <link rel="stylesheet" href="../css/vendor/Style_Sig.css">
@@ -32,19 +34,7 @@
   .ev-status.ok { color: #16a34a; }
   .ev-status.err { color: #dc2626; }
 
-  .contract-dl-wrap { display: flex; justify-content: flex-end; margin-bottom: 6px; }
-  .contract-dl {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--primary); color: #fff;
-    border: none; border-radius: 12px;
-    padding: 11px 18px; font-weight: 700; font-size: 14px;
-    text-decoration: none; cursor: pointer;
-    box-shadow: 0 6px 16px rgba(0,0,0,.12);
-    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
-  }
-  .contract-dl:hover { background: var(--primary-2); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,.18); }
-  .contract-dl:active { transform: translateY(0); }
-</style>
+  </style>
 </head>
 <body>
 
@@ -62,9 +52,6 @@
 </nav>
 
 <div class="container">
-  <div class="contract-dl-wrap">
-    <a class="contract-dl" href="../files/Manara-Safe-Contract-Agreement.pdf" download="Manara-Safe-Contract-Agreement.pdf" title="تحميل إقرار التعاقد الآمن">📄 تحميل إقرار التعاقد الآمن</a>
-  </div>
   <div class="head">
     <span class="badge" data-i18n="signup.badge">CREATE YOUR ACCOUNT</span>
     <h1 data-i18n="signup.title">Create your <span class="accent">Account</span></h1>
@@ -278,13 +265,15 @@
             </div>
           </div>
 
-          <div class="field">
+          <!-- صورة الإقرار — مخفية من الواجهة ولا تُطلب لإنشاء الحساب.
+               الكود محفوظ كما هو (disabled + hidden) لسهولة إعادة تفعيله لاحقاً. -->
+          <div class="field" style="display:none;">
             <label>صورة الإقرار</label>
             <div class="file-zone" data-text="ارفع صورة الإقرار">
-              <input type="file" name="declaration" accept="image/*,.pdf">
+              <input type="file" name="declaration" accept="image/*,.pdf" disabled>
               <div class="ico">📜</div>
               <div class="txt">ارفع صورة الإقرار</div>
-              <div class="hint">الإقرار الموقّع، PDF أو صورة</div>
+              <div class="hint">معطلة حالياً — لا تُطلب لإنشاء الحساب</div>
             </div>
           </div>
 
@@ -861,8 +850,12 @@ const MAX_SIZE   = 100 * 1024 * 1024; // 100MB — same cap as the server/Cloudi
     return (res && res.file) || null;
   }
 
+  // declaration (صورة الإقرار) is intentionally left out of the required
+  // list below — its upload field is disabled for new sign-ups, so a missing
+  // declaration must NOT block account creation. It still uploads when an
+  // (already-existing) value is provided.
   const DOC_KEYS = {
-    player: ['birth_cert', 'medical', 'declaration'],
+    player: ['birth_cert', 'medical'],
     club: ['official_letter', 'license']
   };
   const DOC_NAMES = {

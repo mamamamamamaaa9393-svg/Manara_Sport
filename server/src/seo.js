@@ -7,8 +7,20 @@
    approved profile is individually indexable. */
 
 const db = require("./db");
+const fs = require("fs");
+const path = require("path");
 
-const SITE_URL = (process.env.SITE_URL || "https://manara.app").replace(/\/$/, "");
+const SITE_URL = (process.env.SITE_URL || "https://manarasport.com").replace(/\/$/, "");
+
+// Real last-modified for a static page: the mtime of its HTML file on disk.
+function pageLastmod(htmlFile) {
+  try {
+    const st = fs.statSync(path.join(__dirname, "..", "..", "roster", htmlFile));
+    return new Date(st.mtimeMs).toISOString();
+  } catch (e) {
+    return new Date().toISOString();
+  }
+}
 
 function esc(v) {
   if (v === null || v === undefined) return "";
@@ -102,6 +114,7 @@ function playerProfileHtml(p) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
 <title>${esc(title)}</title>
 <meta name="description" content="${attr(desc)}">
 <link rel="canonical" href="${attr(canonical)}">
@@ -190,6 +203,7 @@ function clubProfileHtml(c) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
 <title>${esc(title)}</title>
 <meta name="description" content="${attr(desc)}">
 <link rel="canonical" href="${attr(canonical)}">
@@ -253,27 +267,30 @@ function buildSitemap() {
   const store = db.get();
   const urls = [];
 
-  const add = (loc, changefreq, priority) =>
-    urls.push("  <url><loc>" + esc(loc) + "</loc><changefreq>" + changefreq + "</changefreq><priority>" + priority + "</priority></url>");
+  const add = (loc, lastmod, changefreq, priority) =>
+    urls.push("  <url><loc>" + esc(loc) + "</loc>" +
+      (lastmod ? "<lastmod>" + esc(lastmod) + "</lastmod>" : "") +
+      "<changefreq>" + changefreq + "</changefreq><priority>" + priority + "</priority></url>");
 
   // Static public pages
-  add(SITE_URL + "/", "weekly", "1.0");
-  add(SITE_URL + "/jobs.html", "daily", "0.9");
-  add(SITE_URL + "/clubs.html", "daily", "0.8");
-  add(SITE_URL + "/about.html", "monthly", "0.6");
-  add(SITE_URL + "/contact.html", "monthly", "0.5");
-  add(SITE_URL + "/plans.html", "monthly", "0.6");
-  add(SITE_URL + "/subscribe.html", "monthly", "0.6");
-  add(SITE_URL + "/privacy.html", "yearly", "0.3");
-  add(SITE_URL + "/terms.html", "yearly", "0.3");
-  add(SITE_URL + "/ai-assistant.html", "monthly", "0.5");
+  add(SITE_URL + "/", pageLastmod("index.html"), "weekly", "1.0");
+  add(SITE_URL + "/jobs.html", pageLastmod("jobs.html"), "daily", "0.9");
+  add(SITE_URL + "/clubs.html", pageLastmod("clubs.html"), "daily", "0.8");
+  add(SITE_URL + "/about.html", pageLastmod("about.html"), "monthly", "0.6");
+  add(SITE_URL + "/contact.html", pageLastmod("contact.html"), "monthly", "0.5");
+  add(SITE_URL + "/plans.html", pageLastmod("plans.html"), "monthly", "0.6");
+  add(SITE_URL + "/subscribe.html", pageLastmod("subscribe.html"), "monthly", "0.6");
+  add(SITE_URL + "/privacy.html", pageLastmod("privacy.html"), "yearly", "0.3");
+  add(SITE_URL + "/terms.html", pageLastmod("terms.html"), "yearly", "0.3");
+  add(SITE_URL + "/ai-assistant.html", pageLastmod("ai-assistant.html"), "monthly", "0.5");
 
   // Dynamic, approved player profiles
   (store.players || [])
     .filter((p) => db.profileApproved(p))
     .forEach((p) => {
       const slug = p.slug || p.id;
-      add(SITE_URL + "/player/" + encodeURIComponent(slug), "weekly", "0.8");
+      const lm = p.createdAt || p.updatedAt || null;
+      add(SITE_URL + "/player/" + encodeURIComponent(slug), lm, "weekly", "0.8");
     });
 
   // Dynamic, approved club profiles
@@ -281,7 +298,8 @@ function buildSitemap() {
     .filter((c) => db.profileApproved(c))
     .forEach((c) => {
       const slug = c.slug || c.id;
-      add(SITE_URL + "/club/" + encodeURIComponent(slug), "weekly", "0.7");
+      const lm = c.createdAt || c.updatedAt || null;
+      add(SITE_URL + "/club/" + encodeURIComponent(slug), lm, "weekly", "0.7");
     });
 
   return '<?xml version="1.0" encoding="UTF-8"?>\n' +

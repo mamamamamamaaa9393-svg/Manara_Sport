@@ -15,7 +15,9 @@
 <meta property="og:title" content="تسجيل الدخول — Manara | منارة">
 <meta property="og:description" content="تسجيل الدخول إلى منارة — منصة اكتشاف المواهب الرياضية.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://manara.app/">
+<meta property="og:url" content="https://manarasport.com/Sign/Sign_In.html">
+<meta property="og:image" content="https://manarasport.com/img/logo.png">
+<link rel="canonical" href="https://manarasport.com/Sign/Sign_In.html">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/tokens.css">
 <link rel="stylesheet" href="../css/vendor/Style_Sig.css">
@@ -184,28 +186,6 @@
   }
 
   // Check connection on load so the user sees the reason before submitting
-  (function checkConnection() {
-    const box = document.createElement('div');
-    box.style.cssText = 'text-align:center;font-size:12.5px;font-weight:700;margin-top:14px;padding:10px 14px;border-radius:10px;';
-    if (window.location.protocol === 'file:') {
-      box.textContent = '⚠️ الموقع مفتوح من الملف مباشرة. شغّل السيرفر ثم افتح http://localhost:5000/Sign/Sign_In.html';
-      box.style.background = '#fef3c7'; box.style.color = '#b45309';
-      document.querySelector('.login-box').prepend(box);
-      return;
-    }
-    fetch((window.API ? window.API.base : '/api') + '/health')
-      .then(r => r.json())
-      .then(() => {
-        box.textContent = '✓ الخادم متصل — يمكنك تسجيل الدخول';
-        box.style.background = '#d1fae5'; box.style.color = '#047857';
-      })
-      .catch(() => {
-        box.textContent = '✗ الخادم غير متصل — شغّل `npm start` داخل مجلد server';
-        box.style.background = '#fee2e2'; box.style.color = '#b91c1c';
-      })
-      .finally(() => document.querySelector('.login-box').prepend(box));
-  })();
-
   const form = document.getElementById('loginForm');
   const notice = document.getElementById('statusNotice');
   const noticeIco = document.getElementById('noticeIco');
