@@ -35,14 +35,14 @@ async function start() {
   setInterval(() => { sub.sendExpiryReminders().catch(() => {}); }, 15 * 60 * 1000);
 
   // Node 18+ defaults requestTimeout to 5 min / headersTimeout to 1 min, which
-  // would silently kill a large video upload long before the client's 20-min
+  // would silently kill a large video upload long before the client's 40-min
   // xhr timeout. Raise the server-side frame so a single video (up to 230MB,
   // 1-10 min of footage over a slow connection) can finish in one request.
   // headersTimeout stays comfortably above keepAliveTimeout (5s) — it only
   // bounds the time to receive the request HEADERS, not the body.
   const http = require("http");
   const rawServer = http.createServer(app);
-  rawServer.requestTimeout = 20 * 60 * 1000; // 20 min per request (large uploads)
+  rawServer.requestTimeout = 40 * 60 * 1000; // 40 min per request (large uploads)
   rawServer.headersTimeout = 65 * 1000;
   rawServer.keepAliveTimeout = 5000;
   rawServer.listen(PORT, () => {

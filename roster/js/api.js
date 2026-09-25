@@ -106,7 +106,7 @@
       xhr.withCredentials = true; // session rides in the httpOnly cookie
       var csrfT = csrfToken();
       if (csrfT) xhr.setRequestHeader("X-CSRF-Token", csrfT);
-      xhr.timeout = opts.timeoutMs || 1200000;
+      xhr.timeout = opts.timeoutMs || 2400000;
       if (typeof opts.onProgress === "function") {
         xhr.upload.addEventListener("progress", function (e) {
           if (e.lengthComputable) opts.onProgress(Math.round((e.loaded / e.total) * 100));
@@ -140,7 +140,7 @@
     return new Promise(function (resolve, reject) {
       var xhr = new XMLHttpRequest();
       xhr.open("POST", endpoint);
-      xhr.timeout = 20 * 60 * 1000;
+      xhr.timeout = 40 * 60 * 1000;
       if (typeof onProgress === "function") {
         xhr.upload.addEventListener("progress", function (e) {
           if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
@@ -199,7 +199,7 @@
       // takes a while to transfer + validate. onProgress(0..100) is real
       // network progress reported by xhr.upload.onprogress.
       if (purpose) formData.append("purpose", purpose);
-      return xhrUpload("/upload/register-upload", formData, { onProgress: onProgress, timeoutMs: 20 * 60 * 1000 });
+      return xhrUpload("/upload/register-upload", formData, { onProgress: onProgress, timeoutMs: 40 * 60 * 1000 });
     },
     // Direct-to-Cloudinary path (no double hop): /sign returns signed params
     // for uploading the video straight to Cloudinary, /confirm tells the
@@ -209,7 +209,7 @@
       return request("POST", "/upload/direct/sign", { purpose: purpose });
     },
     directUploadConfirm: function (payload) {
-      return request("POST", "/upload/direct/confirm", payload, null, 20 * 60 * 1000);
+      return request("POST", "/upload/direct/confirm", payload, null, 40 * 60 * 1000);
     },
     directUploadToCloud: function (endpoint, formData, onProgress) {
       return xhrToCloud(endpoint, formData, onProgress);
@@ -305,7 +305,7 @@
     getApplications: function () { return request("GET", "/applications", null, true); },
     upload: function (formData, purpose, onProgress) {
       if (purpose) formData.append("purpose", purpose);
-      return xhrUpload("/upload", formData, { auth: true, onProgress: onProgress, timeoutMs: 20 * 60 * 1000 });
+      return xhrUpload("/upload", formData, { auth: true, onProgress: onProgress, timeoutMs: 40 * 60 * 1000 });
     },
     adminRegistrations: function (status) {
       var qs = status && status !== "all" ? "?status=" + encodeURIComponent(status) : "";
