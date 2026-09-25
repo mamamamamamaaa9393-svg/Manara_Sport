@@ -108,7 +108,11 @@ function sweepOrphanPendingUploads() {
       const oldPending = u.uploadedBy === "pending" &&
         u.createdAt && new Date(u.createdAt).getTime() < cutoff;
       if (oldPending && !referenced.has(u.url)) {
-        try { fs.unlinkSync(path.join(UPLOAD_DIR, path.basename(u.url))); } catch (e) {}
+        const full = path.join(UPLOAD_DIR, path.basename(u.url));
+        try { fs.unlinkSync(full); } catch (e) {}
+        // Remove the companion auto-generated poster (<video>.jpg) too, or an
+        // orphaned thumbnail is left behind whenever an old video is swept.
+        try { fs.unlinkSync(full.replace(/\.[^/.]+$/, "") + ".jpg"); } catch (e) {}
         removed++;
       } else {
         keep.push(u);

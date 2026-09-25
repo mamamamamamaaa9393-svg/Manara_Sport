@@ -37,7 +37,7 @@ async function getTransporter() {
 }
 
 function fromAddress() {
-  return process.env.SMTP_FROM || "Manara <no-reply@manara.app>";
+  return process.env.SMTP_FROM || "Manara <no-reply@manarasport.com>";
 }
 
 async function sendMail({ to, subject, html, text }) {

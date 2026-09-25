@@ -28,6 +28,26 @@
     return s && s.id ? String(s.id) : "";
   }
 
+  // CSRF double-submit: the server stores a readable token in the manara_csrf
+  // cookie and requires it echoed back on every cookie-authenticated
+  // state-changing call — browsers refuse to attach our SameSite=Lax cookies
+  // to cross-site requests anyway, but this blocks the unlikely corner cases.
+  function getCookie(name) {
+    var m = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
+    return m ? decodeURIComponent(m[1]) : "";
+  }
+
+  function csrfToken() {
+    return getCookie("manara_csrf");
+  }
+
+  function attachCsrf(opts) {
+    var method = opts.method || "GET";
+    if (method === "GET" || method === "HEAD" || method === "OPTIONS") return;
+    var t = csrfToken();
+    if (t) opts.headers["X-CSRF-Token"] = t;
+  }
+
   function request(method, path, body, auth, timeoutMs) {
     // Opening the page from the file system: /api resolves to file:///api which always fails.
     if (window.location.protocol === "file:") {
@@ -42,6 +62,7 @@
       opts.body = body;
     }
     // No manual Authorization header: the server reads the httpOnly cookie.
+    attachCsrf(opts);
 
     var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
     if (ctrl) { opts.signal = ctrl.signal; }
@@ -83,7 +104,9 @@
       var xhr = new XMLHttpRequest();
       xhr.open("POST", BASE + path);
       xhr.withCredentials = true; // session rides in the httpOnly cookie
-      xhr.timeout = opts.timeoutMs || 600000;
+      var csrfT = csrfToken();
+      if (csrfT) xhr.setRequestHeader("X-CSRF-Token", csrfT);
+      xhr.timeout = opts.timeoutMs || 1200000;
       if (typeof opts.onProgress === "function") {
         xhr.upload.addEventListener("progress", function (e) {
           if (e.lengthComputable) opts.onProgress(Math.round((e.loaded / e.total) * 100));
@@ -103,6 +126,47 @@
       };
       xhr.ontimeout = function () {
         reject(new Error("الخادم لا يستجيب — تأكد أن السيرفر شغال ثم أعد المحاولة"));
+      };
+      xhr.send(formData);
+    });
+  }
+
+  // Multipart POST to an EXTERNAL host (Cloudinary direct upload). Unlike
+  // xhrUpload this must NOT carry our session cookie or CSRF header — the
+  // request goes straight to the CDN with the signed params in the body.
+  // extraHeaders (object) is appended verbatim — used by the chunked uploader
+  // for the X-Unique-Upload-Id / Content-Range resume headers.
+  function xhrToCloud(endpoint, formData, onProgress, extraHeaders) {
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", endpoint);
+      xhr.timeout = 20 * 60 * 1000;
+      if (typeof onProgress === "function") {
+        xhr.upload.addEventListener("progress", function (e) {
+          if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
+        });
+      }
+      if (extraHeaders) {
+        Object.keys(extraHeaders).forEach(function (k) {
+          xhr.setRequestHeader(k, extraHeaders[k]);
+        });
+      }
+      xhr.onload = function () {
+        var data = {};
+        try { data = JSON.parse(xhr.responseText || "{}"); } catch (e) { /* non-JSON body */ }
+        if (xhr.status >= 200 && xhr.status < 300) return resolve(data);
+        var message = (data.error && (data.error.message || data.error)) || data.message ||
+          ("Upload failed (" + xhr.status + ")");
+        var err = new Error(message);
+        err.status = xhr.status;
+        err.data = data;
+        reject(err);
+      };
+      xhr.onerror = function () {
+        reject(new Error("تعذر الرفع إلى خادم التخزين — تحقق من اتصالك بالإنترنت وأعد المحاولة"));
+      };
+      xhr.ontimeout = function () {
+        reject(new Error("مُهلة الرفع انتهت — أعد المحاولة"));
       };
       xhr.send(formData);
     });
@@ -135,7 +199,65 @@
       // takes a while to transfer + validate. onProgress(0..100) is real
       // network progress reported by xhr.upload.onprogress.
       if (purpose) formData.append("purpose", purpose);
-      return xhrUpload("/upload/register-upload", formData, { onProgress: onProgress, timeoutMs: 10 * 60 * 1000 });
+      return xhrUpload("/upload/register-upload", formData, { onProgress: onProgress, timeoutMs: 20 * 60 * 1000 });
+    },
+    // Direct-to-Cloudinary path (no double hop): /sign returns signed params
+    // for uploading the video straight to Cloudinary, /confirm tells the
+    // server the CDN copy is ready (it validates + records it). Fallback to
+    // the legacy register-upload lives in the sign-up page, not here.
+    directUploadSign: function (purpose) {
+      return request("POST", "/upload/direct/sign", { purpose: purpose });
+    },
+    directUploadConfirm: function (payload) {
+      return request("POST", "/upload/direct/confirm", payload, null, 20 * 60 * 1000);
+    },
+    directUploadToCloud: function (endpoint, formData, onProgress) {
+      return xhrToCloud(endpoint, formData, onProgress);
+    },
+    // Chunked direct-to-Cloudinary upload: Cloudinary manual chunked upload
+    // (REST) splits the file across several POSTs to the SAME signed endpoint,
+    // tagged with X-Unique-Upload-Id (one id for all chunks) and a byte-range
+    // Content-Range header. The signature/public_id/timestamp are identical for
+    // every chunk, so the single /sign permit is reused. Each chunk uses the
+    // same signed params but only that chunk's bytes go over the wire, so a
+    // dropped connection retries just the missing slice instead of restarting
+    // the whole video. Chunks >5MB (Cloudinary requirement) except the last.
+    // Intermediate responses have done:false; only the final chunk carries the
+    // full asset payload (done:true). onProgress(0..100) reflects total bytes
+    // accepted (compressed per Cloudinary's spec) across all chunks.
+    directUploadChunked: function (endpoint, file, params, onProgress) {
+      var CHUNK_SIZE = 8 * 1024 * 1024; // 8MB (>5MB requirement, <115 chunks for 230MB)
+      var MAX_TRIES = 3; // per-chunk network retries before giving up
+      var uploadId = Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 9);
+      var accepted = 0; // contiguous bytes Cloudinary has acknowledged
+      function sendChunk(start, tries) {
+        var end = Math.min(start + CHUNK_SIZE, file.size);
+        var fd = new FormData();
+        fd.append("file", file.slice(start, end));
+        fd.append("api_key", params.api_key);
+        fd.append("timestamp", params.timestamp);
+        fd.append("public_id", params.public_id);
+        fd.append("signature", params.signature);
+        var headers = {
+          "X-Unique-Upload-Id": uploadId,
+          "Content-Range": "bytes " + start + "-" + (end - 1) + "/" + file.size
+        };
+        return xhrToCloud(endpoint, fd, null, headers).catch(function (err) {
+          if (tries < MAX_TRIES) {
+            return new Promise(function (res) { setTimeout(res, 700 * (tries + 1)); })
+              .then(function () { return sendChunk(start, tries + 1); });
+          }
+          throw err;
+        }).then(function (data) {
+          if (onProgress) {
+            accepted = end;
+            onProgress(Math.round((accepted / file.size) * 100));
+          }
+          if (end >= file.size) return data; // final chunk -> full asset payload
+          return sendChunk(end, 0);
+        });
+      }
+      return sendChunk(0, 0);
     },
     getPlayers: function (params) {
       var qs = params ? "?" + params.toString() : "";
@@ -183,7 +305,7 @@
     getApplications: function () { return request("GET", "/applications", null, true); },
     upload: function (formData, purpose, onProgress) {
       if (purpose) formData.append("purpose", purpose);
-      return xhrUpload("/upload", formData, { auth: true, onProgress: onProgress, timeoutMs: 10 * 60 * 1000 });
+      return xhrUpload("/upload", formData, { auth: true, onProgress: onProgress, timeoutMs: 20 * 60 * 1000 });
     },
     adminRegistrations: function (status) {
       var qs = status && status !== "all" ? "?status=" + encodeURIComponent(status) : "";

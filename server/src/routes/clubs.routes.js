@@ -5,6 +5,22 @@ const su = require("../searchUtils");
 const { requireAuth } = require("../middleware/auth");
 const requireActiveSub = require("../middleware/requireSub");
 
+const mg = require("../mediaGuard");
+
+// Same media hole as players.routes: `logo` / `documents` were copied verbatim
+// from the request, so a club could point its proof documents at an arbitrary
+// external URL and pull them out of the owner/admin gate in app.js.
+// Returns { ok, value } or { ok:false, error }.
+function guardClubMedia(picked) {
+  const res = mg.checkProfileMedia(picked);
+  if (!res.ok) return res;
+  // drop the unsanitised copies so Object.assign cannot re-introduce them
+  const clean = Object.assign({}, picked);
+  ["documents", "logo"].forEach((k) => { delete clean[k]; });
+  return { ok: true, value: Object.assign(clean, res.value) };
+}
+
+
 // Whitelist of fields a club may set (anti mass-assignment: verified,
 // userId, id, createdAt are never client-writable)
 const CLUB_FIELDS = [
@@ -82,7 +98,9 @@ router.post("/", requireAuth, requireActiveSub, (req, res) => {
   if (store.clubs.some((c) => c.userId === req.user.id)) {
     return res.status(409).json({ error: "You already have a club profile" });
   }
-  const c = Object.assign({ id: "c_" + db.nextId("club"), slug: helpers.randomSlug(12), userId: req.user.id, createdAt: new Date().toISOString() }, pickClub(req.body));
+  const guard = guardClubMedia(pickClub(req.body));
+  if (!guard.ok) return res.status(400).json({ error: guard.error });
+  const c = Object.assign({ id: "c_" + db.nextId("club"), slug: helpers.randomSlug(12), userId: req.user.id, createdAt: new Date().toISOString() }, guard.value);
   store.clubs.push(c);
   db.save();
   return res.status(201).json({ club: c });
@@ -94,7 +112,9 @@ router.put("/:id", requireAuth, requireActiveSub, (req, res) => {
   const c = store.clubs.find((x) => x.id === req.params.id);
   if (!c) return res.status(404).json({ error: "Club not found" });
   if (c.userId !== req.user.id) return res.status(403).json({ error: "Not your club" });
-  Object.assign(c, pickClub(req.body), { id: c.id, userId: c.userId });
+  const guard = guardClubMedia(pickClub(req.body));
+  if (!guard.ok) return res.status(400).json({ error: guard.error });
+  Object.assign(c, guard.value, { id: c.id, userId: c.userId });
   db.save();
   return res.json({ club: c });
 });

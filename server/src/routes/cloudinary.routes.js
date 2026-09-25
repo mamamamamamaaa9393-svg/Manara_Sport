@@ -85,8 +85,7 @@ router.post(
         return res.status(400).json({ error: "الملف أكبر من 10MB — غير مسموح" });
       }
 
-      // FIX #5 (duration validation): preserve Manara's existing restriction
-      // for player highlight videos — 5-15 minutes + no sign of editing —
+      // Player highlight videos: 1-10 min, 360p minimum, no sign of editing —
       // validated locally BEFORE anything reaches Cloudinary.
       if (isVideo(req.file) && purpose === "player_video") {
         const vr = await new Promise((resolve) =>
@@ -94,7 +93,11 @@ router.post(
         );
         if (!vr.ok) {
           safeUnlink(tmpPath);
-          return res.status(400).json({ error: vr.message });
+          // A saturated ffmpeg pool is a server problem -> 503, not "bad video".
+          if (vr.code === "busy") {
+            return res.status(503).json({ error: vr.message, code: vr.code });
+          }
+          return res.status(400).json({ error: vr.message, code: vr.code });
         }
       }
 

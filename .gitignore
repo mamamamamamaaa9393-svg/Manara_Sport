@@ -49,3 +49,17 @@ test-*.js
 lifecycle-*.json
 testsprite_tests/tmp/
 testsprite_tests/tmp/config.json
+
+# Local deploy/compare scripts and reports (contain server credentials / IP —
+# never pushed to a public repository)
+_deploy*.ps1
+_compare_remote.ps1
+_manara*.ps1
+_remote_restart.sh
+_cmpdir/
+TASK-REPORT.md
+
+# Local server runtime logs
+server.err
+server/_server.stderr.log
+server/_server.stdout.log

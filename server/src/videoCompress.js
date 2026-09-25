@@ -6,6 +6,11 @@
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
+const pool = require("./ffmpegPool");
+
+// Releases the ffmpeg-pool slot held by the running job, if any. Module-level
+// because this module is strictly single-flight: at most one job holds a slot.
+let releaseSlot = null;
 
 function findFfmpeg() {
   const gyan = path.join(
@@ -38,10 +43,26 @@ const MAX_DURATION_S = 3600;
 let queue = [];
 let busy = false;
 
+const PROBE_TIMEOUT_MS = 30000; // a healthy ffprobe on a 230MB clip finishes in seconds
+const FFMPEG_TIMEOUT_MS = 1200000; // 20 min for a large compress job; prevents a hung process
+
 function log(msg) {
   try {
     console.log("[video-compress] " + msg);
   } catch (e) {}
+}
+
+// Hard timeout guard: if the child hasn't exited within ms, kill it and report
+// failure. Without this a stuck ffmpeg/ffprobe would hold the busy flag forever
+// and starve the whole background queue.
+function killAfter(p, ms, onTimeout) {
+  const t = setTimeout(() => {
+    try { p.kill("SIGKILL"); } catch (e) {}
+    onTimeout();
+  }, ms);
+  p.on("close", () => clearTimeout(t));
+  p.on("error", () => clearTimeout(t));
+  return t;
 }
 
 function probeVideo(filePath, cb) {
@@ -56,22 +77,28 @@ function probeVideo(filePath, cb) {
     filePath
   ];
   let out = "";
+  let done = false;
+  const finish = (r) => { if (done) return; done = true; clearTimeout(timer); cb(r); };
   const p = spawn(ffprobe, args, { windowsHide: true });
-  p.stdout.on("data", (d) => (out += d));
-  p.on("error", () => cb(null));
+  p.stdout.on("data", (d) => { if (out.length < 8192) out += d; });
+  p.on("error", () => finish(null));
   p.on("close", (code) => {
-    if (code !== 0) return cb(null);
+    if (code !== 0) return finish(null);
     try {
       const j = JSON.parse(out);
       const s = j.streams && j.streams[0];
-      cb({
+      finish({
         width: +(s && s.width) || 0,
         height: +(s && s.height) || 0,
         duration: +(j.format && j.format.duration) || 0
       });
     } catch (e) {
-      cb(null);
+      finish(null);
     }
+  });
+  const timer = killAfter(p, PROBE_TIMEOUT_MS, () => {
+    log("ffprobe timed out — killed: " + filePath);
+    finish(null);
   });
 }
 
@@ -89,6 +116,8 @@ function runFfmpeg(filePath, tmpOut, cb) {
     "-threads", "2",
     tmpOut
   ];
+  let done = false;
+  const finish = (ok, note) => { if (done) return; done = true; clearTimeout(timer); cb(ok, note); };
   const p = spawn(FFMPEG, args, { windowsHide: true });
   let errLog = "";
   p.stderr.on("data", (d) => {
@@ -96,15 +125,19 @@ function runFfmpeg(filePath, tmpOut, cb) {
   });
   p.on("error", (e) => {
     log("ffmpeg spawn error: " + e.message);
-    cb(false);
+    finish(false, null);
   });
   p.on("close", (code) => {
     if (code !== 0) {
       log("ffmpeg failed (" + code + "): " + errLog.slice(-400).replace(/\s+/g, " ").trim());
-      cb(false);
+      finish(false, null);
     } else {
-      cb(true);
+      finish(true, null);
     }
+  });
+  const timer = killAfter(p, FFMPEG_TIMEOUT_MS, () => {
+    log("ffmpeg timed out — killed: " + filePath);
+    finish(false, null);
   });
 }
 
@@ -150,12 +183,31 @@ function processFile(filePath) {
 }
 
 function done() {
+  const r = releaseSlot;
+  releaseSlot = null;
+  if (r) { try { r(null); } catch (e) {} }
   busy = false;
   if (queue.length) {
     const next = queue.shift();
     busy = true;
-    setImmediate(() => processFile(next));
+    setImmediate(() => startJob(next));
   }
+}
+
+// Compression holds a global ffmpeg-pool slot for the whole re-encode (a 230MB
+// clip can take minutes). A saturated pool skips the job — the original file
+// simply stays as uploaded, which is exactly the documented fallback.
+function startJob(filePath) {
+  releaseSlot = null;
+  pool
+    .run((release) => {
+      releaseSlot = release;
+      processFile(filePath);
+    })
+    .catch(() => {
+      log("skipped (ffmpeg pool saturated)");
+      done();
+    });
 }
 
 function enqueueCompress(filePath) {
@@ -165,7 +217,7 @@ function enqueueCompress(filePath) {
     return;
   }
   busy = true;
-  setImmediate(() => processFile(filePath));
+  setImmediate(() => startJob(filePath));
 }
 
 module.exports = { enqueueCompress, FFMPEG, FFPROBE };

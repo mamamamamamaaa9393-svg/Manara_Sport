@@ -16,8 +16,22 @@ const JPEG_Q = "3"; // ffmpeg -q:v scale (lower = better, 2-5 is a good range)
 let queue = [];
 let busy = false;
 
+const PROBE_TIMEOUT_MS = 30000;
+const IMG_TIMEOUT_MS = 180000; // 3 min for an image compress job
+
 function log(msg) {
   try { console.log("[img-compress] " + msg); } catch (e) {}
+}
+
+// Hard timeout guard: kill a stuck child so the single-flight queue never dies.
+function killAfter(p, ms, onTimeout) {
+  const t = setTimeout(() => {
+    try { p.kill("SIGKILL"); } catch (e) {}
+    onTimeout();
+  }, ms);
+  p.on("close", () => clearTimeout(t));
+  p.on("error", () => clearTimeout(t));
+  return t;
 }
 
 function probeImage(filePath, cb) {
@@ -32,22 +46,28 @@ function probeImage(filePath, cb) {
     filePath
   ];
   let out = "";
+  let done = false;
+  const finish = (r) => { if (done) return; done = true; clearTimeout(timer); cb(r); };
   const p = require("child_process").spawn(ffprobe, args, { windowsHide: true });
-  p.stdout.on("data", (d) => (out += d));
-  p.on("error", () => cb(null));
+  p.stdout.on("data", (d) => { if (out.length < 4096) out += d; });
+  p.on("error", () => finish(null));
   p.on("close", (code) => {
-    if (code !== 0) return cb(null);
+    if (code !== 0) return finish(null);
     try {
       const j = JSON.parse(out);
       const s = j.streams && j.streams[0];
-      cb({
+      finish({
         width: +(s && s.width) || 0,
         height: +(s && s.height) || 0,
         size: +(j.format && j.format.size) || 0
       });
     } catch (e) {
-      cb(null);
+      finish(null);
     }
+  });
+  const timer = killAfter(p, PROBE_TIMEOUT_MS, () => {
+    log("ffprobe timed out — killed: " + filePath);
+    finish(null);
   });
 }
 
@@ -60,17 +80,24 @@ function compressImage(filePath, tmpOut, mime, cb) {
   else return cb(false); // gif / unknown: leave untouched
   args.push(tmpOut);
 
+  let done = false;
+  const finish = (ok) => { if (done) return; done = true; clearTimeout(timer); cb(ok); };
   const p = require("child_process").spawn(FFMPEG, args, { windowsHide: true });
   let errLog = "";
   p.stderr.on("data", (d) => { if (errLog.length < 2000) errLog += d; });
-  p.on("error", (e) => { log("ffmpeg spawn error: " + e.message); cb(false); });
+  p.on("error", (e) => { log("ffmpeg spawn error: " + e.message); finish(false); });
   p.on("close", (code) => {
     if (code !== 0) {
       log("ffmpeg failed (" + code + "): " + errLog.slice(-300).replace(/\s+/g, " ").trim());
-      cb(false);
+      finish(false);
     } else {
-      cb(true);
+      finish(true);
     }
+  });
+  const timer = killAfter(p, IMG_TIMEOUT_MS, () => {
+    log("image ffmpeg timed out — killed: " + filePath);
+    try { fs.unlinkSync(tmpOut); } catch (e) {}
+    finish(false);
   });
 }
 

@@ -54,7 +54,7 @@
 <div class="container">
   <div class="head">
     <span class="badge" data-i18n="signup.badge">CREATE YOUR ACCOUNT</span>
-    <h1 data-i18n="signup.title">Create your <span class="accent">Account</span></h1>
+    <h1 data-i18n="signup.title">Account <span class="accent">Create your</span></h1>
     <p data-i18n="signup.choose_role">هل أنت رياضي أم نادي؟ اختر نوع الحساب ✨</p>
     <p style="margin-top:10px;font-size:13.5px;"><span data-i18n="signup.have_account">لديك حساب بالفعل؟</span> <a href="Sign_In.html" style="color:var(--primary);font-weight:800;text-decoration:none;" data-i18n="signup.login_link">سجّل الدخول ←</a></p>
   </div>
@@ -135,6 +135,7 @@
             <select name="sport" id="pSport" required>
               <option value="">اختار الرياضة</option>
               <option>⚽ كرة القدم</option>
+              <option>🏀 كرة السلة</option>
             </select>
           </div>
           <div class="field">
@@ -153,9 +154,10 @@
               <option value="جناح أيسر (LW)"></option>
               <option value="مهاجم صريح (CF)"></option>
               <option value="مهاجم (ST)"></option>
-              <option value="حارس مرمى - كرة سلة"></option>
-              <option value="ظهير (PG/SG)"></option>
-              <option value="جناح (SF/PF)"></option>
+              <option value="صانع لعب (PG)"></option>
+              <option value="ظهير (SG)"></option>
+              <option value="جناح صغير (SF)"></option>
+              <option value="جناح قوي (PF)"></option>
               <option value="لاعب وسط (C)"></option>
               <option value="مضرب فردي - تنس"></option>
               <option value="مضرب زوجي - تنس"></option>
@@ -173,13 +175,22 @@
         </div>
 
         <div class="row">
-          <div class="field">
+          <div class="field" id="footField">
             <label>القدم المفضلة <span class="req">*</span></label>
             <select name="foot" required>
               <option value="">اختار</option>
               <option>🦶 يمين</option>
               <option>🦶 يسرى</option>
               <option>🦶 كلتاهما</option>
+            </select>
+          </div>
+          <div class="field" id="handField">
+            <label>اليد المفضلة <span class="req">*</span></label>
+            <select name="hand" required>
+              <option value="">اختار</option>
+              <option>✋ يمين</option>
+              <option>✋ يسرى</option>
+              <option>✋ كلتاهما</option>
             </select>
           </div>
         </div>
@@ -226,7 +237,7 @@
                 <input type="file" id="videoInput" accept="video/*,.mkv" multiple>
                 <div class="ico">🎬</div>
                 <div class="txt">اسحب الفيديوهات هنا أو اضغط للاختيار</div>
-                <div class="hint">MP4, MOV, WEBM, MKV, 3GP — من دقيقة إلى 10 دقائق — حتى 100MB — بدون أي تعديل</div>
+                <div class="hint">MP4, MOV, WEBM, MKV, 3GP — من دقيقة إلى 10 دقائق — حتى 230MB — بدون أي تعديل كل فيديو منفصل عباره عن المهرات الأساسية مثل التمرير-الاستلام والسيطرة:-الجري بالكرة-المراوغة-التسديد</div>
                 <span class="counter" id="videoCounter">0 / 6</span>
               </div>
               <div class="video-warning" id="videoWarn"></div>
@@ -372,13 +383,14 @@
         </div>
 
         <div class="row">
-          <div class="field">
-            <label>الرياضة الأساسية <span class="req">*</span></label>
-            <select name="sport" required>
-              <option value="">اختار الرياضة</option>
-              <option>⚽ كرة القدم</option>
-            </select>
-          </div>
+<div class="field">
+              <label>الرياضة الأساسية <span class="req">*</span></label>
+              <select name="sport" required>
+                <option value="">اختار الرياضة</option>
+                <option>⚽ كرة القدم</option>
+                <option>🏀 كرة السلة</option>
+              </select>
+            </div>
           <div class="field">
             <label>المركز المطلوب</label>
             <input type="text" name="needed_position" list="positions" placeholder="المركز الذي تبحث عنه (اختياري)">
@@ -496,18 +508,55 @@
 
 <script src="../js/api.js"></script>
 <script>
-    // Only football positions for now — non-football options stay in the source
-    // HTML so future updates can re-enable them by removing this filter.
+    // Supported positions: football + basketball. Non-supported options stay
+    // in the source HTML so future updates can re-enable them here.
+    // The list adapts to the chosen sport: football shows football positions,
+    // basketball shows basketball positions, and no result shows all supported.
   (function () {
     var dl = document.getElementById('positions');
     if (!dl) return;
-    var foot = ['حارس مرمى (GK)', 'ظهير أيمن (RB)', 'ظهير أيسر (LB)', 'مدافع (CB)', 'ظهير خلفي (WB)', 'وسط دفاعي (CDM)', 'وسط محوري (CM)', 'صانع لعب (CAM)', 'جناح أيمن (RW)', 'جناح أيسر (LW)', 'مهاجم صريح (CF)', 'مهاجم (ST)'];
-    for (var i = dl.options.length - 1; i >= 0; i--) {
-      if (foot.indexOf(dl.options[i].value) === -1) dl.options[i].remove();
+    var FOOTBALL = ["حارس مرمى (GK)", "ظهير أيمن (RB)", "ظهير أيسر (LB)", "مدافع (CB)", "ظهير خلفي (WB)", "وسط دفاعي (CDM)", "وسط محوري (CM)", "صانع لعب (CAM)", "جناح أيمن (RW)", "جناح أيسر (LW)", "مهاجم صريح (CF)", "مهاجم (ST)"];
+    var BASKETBALL = ["صانع لعب (PG)", "ظهير (SG)", "جناح صغير (SF)", "جناح قوي (PF)", "لاعب وسط (C)"];
+    var ALL = FOOTBALL.concat(BASKETBALL);
+    function render(list) {
+      while (dl.options.length) dl.options[0].remove();
+      for (var i = 0; i < list.length; i++) dl.appendChild(new Option(list[i]));
     }
+    var pSport = document.getElementById('pSport');
+    if (pSport) {
+      pSport.addEventListener('change', function () {
+        var v = pSport.value;
+        if (v.indexOf('السلة') !== -1) return render(BASKETBALL);
+        if (v.indexOf('القدم') !== -1) return render(FOOTBALL);
+        return render(ALL);
+      });
+    }
+    render(ALL);
+
+    // Preferred hand/foot adapt to the chosen sport: football shows the foot
+    // field only, basketball shows the hand field only, nothing shown for all.
+    (function () {
+      var footField = document.getElementById('footField');
+      var handField = document.getElementById('handField');
+      if (!footField || !handField || !pSport) return;
+      function apply() {
+        var v = pSport.value;
+        var showFoot = v.indexOf('القدم') !== -1;
+        var showHand = v.indexOf('السلة') !== -1;
+        if (v === '') { showFoot = true; showHand = true; }
+        footField.style.display = showFoot ? '' : 'none';
+        handField.style.display = showHand ? '' : 'none';
+        var f = footField.querySelector('select');
+        var hnd = handField.querySelector('select');
+        f.required = showFoot;
+        hnd.required = showHand;
+      }
+      pSport.addEventListener('change', apply);
+      apply();
+    })();
   })();
 
-    // Populate day & year
+    // Populate day & yea
   const daySel = document.querySelector('#pForm select[name="day"]');
   for (let d = 1; d <= 31; d++) {
     const o = document.createElement('option');
@@ -522,7 +571,7 @@
     yearSel.appendChild(o);
   }
 
-  // Role selector
+  // Role selecto
   const cards = document.querySelectorAll('.role-card');
   const playerForm = document.getElementById('playerForm');
   const coachForm = document.getElementById('coachForm');
@@ -571,7 +620,7 @@
 
   // ===== Multi-video upload system =====
 const MAX_VIDEOS = 6;
-const MAX_SIZE   = 100 * 1024 * 1024; // 100MB — same cap as the server/Cloudinary
+const MAX_SIZE   = 230 * 1024 * 1024; // 230MB — same cap as the server/directUpload
   const ACCEPTED   = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/x-matroska', 'video/3gpp', 'video/3gpp2', 'video/x-m4v'];
   const videoStore = []; // {id, file, name, size, duration, thumb, status, progress}
 
@@ -637,7 +686,7 @@ const MAX_SIZE   = 100 * 1024 * 1024; // 100MB — same cap as the server/Cloudi
       }
       // limit size
       if (file.size > MAX_SIZE) {
-        showWarn(`❌ "${file.name}" أكبر من 100MB`);
+        showWarn(`❌ "${file.name}" أكبر من 230MB`);
         return;
       }
       // dedupe by name+size
@@ -667,7 +716,7 @@ const MAX_SIZE   = 100 * 1024 * 1024; // 100MB — same cap as the server/Cloudi
     v.src = url;
     v.addEventListener('loadedmetadata', () => {
       item.duration = v.duration;
-      // enforce 1-10 min right away so the server never has to reject it later
+      // enforce 1-10 min right away so the server never has to reject it late
       if (v.duration && (v.duration < 60 || v.duration > 600)) {
         URL.revokeObjectURL(url);
         const idx = videoStore.indexOf(item);
@@ -810,6 +859,117 @@ const MAX_SIZE   = 100 * 1024 * 1024; // 100MB — same cap as the server/Cloudi
   setupEmailVerify('player');
   setupEmailVerify('club');
 
+  // ===== Client-side video compression BEFORE upload (FFmpeg.wasm) =====
+  // A 3-min phone clip (~80-150MB) destroys the user's upload bandwidth and
+  // takes 5-10 min on a typical home connection. We re-encode it in the
+  // browser first with real FFmpeg compiled to WebAssembly: output ~720p
+  // H.264 @ ~1.3Mbps => ~30MB for 3 min, cutting upload time by 3-4x while
+  // keeping the resolution/duration checks satisfied. Works in ALL browsers
+  // (Chrome, Edge, Firefox, Safari incl. iPhone). The ~10MB wasm core is
+  // loaded lazily from OUR OWN server (no external CDN) only when the first
+  // big video is selected, then cached by the browser. SAFE: on any failure
+  // (old browser, load error, encode error) we upload the ORIGINAL untouched.
+  var ffmpegPromise = null;
+  var FFMPEG_BASE = '/libs/ffmpeg/';
+  function loadFfmpeg() {
+    if (!ffmpegPromise) {
+      ffmpegPromise = new Promise(function (resolve, reject) {
+        var script = document.createElement('script');
+        script.src = FFMPEG_BASE + 'ffmpeg.min.js';
+        script.onload = function () {
+          if (window.FFmpeg && window.FFmpeg.createFFmpeg) resolve(window.FFmpeg);
+          else reject(new Error('ffmpeg loader missing'));
+        };
+        script.onerror = function () { reject(new Error('ffmpeg loader failed')); };
+        document.head.appendChild(script);
+      });
+    }
+    return ffmpegPromise;
+  }
+
+  function downloadBinary(url) {
+    return fetch(url, { credentials: 'same-origin' }).then(function (r) {
+      if (!r.ok) throw new Error('core fetch ' + r.status);
+      return r.arrayBuffer().then(function (buf) { return new Uint8Array(buf); });
+    });
+  }
+
+  function compressVideoFile(file, onStatus) {
+    return new Promise(function (resolve) {
+      if (file.size < 15 * 1024 * 1024) return resolve(null); // small files: upload as-is (keeps quality)
+      if (!window.caches) return resolve(null); // need Cache API to stage wasm without external CDNs
+      if (onStatus) onStatus('جاري تجهيز ضغط الفيديو...');
+      var done = false;
+      var finish = function (blob) { if (!done) { done = true; resolve(blob); } };
+      var timer = setTimeout(function () { finish(null); }, 10 * 60 * 1000);
+
+      var coreFiles = {
+        'ffmpeg-core.js': FFMPEG_BASE + 'ffmpeg-core.js',
+        'ffmpeg-core.wasm': FFMPEG_BASE + 'ffmpeg-core.wasm',
+        'ffmpeg-core.worker.js': FFMPEG_BASE + 'ffmpeg-core.worker.js'
+      };
+
+      loadFfmpeg().then(function (FFmpegLib) {
+        var cache = null;
+        return caches.open('manara-ffmpeg-v1').then(function (c) { cache = c; return null; })
+          .then(function () {
+            var names = Object.keys(coreFiles);
+            var jobs = names.map(function (n) {
+              return cache.match(coreFiles[n]).then(function (hit) {
+                if (hit) return hit.arrayBuffer().then(function (ab) { return new Uint8Array(ab); });
+                return downloadBinary(coreFiles[n]).then(function (bytes) {
+                  cache.put(coreFiles[n], new Response(bytes, { headers: { 'Content-Type': 'application/octet-stream', 'Cache-Control': 'max-age=31536000' } }));
+                  return bytes;
+                });
+              });
+            });
+            return Promise.all(jobs).then(function (arrays) {
+              var obj = {}; names.forEach(function (n, i) { obj[n] = arrays[i]; });
+              var coreUrl = URL.createObjectURL(new Blob([obj['ffmpeg-core.js']], { type: 'text/javascript' }));
+              var wasmUrl = URL.createObjectURL(new Blob([obj['ffmpeg-core.wasm']], { type: 'application/wasm' }));
+              var workerUrl = URL.createObjectURL(new Blob([obj['ffmpeg-core.worker.js']], { type: 'text/javascript' }));
+              return { coreUrl: coreUrl, wasmUrl: wasmUrl, workerUrl: workerUrl, FFmpegLib: FFmpegLib };
+            });
+          })
+          .then(function (assets) {
+            var ffmpeg = assets.FFmpegLib.createFFmpeg({
+              corePath: assets.coreUrl,
+              wasmPath: assets.wasmUrl,
+              workerPath: assets.workerUrl,
+              log: false
+            });
+            if (onStatus) onStatus('جاري تهيئة المشغّل...');
+            return ffmpeg.load().then(function () { return ffmpeg; });
+          })
+          .then(function (ffmpeg) {
+            if (onStatus) onStatus('جاري ضغط الفيديو...');
+            var inName = 'in' + (file.name.match(/\.[a-z0-9]+$/i) ? file.name.match(/\.[a-z0-9]+$/i)[0] : '.mp4');
+            var outName = 'out.mp4';
+            return file.arrayBuffer().then(function (buf) {
+              ffmpeg.FS('writeFile', inName, new Uint8Array(buf));
+              var args = [
+                '-y', '-i', inName,
+                '-vf', "scale='min(1280,iw)':'min(720,ih)':force_original_aspect_ratio=decrease:force_divisible_by=2",
+                '-c:v', 'libx264', '-preset', 'medium', '-crf', '27', '-profile:v', 'main', '-pix_fmt', 'yuv420p',
+                '-c:a', 'aac', '-b:a', '96k',
+                '-movflags', '+faststart',
+                '-threads', '1', outName
+              ];
+              return ffmpeg.run.apply(ffmpeg, args).then(function () { return inName; });
+            }).then(function (inName) {
+              var out = ffmpeg.FS('readFile', outName);
+              var blob = out && out.length ? new Blob([out], { type: 'video/mp4' }) : null;
+              try { ffmpeg.FS('unlink', inName); ffmpeg.FS('unlink', outName); } catch (e) {}
+              try { ffmpeg.exit && ffmpeg.exit(); } catch (e) {}
+              finish(blob);
+            });
+          })
+          .catch(function () { finish(null); })
+          .then(function () { clearTimeout(timer); });
+      }).catch(function () { clearTimeout(timer); finish(null); });
+    });
+  }
+
   // ===== Form submit
   // New review flow: every file (photo, proof documents, videos) is uploaded
   // via the no-auth /api/upload/register-upload endpoint, then the whole
@@ -844,6 +1004,11 @@ const MAX_SIZE   = 100 * 1024 * 1024; // 100MB — same cap as the server/Cloudi
   }
 
   async function uploadOne(file, purpose, onProgress) {
+    // Every file — videos included — goes to the server's /register-upload
+    // queue (230MB cap, local disk, thumbnails + compression). The browser→
+    // Cloudinary direct path was retired: the free-plan cap is 10MB per file,
+    // so real player videos can never live there no matter how they are
+    // chunked. Server-side storage is proven up to 230MB.
     const fd = new FormData();
     fd.append('file', file);
     const res = await window.API.uploadRegister(fd, purpose, onProgress);
@@ -868,6 +1033,15 @@ const MAX_SIZE   = 100 * 1024 * 1024; // 100MB — same cap as the server/Cloudi
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = form.querySelector('button[type="submit"]');
+      // freeze: every fillable field (text inputs, selects, option toggles,
+      // the photo/logo picker and file inputs) EXCEPT the submit button itself.
+      // During the upload phase they stay locked so the user cannot tweak data
+      // mid-flight; the video add/remove row is intentionally left unlocked so
+      // the user may still add clips while files are being uploaded.
+      const fileInputs = new Set(form.querySelectorAll('input[type="file"]'));
+      const freeze = Array.from(form.querySelectorAll('input, select, textarea, button'))
+        .filter(el => !el.disabled && el !== btn && !fileInputs.has(el));
+      const setFrozen = (on) => { for (const el of freeze) el.disabled = on; };
       if (!window.API) {
         showToast('⚠️ السيرفر غير متصل — شغّل node server.js أولاً', true);
         return;
@@ -896,6 +1070,7 @@ const MAX_SIZE   = 100 * 1024 * 1024; // 100MB — same cap as the server/Cloudi
       }
 
       btn.disabled = true;
+      setFrozen(true); // freeze all data fields while the video upload is running
       try {
         // 1) upload every file without auth (photo/logo + documents + videos)
         btn.textContent = 'جاري رفع الملفات...';
@@ -917,8 +1092,14 @@ const MAX_SIZE   = 100 * 1024 * 1024; // 100MB — same cap as the server/Cloudi
           renderList();
           let lastPainted = -100;
           try {
-            const up = await uploadOne(v.file, 'player_video', (pct) => {
-              // real network progress — repaint sparingly to avoid flicker
+            // Compress in-browser FIRST so big phone clips upload fast; if
+            // compression is unavailable/fails we upload the original file
+            // unchanged (never blocks the sign-up).
+            let toUpload = v.file;
+            const compressed = await compressVideoFile(v.file, (msg) => { btn.textContent = msg; });
+            if (compressed && compressed.size > 0) toUpload = compressed;
+            const up = await uploadOne(toUpload, 'player_video', (pct) => {
+              // real network progress — repaint sparingly to avoid flicke
               if (pct - lastPainted >= 4 || pct >= 100) {
                 lastPainted = pct;
                 v.progress = pct;
@@ -977,6 +1158,7 @@ const MAX_SIZE   = 100 * 1024 * 1024; // 100MB — same cap as the server/Cloudi
       } finally {
         btn.disabled = false;
         btn.textContent = submitText;
+        setFrozen(false); // re-enable the data fields now that upload/submit finished
       }
     });
   }

@@ -6,6 +6,11 @@
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
+const pool = require("./ffmpegPool");
+
+// Releases the ffmpeg-pool slot held by the running job, if any. Module-level
+// because this module is strictly single-flight: at most one job holds a slot.
+let releaseSlot = null;
 
 function findFfmpeg() {
   const gyan = path.join(
@@ -30,29 +35,49 @@ const MIN_VIDEO_BYTES = 200 * 1024; // skip tiny test clips
 let queue = [];
 let busy = false;
 
+const PROBE_TIMEOUT_MS = 30000;
+const THUMB_TIMEOUT_MS = 180000; // 3 min for a single-frame extract
+
 function log(msg) {
   try { console.log("[video-thumb] " + msg); } catch (e) {}
+}
+
+// Hard timeout guard: kill a stuck child so the single-flight queue never dies.
+function killAfter(p, ms, onTimeout) {
+  const t = setTimeout(() => {
+    try { p.kill("SIGKILL"); } catch (e) {}
+    onTimeout();
+  }, ms);
+  p.on("close", () => clearTimeout(t));
+  p.on("error", () => clearTimeout(t));
+  return t;
 }
 
 function probeDuration(filePath, cb) {
   const ffprobe = FFMPEG ? FFMPEG.replace(/ffmpeg(\.exe)?$/i, "ffprobe$1") : null;
   if (!ffprobe) return cb(2);
   let out = "";
+  let done = false;
+  const finish = (d) => { if (done) return; done = true; clearTimeout(timer); cb(d); };
   const p = spawn(ffprobe, [
     "-v", "error",
     "-show_entries", "format=duration",
     "-of", "json",
     filePath
   ], { windowsHide: true });
-  p.stdout.on("data", (d) => (out += d));
-  p.on("error", () => cb(2));
+  p.stdout.on("data", (d) => { if (out.length < 4096) out += d; });
+  p.on("error", () => finish(2));
   p.on("close", (code) => {
-    if (code !== 0) return cb(2);
+    if (code !== 0) return finish(2);
     try {
       const j = JSON.parse(out);
       const d = +(j.format && j.format.duration) || 0;
-      cb(d > 0 ? d : 2);
-    } catch (e) { cb(2); }
+      finish(d > 0 ? d : 2);
+    } catch (e) { finish(2); }
+  });
+  const timer = killAfter(p, PROBE_TIMEOUT_MS, () => {
+    log("ffprobe timed out — killed: " + filePath);
+    finish(2);
   });
 }
 
@@ -63,6 +88,8 @@ function makeThumb(filePath) {
     probeDuration(filePath, (duration) => {
       const seek = Math.min(duration, Math.max(1.5, duration * 0.1));
       const tmpOut = thumbPath + ".tmp" + process.pid + ".jpg";
+      let finished = false;
+      const finish = () => { if (finished) return; finished = true; clearTimeout(timer); done(); };
       const p = spawn(FFMPEG, [
         "-y", "-ss", String(seek),
         "-i", filePath,
@@ -76,38 +103,63 @@ function makeThumb(filePath) {
       p.stderr.on("data", (d) => {
         if (errLog.length < 1200) errLog += d;
       });
-      p.on("error", () => done());
+      p.on("error", () => finish());
       p.on("close", (code) => {
         if (code !== 0) {
           try { fs.unlinkSync(tmpOut); } catch (e) {}
           log("extract failed (" + code + "): " + errLog.slice(-200).replace(/\s+/g, " ").trim());
-          return done();
+          return finish();
         }
         // Replace any existing thumbnail in place.
         try { fs.renameSync(tmpOut, thumbPath); } catch (e) {
           try { fs.copyFileSync(tmpOut, thumbPath); } catch (e2) {}
           try { fs.unlinkSync(tmpOut); } catch (e3) {}
         }
-        done();
+        finish();
+      });
+      const timer = killAfter(p, THUMB_TIMEOUT_MS, () => {
+        log("thumbnail ffmpeg timed out — killed: " + filePath);
+        try { fs.unlinkSync(tmpOut); } catch (e) {}
+        finish();
       });
     });
   });
 }
 
 function done() {
+  const r = releaseSlot;
+  releaseSlot = null;
+  if (r) { try { r(null); } catch (e) {} }
   busy = false;
   if (queue.length) {
     const next = queue.shift();
     busy = true;
-    setImmediate(() => makeThumb(next));
+    setImmediate(() => startJob(next));
   }
+}
+
+// Runs makeThumb while holding a global ffmpeg-pool slot, so a background
+// poster never adds an extra encoder on top of the request-path validator.
+// If the pool is saturated the poster is skipped (cosmetic) and the queue keeps
+// moving — the release is returned exactly once, by done().
+function startJob(filePath) {
+  releaseSlot = null;
+  pool
+    .run((release) => {
+      releaseSlot = release;
+      makeThumb(filePath);
+    })
+    .catch(() => {
+      log("skipped (ffmpeg pool saturated)");
+      done();
+    });
 }
 
 function enqueueThumb(filePath) {
   if (!ENABLED || !filePath) return;
   if (busy) { queue.push(filePath); return; }
   busy = true;
-  setImmediate(() => makeThumb(filePath));
+  setImmediate(() => startJob(filePath));
 }
 
 module.exports = { enqueueThumb, FFMPEG, ENABLED };

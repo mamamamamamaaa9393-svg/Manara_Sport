@@ -349,6 +349,7 @@
       { b: p.height ? p.height + "cm" : "—", s: "الطول" },
       { b: p.weight ? p.weight + "kg" : "—", s: "الوزن" },
       { b: p.foot || "—", s: "القدم" },
+      { b: p.hand || "—", s: "اليد" },
       { b: exp, s: "خبرة" }
     ];
     var qs = document.querySelectorAll(".quick-stats .qs");
@@ -655,7 +656,7 @@
     row("النادي الحالي", p.currentClub);
     row("المستوى", p.level ? lvl(p.level) : "");
     if (p.userId) {
-      rows.push('<div class="info-row"><b>التحقق من الهوية</b><span style="color:var(--green);font-weight:800;">✅ موثقة — تمت مراجعة صورة الإقرار</span></div>');
+      rows.push('<div class="info-row"><b>التحقق من الهوية</b><span style="color:var(--green);font-weight:800;">✅ موثقة — تم تأكيد الحساب</span></div>');
     }
     box.innerHTML = rows.length
       ? rows.join("")
@@ -701,6 +702,9 @@
     Object.keys(docs).forEach(function (k) {
       var url = docs[k];
       if (!url) return;
+      // declaration (صورة الإقرار) is no longer collected — never render it in
+      // the profile documents widget even if legacy data still carries it.
+      if (k === "declaration") return;
       var m = map[k] || [k, "📄"];
       rows.push('<div class="doc"><div class="dico">' + m[1] + '</div><div class="dinfo"><b>' + esc(m[0]) + '</b><span>ملف مرفق</span></div><a class="view" href="' + esc(url) + '" target="_blank" rel="noopener">عرض</a></div>');
     });

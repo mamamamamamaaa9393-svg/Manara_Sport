@@ -83,6 +83,7 @@ function playerProfileHtml(p) {
     playerRow("الرياضة", pub.sport) +
     playerRow("المركز", pub.position) +
     playerRow("القدم", pub.foot) +
+    playerRow("اليد", pub.hand) +
     playerRow("العمر", pub.age) +
     playerRow("الطول", pub.height ? pub.height + " سم" : "") +
     playerRow("الوزن", pub.weight ? pub.weight + " كجم" : "") +

@@ -13,7 +13,7 @@ const helpers = require("./helpers");
 const DATA_DIR = path.join(__dirname, "..", "data");
 const DB_FILE = path.join(DATA_DIR, "db.json");
 const DB_NAME = process.env.MONGODB_DB || "manara";
-const COLLECTIONS = ["users", "players", "clubs", "messages", "applications", "uploads", "registrations", "ai_chats", "transactions", "webhooks", "reviews", "profile_views", "verifications", "inquiries", "faq", "platform_params"];
+const COLLECTIONS = ["users", "players", "clubs", "messages", "applications", "uploads", "registrations", "ai_chats", "transactions", "webhooks", "reviews", "profile_views", "verifications", "inquiries", "faq", "platform_params", "revoked_tokens"];
 
 let MongoClient = null;
 try { MongoClient = require("mongodb").MongoClient; } catch (e) { MongoClient = null; }
@@ -54,7 +54,8 @@ function emptyDb() {
     verifications: [],
     inquiries: [],
     faq: [],
-    platform_params: []
+    platform_params: [],
+    revoked_tokens: []
   };
 }
 

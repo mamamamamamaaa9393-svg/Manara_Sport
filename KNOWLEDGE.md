@@ -20,7 +20,7 @@
 | `server/src/ai/manaraChat.js` | ربط الوشيجة: `detectLang`، `buildContext`، `offlineReply` |
 | `server/src/ai/classify.js` | تصنيف نية السؤال (FAQ / علّي / عام / غير لائق) |
 | `server/src/routes/knowledge.routes.js` | كامل مسارات المعرفة (نموذج `faqs/params` + تصدير + `preview`) |
-| `server/test/*` | 9 أجنحة اختبار + رانر `npm test` |
+| `server/test/*` | (أُزيلت أجنحة الاختبار من المستودع بقرار المشروع) |
 
 مبدأ أساسي: **لا توجد بيانات تخزين مؤقت افتراضية** في الاستجابة الحيّة؛ عندما تكون القاعدة
 فارغة نرد بصدق "لا معلومات" بدل إجابة مضللة.
@@ -113,34 +113,10 @@
 
 ## 8. مراقبة الجودة والتوثيق وتدقيق النشر (مكتمل ومُختبَر — قسم 8)
 
-### 8.1 رانر الاختبارات
-`npm test` (سكربت `test` في `server/package.json`) يشغّل **خادماً معزولاً** (منفذ حر،
-مقاس بلا تعارض محلي) ثم يمرّر الأجنحة ضده ويكسره لاحقاً — لا يعتمد على خادم حيّ أو
-حالة بيانات مخزنة. المخرجات: بملّ كل جناح (exit code + العدد) + ملخص نهائي
-`N/9 suites passed`.
-
-### 8.2 الأجنحة والنتائج الحالية (كلها ✅)
-| الجناح | المرحلة | النتائج |
-|---|---|---|
-| knowledge-model | offline (unit) | 71 |
-| params-source | offline | 47 |
-| context | offline | 17 |
-| manarachat | offline | 10 |
-| context-live | live (server) | 6 |
-| knowledge-security | live | 59 |
-| knowledge-admin | live | 40 |
-| ai-assistant | live (UI/واجهة) | 14 |
-| knowledge-ui-smoke | headless Chrome | 15 |
-
-**النتيجة الإجمالية عبر الرانر: 9/9 أجنحة ناجحة، صفر فشل.**
-
-### 8.3 الأجنحة المستثناة من `npm test` (بيئة/متفرّقة)
-- `improvements-2` / `improvements-e2e`: تحتاج OCR/انتظار بريد/حسابات مثقلة بعدد محاولات
-  التسجيل (rate-limit 429) — متفرّقة وليست كودية.
-- `receipt-e2e` / `subscription` / `expiry-email` / `forgot-password` / `mobile-video`:
-  تعتمد على SMTP/بريد/حالة مخزن طويلة.
-- هذه تُدار يدوياً عند الحاجة (مثلاً مع بريد حقيقي) ولا تدخل في `npm test` لضمان
-  استقرار البطاقات الخضراء.
+### 8.1 الأجنحة الآلية
+أُزيلت ملفات الاختبارات الآلية (`server/test` + سكربتات `npm test`) من المستودع بقرار
+المشروع، ولا تُشغَّل مع أي أمر `npm` الآن. السكربتات المتاحـة هي فقط `start` و`dev`.
+بقيت نتائج التدقيق التالي (8.4) سارية كمرجع للإنتاج.
 
 ### 8.4 تدقيق النشر (الاستنتاجات)
 1. **`DEV_CODES` (رموز التطوير)** — `server/src/routes/auth.routes.js:42-43`:
@@ -165,6 +141,5 @@
 ---
 
 ## مسرد سريع (تقصّي)
-- شغّل الاختبارات: `cd server && npm test` — النتيجة تظهر في ملخص الرانر.
 - تقرير مصالحة المعرفة: `GET /api/admin/knowledge/reconcile` (يتطلب أدمن).
 - تصدير عام: `GET /api/knowledge/export?lang=ar` — لا يكشف مفاتيح داخلية.

@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const db = require("../db");
 
 // --- httpOnly cookie session carrier -------------------------------
 // The JWT lives in an httpOnly cookie so an XSS payload can never read it
@@ -10,6 +11,7 @@ const path = require("path");
 // and top-level navigations, and Secure is applied only on HTTPS so local
 // HTTP development keeps working.
 const COOKIE_NAME = "manara_token";
+const CSRF_COOKIE = "manara_csrf";
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // matches sign() expiresIn
 
 function readCookie(req, name) {
@@ -33,22 +35,46 @@ function tokenFromRequest(req) {
   return readCookie(req, COOKIE_NAME);
 }
 
+function secureCookies() {
+  return process.env.COOKIE_SECURE === "1" || process.env.NODE_ENV === "production";
+}
+
 function authCookieOptions() {
   return {
     httpOnly: true,
-    secure: process.env.COOKIE_SECURE === "1" || process.env.NODE_ENV === "production",
+    secure: secureCookies(),
     sameSite: "lax",
     maxAge: SESSION_TTL_MS,
     path: "/"
   };
 }
 
+// The CSRF cookie carries the double-submit token. It is NOT httpOnly on
+// purpose: JavaScript must read it back to attach the X-CSRF-Token header,
+// which is exactly what defeats cross-site submission forgery.
+function csrfCookieOptions() {
+  return {
+    httpOnly: false,
+    secure: secureCookies(),
+    sameSite: "lax",
+    maxAge: SESSION_TTL_MS,
+    path: "/"
+  };
+}
+
+function newCsrfToken() {
+  return crypto.randomBytes(24).toString("hex");
+}
+
 function setAuthCookie(res, token) {
   res.cookie(COOKIE_NAME, token, authCookieOptions());
+  // Fresh session -> fresh CSRF token. Every login rotates both.
+  res.cookie(CSRF_COOKIE, newCsrfToken(), csrfCookieOptions());
 }
 
 function clearAuthCookie(res) {
   res.clearCookie(COOKIE_NAME, { path: "/" });
+  res.clearCookie(CSRF_COOKIE, { path: "/" });
 }
 
 // Never use a known default secret. In production require JWT_SECRET.
@@ -106,35 +132,112 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-function clearAuthCookie(res) {
-  res.clearCookie(COOKIE_NAME, { path: "/" });
+// ---------------------------------------------------------------------------
+// Revoked tokens (logout). The JWT is signed/stateless, so clearing the cookie
+// alone leaves the old value technically valid until it expires.
+//
+// The denylist is both an IN-MEMORY Map (fast path) AND a persisted list on
+// the data store (revoked_tokens). Persisting means a logout survives a server
+// restart: previously a process restart silently resurrected every logged-out
+// token for up to its whole 7-day TTL. The store is hydrated lazily on the
+// first check so a module load before db.init() is harmless.
+// ---------------------------------------------------------------------------
+const revoked = new Map(); // token -> expiresAt(ms)
+let revokedHydrated = false;
+
+function revokedAsList(store) {
+  const list = [];
+  const now = Date.now();
+  for (const r of (store && Array.isArray(store.revoked_tokens) ? store.revoked_tokens : [])) {
+    if (!r || typeof r.token !== "string") continue;
+    const exp = Number(r.expiresAt);
+    if (!Number.isFinite(exp) || exp <= now) continue; // expired are dropped here
+    list.push({ token: r.token, expiresAt: exp });
+  }
+  return list;
 }
 
-// Revoked tokens (logout). The JWT is signed/stateless, so clearing the
-// cookie alone leaves the old value technically valid until it expires.
-// To truly kill a session on logout we keep an in-process denylist — reusing
-// a logged-out token is rejected with 401. Entries are pruned once expired
-// so the map never grows unbounded. (In multi-instance deployments this is
-// per-process; acceptable for now and a large step up from no revocation.)
-const revoked = new Map(); // token -> expiresAt(ms)
+function ensureRevokedHydrated() {
+  if (revokedHydrated) return;
+  revokedHydrated = true;
+  let store = null;
+  try { store = db.get(); } catch (e) {}
+  if (!store) return;
+  const now = Date.now();
+  for (const r of revokedAsList(store)) revoked.set(r.token, r.expiresAt);
+}
+
+function persistRevoked(list) {
+  try {
+    const store = db.get();
+    if (!store || !Array.isArray(store.revoked_tokens)) return;
+    store.revoked_tokens = list;
+    db.save();
+  } catch (e) { /* storage unavailable -> in-memory only (previous behaviour) */ }
+}
 
 function revokeToken(token) {
   if (!token) return;
   const now = Date.now();
-  // Prune expired entries before adding new one
+  ensureRevokedHydrated();
+  // Prune expired entries before adding the new one (Map + store stay bounded
+  // to the 7-day TTL window — anything older is dropped on the next logout).
   for (const [t, exp] of revoked) {
     if (exp <= now) revoked.delete(t);
   }
-  // Mark this token as revoked for the JWT TTL (7 days from now)
   revoked.set(token, now + SESSION_TTL_MS);
+  const list = [];
+  for (const [t, exp] of revoked) list.push({ token: t, expiresAt: exp });
+  persistRevoked(list);
 }
 
 function isRevoked(token) {
-  if (!token || !revoked.size) return false;
+  if (!token) return false;
+  ensureRevokedHydrated();
   const exp = revoked.get(token);
   if (!exp) return false;
   if (exp <= Date.now()) { revoked.delete(token); return false; }
   return true;
 }
 
-module.exports = { SECRET, sign, requireAuth, requireAdmin, COOKIE_NAME, tokenFromRequest, setAuthCookie, clearAuthCookie, readCookie, revokeToken, isRevoked };
+// ---------------------------------------------------------------------------
+// CSRF protection (double-submit cookie pattern).
+//
+// The only requests that can be forged cross-site are ones carrying a session:
+// browsers refuse to attach SameSite=Lax cookies to cross-site POSTs, and a
+// cross-origin fetch with credentials against this server is blocked by CORS
+// (dev is origin "*" + credentials false; production is an explicit allowlist).
+// As defence-in-depth we additionally require the custom header X-CSRF-Token
+// to match the manara_csrf cookie for every cookie-authenticated state change.
+// Requests authenticated ONLY via the Authorization header (API clients, the
+// test suite) never carry the cookie, so they are untouched and stay working.
+//
+// The CSRF cookie is planted lazily on safe (GET) requests whenever a session
+// cookie exists, which makes the rollout seamless for sessions created before
+// this feature existed: the next page load or /auth/me call plants it, and the
+// frontend then sends the header on every state-changing call.
+// ---------------------------------------------------------------------------
+const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+
+function plantCsrfIfMissing(req, res) {
+  if (readCookie(req, CSRF_COOKIE)) return;
+  if (!readCookie(req, COOKIE_NAME)) return;
+  res.cookie(CSRF_COOKIE, newCsrfToken(), csrfCookieOptions());
+}
+
+function csrfProtect(req, res, next) {
+  if (SAFE_METHODS.has(req.method)) {
+    plantCsrfIfMissing(req, res);
+    return next();
+  }
+  // No session cookie -> nothing to hijack; let requireAuth decide auth.
+  if (!readCookie(req, COOKIE_NAME)) return next();
+  const cookieToken = readCookie(req, CSRF_COOKIE);
+  const headerToken = req.headers["x-csrf-token"];
+  if (!cookieToken || !headerToken || headerToken !== cookieToken) {
+    return res.status(403).json({ error: "CSRF token missing or invalid — قم بتحديث الصفحة أو أعد تسجيل الدخول" });
+  }
+  next();
+}
+
+module.exports = { SECRET, sign, requireAuth, requireAdmin, COOKIE_NAME, CSRF_COOKIE, tokenFromRequest, setAuthCookie, clearAuthCookie, readCookie, revokeToken, isRevoked, csrfProtect, csrfCookieOptions, newCsrfToken };

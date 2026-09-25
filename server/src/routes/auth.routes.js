@@ -9,6 +9,7 @@ const helpers = require("../helpers");
 const { claimUploads } = require("../uploadQuota");
 const declarations = require("../declarations");
 const cloudinary = require("cloudinary").v2;
+const mg = require("../mediaGuard");
 
 const UPLOAD_DIR = path.join(__dirname, "..", "..", "uploads");
 
@@ -36,11 +37,10 @@ function collectCloudIds(v, set) {
   }
 }
 
-// SECURITY: OTP codes may only be echoed back in an EXPLICIT development
-// environment (or with DEV_CODES=1). Never when NODE_ENV is merely unset —
-// a production deploy that forgets to set NODE_ENV must not leak codes.
-const DEV_CODES =
-  process.env.NODE_ENV === "development" || process.env.DEV_CODES === "1";
+// SECURITY: OTP codes are echoed back ONLY when explicitly enabled via
+// DEV_CODES=1. The email provider is the delivery channel; NODE_ENV alone
+// never leaks codes, so an unset/misconfigured NODE_ENV cannot expose them.
+const DEV_CODES = process.env.DEV_CODES === "1";
 
 function emailForRole(role, data) {
   const email = role === "player" ? data.email : data.official_email;
@@ -70,15 +70,28 @@ const DOC_LABELS = {
 
 // Registration requires the official proof documents to be uploaded. The
 // admin reviews those images before the account becomes active.
+// NOTE: declaration (صورة الإقرار) was removed from the required list — the
+// field is currently disabled for new sign-ups, so a missing declaration must
+// NOT block account creation. It stays fully supported when provided.
 function missingDoc(role, data) {
   const docs = (data && data.documents && typeof data.documents === "object") ? data.documents : {};
   const required = role === "player"
-    ? ["birth_cert", "medical", "declaration"]
+    ? ["birth_cert", "medical"]
     : ["official_letter", "license"];
   for (const k of required) {
     if (typeof docs[k] !== "string" || !docs[k].trim()) return k;
   }
   return null;
+}
+
+// A submitted video URL is only accepted if the server can prove it owns the
+// bytes AND that the bytes are a real video. Delegates to mediaGuard, which is
+// the single source of truth shared with POST/PUT /api/players (players.routes
+// .js) — a bare fs.existsSync here used to let a PDF or a JPEG pass as a
+// "video", and let an arbitrary external link through if it happened to name
+// any file in /uploads.
+function isKnownVideoUrl(url) {
+  return mg.isKnownVideoUrl(url);
 }
 
 // POST /api/auth/register  { role: "player"|"club", data: { ...form, photo, documents, videos } }
@@ -91,18 +104,29 @@ router.post("/register", async (req, res, next) => {
     const { role } = req.body || {};
     const data = (req.body && req.body.data) || {};
     if (role !== "player" && role !== "club") {
-      return res.status(400).json({ error: "role must be 'player' or 'club'" });
+      return res.status(400).json({ error: "نوع الحساب غير صالح — يجب أن يكون «لاعب» أو «نادي»" });
     }
     const email = emailForRole(role, data || {});
     if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      return res.status(400).json({ error: "A valid email is required" });
+      return res.status(400).json({ error: "بريد إلكتروني صالح مطلوب" });
     }
     const password = String(data.password || "");
     if (password.length < 6) {
-      return res.status(400).json({ error: "Password must be at least 6 characters" });
+      return res.status(400).json({ error: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" });
     }
     if (password !== String(data.password_confirm || "")) {
-      return res.status(400).json({ error: "Passwords do not match" });
+      return res.status(400).json({ error: "كلمتا المرور غير متطابقتين" });
+    }
+
+    // The account name and phone are required fields in the sign-up form, so
+    // enforce them server-side too (an empty name previously produced a
+    // placeholder profile name).
+    const accountName = helpers.clean(role === "club" ? (data.club_name || data.full_name) : data.full_name);
+    if (!accountName) {
+      return res.status(400).json({ error: role === "club" ? "اسم النادي مطلوب" : "الاسم الكامل مطلوب" });
+    }
+    if (!helpers.clean(data.phone)) {
+      return res.status(400).json({ error: "رقم الهاتف مطلوب" });
     }
 
     const missing = missingDoc(role, data);
@@ -126,12 +150,24 @@ router.post("/register", async (req, res, next) => {
       return res.status(400).json({ error: "يجب رفع فيديو واحد على الأقل (من دقيقة واحدة إلى 10 دقائق) لعرض مهاراتك" });
     }
 
+    // Every video referenced must correspond to a real file the server has
+    // (a /uploads/ file on disk or an upload record from register-upload).
+    // This blocks forged / dead links submitted directly to the API.
+    if (role === "player" && Array.isArray(data.videos)) {
+      const known = isKnownVideoUrl;
+      for (const v of data.videos) {
+        if (!known(v && v.url)) {
+          return res.status(400).json({ error: "أحد ملفات الفيديو غير موجود في الخادم — أعد رفع الفيديو من صفحة التسجيل" });
+        }
+      }
+    }
+
     // Email already registered? Distinguish pending / rejected / active.
     const existing = findUserByEmail(email);
     if (existing) {
       const reg = findRegistrationByEmail(email);
       if (!reg || reg.status === "approved" || existing.approved !== false) {
-        return res.status(409).json({ error: "An account with this email already exists" });
+        return res.status(409).json({ error: "يوجد حساب مسجل بهذا البريد بالفعل" });
       }
       if (reg.status === "pending") {
         return res.status(409).json({ error: "تم استلام طلبك مسبقاً — بانتظار مراجعة الإدارة", status: "pending" });
@@ -239,8 +275,11 @@ router.post("/status", async (req, res, next) => {
     const email = String(req.body.email || "").trim().toLowerCase();
     const token = String(req.body.token || "").trim();
     const reg = findRegistrationByEmail(email);
-    if (!reg || !token || reg.statusToken !== token) {
-      return res.status(404).json({ error: "Not found" });
+    if (!reg) {
+      return res.status(404).json({ error: "لم يتم العثور على طلب تسجيل بهذا البريد" });
+    }
+    if (!token || reg.statusToken !== token) {
+      return res.status(403).json({ error: "رمز التتبع غير صحيح — تأكد من الرابط المرسل إليك" });
     }
     const msgs = {
       pending: "لا يزال طلبك قيد المراجعة",
@@ -302,6 +341,9 @@ router.post("/send-verification", async (req, res, next) => {
         devCode: code,
         message: sent ? "تم إرسال رمز التحقق إلى بريدك الإلكتروني" : "⚠️ لم يصل الرمز عبر البريد (فشل الإرسال). في وضع التطوير، هذا هو رمزك: " + code
       });
+    }
+    if (!sent) {
+      return res.status(500).json({ error: "تعذر إرسال رمز التحقق إلى بريدك الإلكتروني — تحقق من صحة البريد وحاول مرة أخرى لاحقاً" });
     }
     return res.json({ verificationId, message: "تم إرسال رمز التحقق إلى بريدك الإلكتروني" });
   } catch (err) {
@@ -480,6 +522,9 @@ router.post("/forgot-password", async (req, res, next) => {
         message: sent ? "تم إرسال رمز إعادة تعيين كلمة المرور إلى بريدك الإلكتروني" : "⚠️ لم يصل الرمز عبر البريد (فشل الإرسال). في وضع التطوير، استخدم الرمز: " + code
       });
     }
+    if (!sent) {
+      return res.status(500).json({ error: "تعذر إرسال رمز إعادة التعيين إلى بريدك الإلكتروني — حاول مرة أخرى لاحقاً" });
+    }
     return res.json({ message: "تم إرسال رمز إعادة تعيين كلمة المرور إلى بريدك الإلكتروني" });
   } catch (err) {
     next(err);
@@ -638,6 +683,7 @@ router.delete("/account", require("../middleware/auth").requireAuth, async (req,
     }
 
     console.log(`[auth] account ${userId} deleted: ${fileUrls.size} local urls, ${filesDeleted} files removed, ${cloudDeleted}/${cloudIds.size} cloud videos removed`);
+    clearAuthCookie(res); // the session is gone with the account
     return res.json({ message: "تم حذف حسابك نهائياً" });
   } catch (err) {
     next(err);

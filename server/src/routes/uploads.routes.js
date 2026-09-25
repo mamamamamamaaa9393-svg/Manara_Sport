@@ -51,10 +51,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  // 100MB cap per file — matches the Cloudinary free-plan hard limit (videos
-  // are pushed to Cloudinary right after upload, anything bigger would fail
-  // there with a confusing error). At phone bitrates this is ~10 minutes.
-  limits: { fileSize: 100 * 1024 * 1024 },
+  // 230MB cap per file — the local-disk allowance. Videos larger than the
+  // Cloudinary free-plan cap (10MB) stay on this server, so no cloud limit
+  // applies. At phone bitrates 230MB is ~20+ minutes.
+  limits: { fileSize: 230 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const ext = ALLOWED_MIME[file.mimetype];
     if (!ext) {
@@ -67,7 +67,7 @@ const upload = multer({
 });
 
 const MAX_DOC_BYTES = 10 * 1024 * 1024; // documents / photos: 10MB
-const MAX_VIDEO_BYTES = 100 * 1024 * 1024; // videos: 100MB (Cloudinary free limit)
+const MAX_VIDEO_BYTES = 230 * 1024 * 1024; // videos: 230MB (local disk; the Cloudinary free-plan hard cap is 10MB per file — videos above that stay local permanently)
 const isVideo = (f) => f.mimetype && f.mimetype.startsWith("video/");
 
 function makeRecord(f, uploadedBy) {
@@ -82,11 +82,25 @@ function makeRecord(f, uploadedBy) {
   };
 }
 
+// The deterministic auto-generated poster/thumbnail for a video (FFmpeg frame
+// written by videoThumb.js as <video-basename>.jpg right next to the video).
+function localPosterUrl(filePath) {
+  return filePath.replace(/\.[^/.]+$/, "") + ".jpg";
+}
+
+// Remove the poster .jpg that sits next to a video file (if one exists). The
+// orphan sweep / cleanupFiles / cloud promotion must all remove it together
+// with the video, otherwise orphaned .jpg files accumulate on disk forever.
+function unlinkCompanionThumb(filePath) {
+  if (!filePath) return;
+  try { fs.unlinkSync(localPosterUrl(filePath)); } catch (e) {}
+}
+
 function cleanupFiles(list) {
   (list || []).forEach((f) => {
-    try {
-      fs.unlinkSync(path.join(UPLOAD_DIR, f.filename));
-    } catch (e) {}
+    const full = path.join(UPLOAD_DIR, f.filename);
+    try { fs.unlinkSync(full); } catch (e) {}
+    if (f.mimetype && f.mimetype.startsWith("video/")) unlinkCompanionThumb(full);
   });
 }
 
@@ -98,15 +112,16 @@ function cloudinaryConfigured() {
   );
 }
 
-// Videos must live on Cloudinary (CDN delivery, offsite storage, works on
-// mobile data). The local disk file is only a staging area — BUT the HTTP
-// response does NOT wait for the cloud hop: uploading the same file again
-// from the server used to block the player's request for minutes on slow
-// connections. Instead the record is stored/returned immediately with the
-// local URL and promoted to Cloudinary in the BACKGROUND; once the push
-// succeeds the record is switched to the CDN URL and the local copy removed.
-// If Cloudinary fails we simply keep serving the local file (same fallback
-// as before) and queue thumbnail/compression for it.
+// Videos up to 10MB are still useful on Cloudinary (CDN delivery, works on
+// mobile data) — the free-plan per-file limit. Larger videos can NEVER live
+// there (verified live: chunked or not, any upload declaring >10MB total is
+// rejected), so they stay on the local disk permanently. The HTTP response
+// never blocks on the cloud hop: the record is stored/returned immediately
+// with the local URL; a ≤10MB video is promoted to Cloudinary in the
+// BACKGROUND (once the push succeeds the record switches to the CDN URL and
+// the local copy is removed). If the push fails the local file stays and
+// gets the usual thumbnail/compression pipeline.
+const CLOUD_VIDEO_MAX_BYTES = 10 * 1024 * 1024; // free-plan hard cap (10485760)
 function uploadVideoToCloud(filePath) {
   return new Promise((resolve) => {
     if (!cloudinaryConfigured()) return resolve(null);
@@ -165,12 +180,24 @@ function promoteToCloudLater(record, localPath) {
         rec.url = res.secure_url;
         rec.publicId = res.public_id;
         rec.provider = "cloudinary";
+        // Cloudinary auto-generates a video frame for the same public_id with
+        // a .jpg extension — reuse the deterministic poster convention so the
+        // frontend's <video poster> keeps working after promotion.
+        rec.poster = res.secure_url.replace(/\.[^/.]+$/, "") + ".jpg";
+        // Keep the pre-promotion local URL. The sign-up client still holds it
+        // (it received it from /register-upload) and may POST /api/auth/register
+        // while this background push is in flight — without `localUrl` the
+        // mediaGuard check would see neither the deleted local file nor a
+        // matching record url and reject a perfectly good sign-up as forged.
+        rec.localUrl = oldUrl;
       }
       // Keep every consumer (player.videos, registration.videos, ...) pointed
       // at a live URL now that the local file is about to be removed.
       rewriteReferencesToCloud(db.get(), oldUrl, res.secure_url);
       db.save();
       try { fs.unlinkSync(localPath); } catch (e) {}
+      // Delete the local poster too, or a discarded <video>.jpg is left behind.
+      unlinkCompanionThumb(localPath);
       console.log("☁️ video promoted to Cloudinary:", res.secure_url);
     } catch (e) {
       console.warn("⚠️ Cloudinary (background) error:", e && e.message);
@@ -180,19 +207,25 @@ function promoteToCloudLater(record, localPath) {
   });
 }
 
-// Builds the stored record for an uploaded file. Videos are scheduled for
-// Cloudinary promotion in the background (never blocking the response);
-// every other file type stays on local disk as before.
+// Builds the stored record for an uploaded file. A ≤10MB video is scheduled
+// for Cloudinary promotion in the background (never blocking the response);
+// every larger video — which the free plan can never accept — stays on local
+// disk and immediately gets the local thumbnail + compression pipeline.
+// Every other file type stays on local disk as before.
 function finalizeFileRecord(f, uploadedBy) {
   const record = makeRecord(f, uploadedBy);
   if (!isVideo(f)) return record;
   const localPath = path.join(UPLOAD_DIR, f.filename);
-  if (!cloudinaryConfigured()) {
-    enqueueThumb(localPath);
-    enqueueCompress(localPath);
+  // Store the deterministic local poster URL on the record (a <video>.jpg the
+  // thumbnail job will write next to the file). For ≤10MB videos destined for
+  // Cloudinary the promotion handler replaces this with the CDN poster.
+  record.poster = localPosterUrl(localPath);
+  if (cloudinaryConfigured() && f.size <= CLOUD_VIDEO_MAX_BYTES) {
+    promoteToCloudLater(record, localPath);
     return record;
   }
-  promoteToCloudLater(record, localPath);
+  enqueueThumb(localPath);
+  enqueueCompress(localPath);
   return record;
 }
 
@@ -210,6 +243,16 @@ router.post("/", requireAuth, upload.array("file", 10), (req, res, next) => {
   }
   const purpose = String((req.body && req.body.purpose) || "");
   const records = [];
+  // A saturated ffmpeg pool is a SERVER problem, not a bad file: answer 503
+  // (retryable) instead of 400 so the client retries instead of showing the
+  // player "your video is invalid".
+  const failValidation = (vr) => {
+    cleanupFiles(req.files);
+    if (vr && vr.code === "busy") {
+      return res.status(503).json({ error: vr.message, code: vr.code });
+    }
+    return res.status(400).json({ error: vr.message, code: vr.code });
+  };
   const fail = (message) => {
     cleanupFiles(req.files);
     return res.status(400).json({ error: message });
@@ -220,8 +263,9 @@ router.post("/", requireAuth, upload.array("file", 10), (req, res, next) => {
       db.get().uploads.push(...records);
       db.save();
       // Background processing only applies to files that stay on local disk.
-      // Videos are handled by the background Cloudinary promotion itself, so
-      // they are skipped here (no thumb/compress for a file that may vanish).
+      // Videos are handled by finalizeFileRecord (local pipeline for >10MB,
+      // thumbnail/compress only if the cloud push fails for ≤10MB), so they
+      // are skipped here.
       req.files.forEach((f, idx) => {
         if (isVideo(f)) return;
         const localPath = path.join(UPLOAD_DIR, f.filename);
@@ -235,14 +279,14 @@ router.post("/", requireAuth, upload.array("file", 10), (req, res, next) => {
     }
     const f = req.files[i];
     if (isVideo(f)) {
-      if (f.size > MAX_VIDEO_BYTES) return fail("الفيديو كبير جداً — الحد 100MB (حوالي 10 دقائق بجودة الهاتف)");
+      if (f.size > MAX_VIDEO_BYTES) return fail("الفيديو كبير جداً — الحد 230MB");
     } else if (f.size > MAX_DOC_BYTES) {
       return fail("الملف أكبر من 10MB — غير مسموح");
     }
     if (isVideo(f) && purpose === "player_video") {
-      // Strict validation: 5-15 min + no sign of editing.
+      // Strict validation: 1-10 min, 360p min, no sign of editing.
       validatePlayerVideo(path.join(UPLOAD_DIR, f.filename), async (vr) => {
-        if (!vr.ok) return fail(vr.message);
+        if (!vr.ok) return failValidation(vr);
         records.push(await finalizeFileRecord(f, req.user.id));
         await nextFile(i + 1);
       });
@@ -275,13 +319,21 @@ router.post("/register-upload", registerQuota, upload.single("file"), async (req
   const purpose = String((req.body && req.body.purpose) || "");
   const full = path.join(UPLOAD_DIR, req.file.filename);
   const cleanup = () => cleanupFiles([req.file]);
+  // Saturated ffmpeg pool -> 503 (retryable), not 400 "invalid video".
+  const failValidation = (vr) => {
+    cleanup();
+    if (vr && vr.code === "busy") {
+      return res.status(503).json({ error: vr.message, code: vr.code });
+    }
+    return res.status(400).json({ error: vr.message, code: vr.code });
+  };
   const fail = (message) => {
     cleanup();
     return res.status(400).json({ error: message });
   };
 
   if (isVideo(req.file)) {
-    if (req.file.size > MAX_VIDEO_BYTES) return fail("الفيديو كبير جداً — الحد 100MB (حوالي 10 دقائق بجودة الهاتف)");
+    if (req.file.size > MAX_VIDEO_BYTES) return fail("الفيديو كبير جداً — الحد 230MB");
   } else if (req.file.size > MAX_DOC_BYTES) {
     return fail("الملف أكبر من 10MB — غير مسموح");
   }
@@ -290,9 +342,9 @@ router.post("/register-upload", registerQuota, upload.single("file"), async (req
     const record = finalizeFileRecord(req.file, "pending");
     db.get().uploads.push(record);
     db.save();
-    // NOTE: videos are NOT queued for thumb/compress here — the background
-    // Cloudinary promotion owns that decision (it queues them only if the
-    // cloud push fails and the file stays local).
+    // NOTE: videos are NOT queued for thumb/compress here — finalizeFileRecord
+    // owns that decision: ≤10MB videos get local thumb/compress only if the
+    // cloud push fails, larger videos get it immediately.
     if (!isVideo(req.file) && req.file.mimetype && req.file.mimetype.startsWith("image/") && purpose !== "payment_receipt") {
       enqueueImageCompress(full, req.file.mimetype);
     }
@@ -300,9 +352,9 @@ router.post("/register-upload", registerQuota, upload.single("file"), async (req
   };
 
   if (isVideo(req.file) && purpose === "player_video") {
-    // Strict validation: 5-15 min + no sign of editing.
+    // Strict validation: 1-10 min, 360p min, no sign of editing.
     validatePlayerVideo(full, async (vr) => {
-      if (!vr.ok) return fail(vr.message);
+      if (!vr.ok) return failValidation(vr);
       await respond();
     });
   } else {

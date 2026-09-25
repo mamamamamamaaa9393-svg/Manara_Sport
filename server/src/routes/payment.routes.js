@@ -82,8 +82,8 @@ router.post("/kashier/checkout", requireAuth, loadUser, async (req, res, next) =
       // the checkout page can still be opened (set KASHIER_REDIRECT_URL /
       // KASHIER_WEBHOOK_URL, e.g. an ngrok tunnel, to test the full flow).
       console.warn("[kashier] loopback URL — substituting production placeholder (set KASHIER_REDIRECT_URL/KASHIER_WEBHOOK_URL to test locally)");
-      redirectUrl = "https://manara.app/subscribe.html?kashier=1";
-      webhookUrl = "https://manara.app/api/payments/kashier/webhook";
+      redirectUrl = "https://manarasport.com/subscribe.html?kashier=1";
+      webhookUrl = "https://manarasport.com/api/payments/kashier/webhook";
     }
 
     const session = await kashier.createSession({

@@ -143,11 +143,18 @@ function dimsFor(buf, format) {
    working offline, but any decode error on a real install => reject. */
 function decodeTest(filePath, cb) {
   if (!FFMPEG) return cb(true);
+  const DECODE_TIMEOUT_MS = 30000; // hard guard: a hung ffmpeg must never stall receipt uploads
+  let done = false;
+  const finish = (ok) => { if (done) return; done = true; clearTimeout(timer); cb(ok); };
   const p = spawn(FFMPEG, ["-v", "error", "-i", filePath, "-f", "null", "-"], { windowsHide: true });
   let err = "";
-  p.stderr.on("data", (d) => (err += d));
-  p.on("error", () => cb(true)); // couldn't spawn -> fail open
-  p.on("close", (code) => cb(code === 0));
+  p.stderr.on("data", (d) => { if (err.length < 2048) err += d; });
+  p.on("error", () => finish(true)); // couldn't spawn -> fail open
+  p.on("close", (code) => finish(code === 0));
+  const timer = setTimeout(() => {
+    try { p.kill("SIGKILL"); } catch (e) {}
+    finish(true); // timeout -> fail open (never block the payment flow)
+  }, DECODE_TIMEOUT_MS);
 }
 
 // cb({ ok: true }) | cb({ ok: false, code, message })

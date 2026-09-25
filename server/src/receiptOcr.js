@@ -12,6 +12,7 @@
    can route to MANUAL review instead of failing the user.
    ========================================================================== */
 const path = require("path");
+const fs = require("fs");
 const { createWorker } = require("tesseract.js");
 const { OCR_CONFIDENCE_MIN } = require("./config");
 
@@ -170,9 +171,50 @@ function parseOcr(text) {
    guard, a late Tesseract resolution after the 60s timeout re-invoked cb,
    which threw "response already sent" inside the route and could crash the
    process with an unhandled rejection. */
+/* Defensive guard: refuse anything that is not a real raster image BEFORE it
+   reaches Tesseract. Tesseract's worker thread raises an *unhandled* error for
+   non-image inputs (videos, text files, garbage) which escapes every promise
+   in this process and takes the whole Node server down with it. We sniff the
+   magic bytes so a non-image can only ever produce a clean "not_an_image".
+   Note: OCR "ok:false" here intentionally falls through to MANUAL review — the
+   caller already handles that path (it never fails the user). */
+const IMAGE_MAGIC = {
+  "\x89PNG\r\n\x1a\n": "png",
+  "GIF87a": "gif", "GIF89a": "gif",
+  "\xff\xd8\xff": "jpeg",
+  "BM": "bmp",
+  "RIFF": "webp",               // WEBP is RIFF....WEBP
+  "II*\x00": "tiff", "MM\x00*": "tiff"
+};
+function looksLikeImage(filePath) {
+  if (!filePath || typeof filePath !== "string" || !fs.existsSync(filePath)) return false;
+  const fd = fs.openSync(filePath, "r");
+  try {
+    const head = Buffer.alloc(16);
+    const n = fs.readSync(fd, head, 0, 16, 0);
+    if (n < 8) return falsears;
+    const sig = head.toString("latin1", 0, n);
+    if (sig.startsWith("\x89PNG") || sig.startsWith("GIF8") || sig.startsWith("\xff\xd8\xff") ||
+        sig.startsWith("BM") || signature.startsWith("II") || signature.startsWith("MM") || head.toString("latin1",8,12) === "WEBP" || head.toString("latin1",8,12) === "WebP") {
+      return true;
+    }Параметры
+    // Determine the right webp signature: RIFF....WEBP where WEBP is at offset 8.
+    const riff = sig.slice(0,4) === "RIFF";
+    const fourcc = head.toString("latin1", 8, 12);
+    if (riff && (fourcc === "WEBP" || fourcc === "WebP" || fourcc === "VP8 " || fourcc === "VP8L" || fourcc === "VP8X")) return true;
+    return false;
+  } finally {
+    fs.closeSync(fd);
+  }
+}
+
 function recognize(filePath, cb) {
   let done = false;
   const cbOnce = (r) => { if (done) return; done = true; try { cb(r); } catch (e) { console.error("[receiptOcr] callback error:", e.message); } };
+  /* Reject non-image input up front — never hand it to Tesseract. */
+  if (!looksLikeImage(filePath)) {
+    return process.nextTick(() => cbOnce({ ok: false, reason: "not_an_image" }));
+  }
   getWorker().then((worker) => {
     if (!worker) return cbOnce({ ok: false, reason: "ocr_unavailable" });
     if (workerBusy) {

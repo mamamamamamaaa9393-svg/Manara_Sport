@@ -9,7 +9,7 @@ const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const db = require("./db");
 const rateLimit = require("./middleware/rateLimit");
-const { SECRET, tokenFromRequest } = require("./middleware/auth");
+const { SECRET, tokenFromRequest, csrfProtect } = require("./middleware/auth");
 
 const app = express();
 
@@ -66,6 +66,11 @@ app.use("/api/subscription/webhook", express.raw({ type: () => true }), require(
 // --- Body parsing with explicit limits ---
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false, limit: "1mb" }));
+
+// --- CSRF: double-submit cookie on cookie-authenticated state changes ---
+// (Authorization-header-only requests and the raw webhook keep working
+// unchanged; see middleware/auth.js for the full reasoning.)
+app.use("/api", csrfProtect);
 
 // ---------------------------------------------------------------------------
 // Protected media: /uploads is served publicly ONLY for photos / videos / logos.
@@ -257,6 +262,18 @@ app.use("/api/players", require("./routes/players.routes"));
 app.use("/api/clubs", require("./routes/clubs.routes"));
 app.use("/api/messages", require("./routes/messages.routes"));
 app.use("/api/applications", require("./routes/applications.routes"));
+// Direct-to-Cloudinary video upload (sign-up): /api/upload/direct/sign issues
+// a signed permit, /confirm validates + records the CDN copy. Mounted BEFORE
+// /api/upload so the more-specific path always wins.
+//
+// This path WAS covered by the generic /api/upload limiter above (60/h), but
+// that cap is per-request on a tiny JSON body: the in-route permit cap (10
+// outstanding/IP) and the byte quota only ever measured the JSON, while the
+// actual video bytes went straight to Cloudinary. 20/h shared by /sign and
+// /confirm keeps a single IP from cycling permits to fill the free Cloudinary
+// quota (swept only after 26h).
+app.use("/api/upload/direct", rateLimit({ windowMs: 60 * 60 * 1000, max: 20 }));
+app.use("/api/upload/direct", require("./routes/directUpload.routes"));
 app.use("/api/upload", require("./routes/uploads.routes"));
 app.use("/api/cloudinary", require("./routes/cloudinary.routes"));
 app.use("/api/subscription", require("./routes/subscription.routes"));

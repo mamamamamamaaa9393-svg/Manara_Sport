@@ -6,4 +6,4 @@ Disallow: /admin-declarations.html
 Disallow: /Sign/
 Disallow: /messages.html
 
-Sitemap: https://manara.app/sitemap.xml
+Sitemap: https://manarasport.com/sitemap.xml

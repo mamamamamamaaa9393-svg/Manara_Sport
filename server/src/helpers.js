@@ -87,6 +87,7 @@ function playerFromForm(data) {
     sport: normalizeSport(data.sport),
     position: clean(data.position),
     foot: clean(data.foot),
+    hand: clean(data.hand),
     country: clean(data.nationality),
     dob,
     height: data.height ? Number(data.height) : null,

@@ -6,10 +6,29 @@ const sub = require("../subscription");
 const { requireAuth } = require("../middleware/auth");
 const requireActiveSub = require("../middleware/requireSub");
 
+const mg = require("../mediaGuard");
+
+// pickPlayer copies `videos` / `documents` / `photo` / `declaration` straight
+// from the request body, which let any authenticated player store an arbitrary
+// external URL in a PUBLIC profile field — bypassing validatePlayerVideo,
+// bypassing the sign-up anti-forgery check (auth.routes isKnownVideoUrl), and
+// for documents, escaping the owner/admin gate in app.js privateUploadUrls().
+// Every media field must therefore be re-validated here against mediaGuard and
+// replaced by its sanitised form before it reaches the stored document.
+// Returns { ok, value } or { ok:false, error }.
+function guardPlayerMedia(picked) {
+  const res = mg.checkProfileMedia(picked);
+  if (!res.ok) return res;
+  // drop the unsanitised copies so Object.assign cannot re-introduce them
+  const clean = Object.assign({}, picked);
+  ["videos", "documents", "photo", "declaration"].forEach((k) => { delete clean[k]; });
+  return { ok: true, value: Object.assign(clean, res.value) };
+}
+
 // Whitelist of fields a player may set on its own profile (anti mass-assignment:
 // verified / rating / reviews / userId / id / createdAt are never client-writable)
 const PLAYER_FIELDS = [
-  "name", "dob", "age", "sport", "position", "foot", "height", "weight",
+  "name", "dob", "age", "sport", "position", "foot", "hand", "height", "weight",
   "level", "country", "currentClub", "bio", "stats", "phone", "whatsapp",
   "email", "instagram", "available", "photo", "videos", "documents",
   "declaration", "files", "keywords", "postedDays"
@@ -245,9 +264,11 @@ router.post("/", requireAuth, requireActiveSub, (req, res) => {
   if (store.players.some((p) => p.userId === req.user.id)) {
     return res.status(409).json({ error: "You already have a profile" });
   }
-  const p = Object.assign(
-    { id: "p_" + db.nextId("player"), slug: helpers.randomSlug(12), userId: req.user.id, postedDays: 0, rating: 0, reviews: 0, createdAt: new Date().toISOString() },
-    pickPlayer(req.body)
+    const guard = guardPlayerMedia(pickPlayer(req.body));
+    if (!guard.ok) return res.status(400).json({ error: guard.error });
+    const p = Object.assign(
+      { id: "p_" + db.nextId("player"), slug: helpers.randomSlug(12), userId: req.user.id, postedDays: 0, rating: 0, reviews: 0, createdAt: new Date().toISOString() },
+      guard.value
   );
   store.players.push(p);
   db.save();
@@ -260,7 +281,9 @@ router.put("/:id", requireAuth, requireActiveSub, (req, res) => {
   const p = store.players.find((x) => x.id === req.params.id);
   if (!p) return res.status(404).json({ error: "Player not found" });
   if (p.userId !== req.user.id) return res.status(403).json({ error: "Not your profile" });
-  Object.assign(p, pickPlayer(req.body), { id: p.id, userId: p.userId });
+    const guard = guardPlayerMedia(pickPlayer(req.body));
+    if (!guard.ok) return res.status(400).json({ error: guard.error });
+    Object.assign(p, guard.value, { id: p.id, userId: p.userId });
   // ANTI-GAMING: recency is server-computed from createdAt — a client-supplied
   // postedDays would let profiles pin themselves to the top of "newest" sort.
   delete p.postedDays;
