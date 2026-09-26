@@ -12,6 +12,10 @@ const path = require("path");
 const db = require("./db");
 
 const UPLOAD_DIR = path.join(__dirname, "..", "uploads");
+// Staging dir for the RESUMABLE chunked upload (resume.routes.js). Kept OUTSIDE
+// /uploads because that folder is statically served: a private .chunks dir can
+// never be enumerated/fetched as files, and partial uploads must stay hidden.
+const CHUNK_DIR = path.join(__dirname, "..", ".chunks");
 
 const QUOTA_WINDOW_MS = 60 * 60 * 1000;
 const IP_QUOTA_BYTES = 2 * 1024 * 1024 * 1024; // 2GB / hour / IP
@@ -54,6 +58,34 @@ function registerQuota(req, res, next) {
 // cannot). Must be called right after multer finished parsing the body.
 function chargeUpload(req, bytes) {
   if (req._uploadQuotaRec) req._uploadQuotaRec.bytes += Number(bytes) || 0;
+}
+
+// Declared-size variant for the resumable chunked upload: the START request
+// carries the TOTAL file size in its JSON body (not in Content-Length, which
+// only holds the tiny JSON), so the per-IP/global quota must be checked and
+// reserved against that declared total before any chunk is written to disk.
+function checkDeclaredQuota(req, declaredBytes) {
+  const ip = req.ip || req.socket.remoteAddress || "unknown";
+  const now = Date.now();
+  if (ipQuota.size > 10000) {
+    ipQuota.forEach((rec, key) => { if (now - rec.start >= QUOTA_WINDOW_MS) ipQuota.delete(key); });
+  }
+  let rec = ipQuota.get(ip);
+  if (!rec || now - rec.start >= QUOTA_WINDOW_MS) {
+    rec = { start: now, bytes: 0 };
+    ipQuota.set(ip, rec);
+  }
+  if (rec.bytes + Number(declaredBytes) > IP_QUOTA_BYTES) {
+    return { ok: false, status: 429, error: "وصلت لحد الرفع المسموح لهذه الساعة — حاول لاحقاً" };
+  }
+  if (pendingTotalBytes(db.get()) + Number(declaredBytes) > GLOBAL_PENDING_MAX_BYTES) {
+    return { ok: false, status: 503, error: "الخدمة مشغولة حالياً — حاول لاحقاً" };
+  }
+  // Reserve the DECLARED total up-front (the client may be interrupted before
+  // the last chunk, but the bytes are already accounted against this IP's
+  // hourly cap — the same protection register-upload gets per-request).
+  rec.bytes += Number(declaredBytes) || 0;
+  return { ok: true, rec };
 }
 
 // Every /uploads/ URL still referenced by any document on the platform.
@@ -126,14 +158,37 @@ function sweepOrphanPendingUploads() {
   } catch (e) {}
 }
 
+// Delete staged chunk sessions (.chunks/<id>/) that are older than the
+// pending-upload cutoff. An upload that dies mid-way (network drop, tab close)
+// would otherwise leave 8MB chunks on disk forever. Runs on the same hourly
+// sweep as sweepOrphanPendingUploads.
+function sweepStaleChunkSessions() {
+  try {
+    if (!fs.existsSync(CHUNK_DIR)) return;
+    const cutoff = Date.now() - PENDING_MAX_AGE_MS;
+    let removed = 0;
+    fs.readdirSync(CHUNK_DIR).forEach((id) => {
+      const dir = path.join(CHUNK_DIR, id);
+      let st;
+      try { st = fs.statSync(dir); } catch (e) { return; }
+      if (!st.isDirectory() || st.mtimeMs >= cutoff) return;
+      try { fs.rmSync(dir, { recursive: true, force: true }); removed++; } catch (e) {}
+    });
+    if (removed) console.log("[resume] swept " + removed + " stale chunk session(s)");
+  } catch (e) {}
+}
+
 module.exports = {
   registerQuota,
   chargeUpload,
+  checkDeclaredQuota,
   sweepOrphanPendingUploads,
+  sweepStaleChunkSessions,
   collectReferencedUrls,
   claimUploads,
   QUOTA_WINDOW_MS,
   IP_QUOTA_BYTES,
   GLOBAL_PENDING_MAX_BYTES,
-  PENDING_MAX_AGE_MS
+  PENDING_MAX_AGE_MS,
+  CHUNK_DIR
 };

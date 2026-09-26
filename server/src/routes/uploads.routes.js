@@ -367,3 +367,16 @@ module.exports = router;
 // Exported for tests: rewrite every reference to a local /uploads/ URL with a
 // new (e.g. Cloudinary CDN) URL so promoted videos never leave dead links.
 module.exports.rewriteReferencesToCloud = rewriteReferencesToCloud;
+
+// Reused by the resumable chunked upload (resume.routes.js) so "complete"
+// produces a byte-identical record + background pipeline to register-upload:
+// the client gets the exact same {file} shape from both paths.
+module.exports.UPLOAD_DIR = UPLOAD_DIR;
+module.exports.ALLOWED_MIME = ALLOWED_MIME;
+module.exports.MAX_DOC_BYTES = MAX_DOC_BYTES;
+module.exports.MAX_VIDEO_BYTES = MAX_VIDEO_BYTES;
+module.exports.isVideo = isVideo;
+module.exports.makeRecord = makeRecord;
+module.exports.localPosterUrl = localPosterUrl;
+module.exports.cleanupFiles = cleanupFiles;
+module.exports.finalizeFileRecord = finalizeFileRecord;

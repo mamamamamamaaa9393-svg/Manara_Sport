@@ -259,6 +259,115 @@
       }
       return sendChunk(0, 0);
     },
+    // Resumable chunked upload to OUR server (replaces the single-shot
+    // register-upload for big player videos). The file is split into 8MB
+    // pieces; the server keeps every piece that reaches it (under
+    // server/.chunks/, see resume.routes.js). When the connection drops — the
+    // mobile-ISP silent stall that left videos stuck at 52% — this uploader:
+    //   1) retries the in-flight chunk a few times with backoff,
+    //   2) waits for the browser's 'online' event if navigator.onLine is false,
+    //   3) asks the server /status for the exact contiguous bytes it already
+    //      has, then resumes from there instead of restarting the video.
+    // Only a hard server rejection (400 invalid video / 413 too large) fails
+    // the upload; every network failure is auto-recovered. onProgress(0..100)
+    // reflects ACKNOWLEDGED bytes, so the bar only moves when data is safe.
+    uploadResumable: function (file, purpose, onProgress) {
+      var CHUNK_SIZE = 8 * 1024 * 1024;
+      var MAX_CHUNK_TRIES = 4;
+      var uploadId = null;
+
+      function rawChunk(start, tries) {
+        var end = Math.min(start + CHUNK_SIZE, file.size);
+        var blob = file.slice(start, end);
+        return new Promise(function (resolve, reject) {
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", BASE + "/upload/resume/chunk/" + uploadId);
+          xhr.withCredentials = true;
+          var csrfT = csrfToken();
+          if (csrfT) xhr.setRequestHeader("X-CSRF-Token", csrfT);
+          xhr.setRequestHeader("Content-Type", "application/octet-stream");
+          xhr.setRequestHeader("Content-Range", "bytes " + start + "-" + (end - 1) + "/" + file.size);
+          xhr.timeout = 60 * 1000; // per-chunk; a full 8MB slice fits easily
+          if (typeof onProgress === "function") {
+            xhr.upload.addEventListener("progress", function (e) {
+              if (e.lengthComputable) {
+                onProgress(Math.round(((start + e.loaded) / file.size) * 100));
+              }
+            });
+          }
+          xhr.onload = function () {
+            var data = {};
+            try { data = JSON.parse(xhr.responseText || "{}"); } catch (e) {}
+            if (xhr.status >= 200 && xhr.status < 300) {
+              var received = data && typeof data.received === "number" ? data.received : end;
+              if (onProgress) onProgress(Math.round((received / file.size) * 100));
+              return resolve(received);
+            }
+            var err = new Error((data && (data.error || data.message)) || ("Request failed (" + xhr.status + ")"));
+            err.status = xhr.status;
+            err.data = data;
+            reject(err);
+          };
+          xhr.onerror = function () { reject(new Error("network")); };
+          xhr.ontimeout = function () { reject(new Error("timeout")); };
+          xhr.send(blob);
+        }).catch(function (err) {
+          // 400/413/429 etc. are final — do not retry them.
+          if (err && err.status && err.status >= 400 && err.status < 500) throw err;
+          if (tries < MAX_CHUNK_TRIES) {
+            return new Promise(function (r) { setTimeout(r, 600 * (tries + 1)); })
+              .then(function () { return rawChunk(start, tries + 1); });
+          }
+          // Chunk retries exhausted -> network is unreachable. Wait silently
+          // for the connection to return (browser 'online' event when the OS
+          // knows it dropped), then ask the server where it really is. A small
+          // extra delay prevents hammering a down server with no feedback.
+          return waitForNetwork()
+            .then(function () { return new Promise(function (r) { setTimeout(r, 1200); }); })
+            .then(queryReceived)
+            .then(function (received) {
+              if (received >= file.size) return received;
+              return rawChunk(Math.min(received, file.size - 1), 0);
+            });
+        });
+      }
+
+      function queryReceived() {
+        return request("GET", "/upload/resume/status/" + uploadId)
+          .then(function (d) { return (d && typeof d.received === "number") ? d.received : 0; })
+          .catch(function () { return 0; });
+      }
+
+      function waitForNetwork() {
+        return new Promise(function (resolve) {
+          if (navigator.onLine !== false) return resolve();
+          var done = false;
+          var finish = function () { if (!done) { done = true; window.removeEventListener("online", finish); resolve(); } };
+          window.addEventListener("online", finish);
+        });
+      }
+
+      function uploadLoop(from) {
+        if (from >= file.size) {
+          return request("POST", "/upload/resume/complete", { uploadId: uploadId }, null, 300000)
+            .then(function (d) { return d && d.file ? d : (d || {}); });
+        }
+        return rawChunk(from, 0).then(uploadLoop);
+      }
+
+      // The session belongs to a file whose size must match; if the server
+      // restarted and purged .chunks mid-upload, /start simply makes a new id.
+      return request("POST", "/upload/resume/start", {
+        name: file.name,
+        mime: file.type || "application/octet-stream",
+        purpose: purpose || "",
+        size: file.size
+      }).then(function (d) {
+        uploadId = d && d.uploadId ? d.uploadId : null;
+        if (!uploadId) throw new Error("فشل بدء الرفع القابل للاستئناف");
+        return queryReceived();
+      }).then(uploadLoop);
+    },
     getPlayers: function (params) {
       var qs = params ? "?" + params.toString() : "";
       return request("GET", "/players" + qs);

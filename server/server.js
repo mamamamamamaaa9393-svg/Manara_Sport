@@ -4,7 +4,7 @@ const app = require("./src/app");
 const db = require("./src/db");
 const { ensureSeeded, ensureAdmin } = require("./src/seed");
 const sub = require("./src/subscription");
-const { sweepOrphanPendingUploads } = require("./src/uploadQuota");
+const { sweepOrphanPendingUploads, sweepStaleChunkSessions } = require("./src/uploadQuota");
 const { configureCloudinary } = require("./src/config/cloudinary");
 
 const PORT = process.env.PORT || 5000;
@@ -25,6 +25,10 @@ async function start() {
   // register-upload endpoint). Runs at boot + hourly.
   sweepOrphanPendingUploads();
   setInterval(sweepOrphanPendingUploads, 60 * 60 * 1000).unref();
+  // Staged chunks from interrupted resumable uploads: same 24h cutoff, so a
+  // dropped 200MB video can never litter the disk forever.
+  sweepStaleChunkSessions();
+  setInterval(sweepStaleChunkSessions, 60 * 60 * 1000).unref();
 
   // Sweep trial/subscription transitions every 5 minutes (trial -> expired,
   // active -> past_due -> expired, milestone notifications). Lazy refresh also

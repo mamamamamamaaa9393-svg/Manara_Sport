@@ -1004,14 +1004,15 @@ const MAX_SIZE   = 230 * 1024 * 1024; // 230MB — same cap as the server/direct
   }
 
   async function uploadOne(file, purpose, onProgress) {
-    // Every file — videos included — goes to the server's /register-upload
-    // queue (230MB cap, local disk, thumbnails + compression). The browser→
-    // Cloudinary direct path was retired: the free-plan cap is 10MB per file,
-    // so real player videos can never live there no matter how they are
-    // chunked. Server-side storage is proven up to 230MB.
-    const fd = new FormData();
-    fd.append('file', file);
-    const res = await window.API.uploadRegister(fd, purpose, onProgress);
+    // Every file goes through the resumable chunked uploader (unused
+    // Cloudinary /register-upload single shot replaced): each 8MB piece that
+    // reaches the server is kept, and on a network drop the transfer resumes
+    // from the last acknowledged byte automatically — a stalled mobile
+    // connection (the "52% forever" silent drop) can no longer abort a whole
+    // video upload. Small files complete in a single chunk so there is no
+    // overhead. The server's /upload/resume/complete responds with the same
+    // 201 {file: record} shape as the old /register-upload.
+    const res = await window.API.uploadResumable(file, purpose || '', onProgress);
     return (res && res.file) || null;
   }
 

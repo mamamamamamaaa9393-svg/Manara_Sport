@@ -210,6 +210,13 @@ app.use("/api/auth/forgot-password", rateLimit({ windowMs: 15 * 60 * 1000, max: 
 // cap an attacker could brute-force it (full account takeover). 8 tries per
 // window keeps legitimate users safe and makes guessing hopeless.
 app.use("/api/auth/reset-password", rateLimit({ windowMs: 15 * 60 * 1000, max: 8 }));
+// Resumable chunked upload: one video = (~230MB / 8MB) ≈ 29 chunk requests +
+// start/status/complete, so it needs its OWN generous limiter. Registered
+// BEFORE the /api/upload limiter below so chunk bursts are never throttled by
+// the 60/hr single-shot cap. Real abuse is still bounded by the per-IP 2GB/hr
+// byte quota (checkDeclaredQuota reserves the DECLARED total at /start).
+app.use("/api/upload/resume", rateLimit({ windowMs: 60 * 60 * 1000, max: 600 }));
+app.use("/api/upload/resume", require("./routes/resume.routes"));
 app.use("/api/upload", rateLimit({ windowMs: 60 * 60 * 1000, max: 60 }));
 app.use("/api/cloudinary", rateLimit({ windowMs: 60 * 60 * 1000, max: 30 }));
 app.use("/api/subscription/chat", rateLimit({ windowMs: 15 * 60 * 1000, max: 30 }));
