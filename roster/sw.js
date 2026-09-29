@@ -4,7 +4,7 @@
    - Runtime: network-first for navigations (fresh pages), stale-while-revalidate
      for static assets, cache-first for icons/fonts.
    - Never cache API responses or /uploads (privacy-sensitive). */
-const VERSION = "manara-v9";
+const VERSION = "manara-v10";
 const CORE = [
   "/",
   "/index.html",
