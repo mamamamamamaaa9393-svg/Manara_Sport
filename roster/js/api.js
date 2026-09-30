@@ -51,7 +51,7 @@
   function request(method, path, body, auth, timeoutMs) {
     // Opening the page from the file system: /api resolves to file:///api which always fails.
     if (window.location.protocol === "file:") {
-      return Promise.reject(new Error("يجب فتح الموقع من خلال السيرفر — شغّل `npm start` داخل مجلد server ثم افتح http://localhost:5000"));
+      return Promise.reject(new Error("تعذر الاتصال بالخادم — تأكد أنك تفتح الموقع عبر رابط الموقع"));
     }
 
     var opts = { method: method, headers: { "Accept": "application/json" }, credentials: "include" };
@@ -88,7 +88,7 @@
           throw new Error("الخادم لا يستجيب — تأكد أن السيرفر شغال ثم أعد المحاولة");
         }
         if (err instanceof TypeError) {
-          throw new Error("تعذر الاتصال بالخادم — تأكد أن السيرفر يعمل على http://localhost:5000 ثم أعد المحاولة");
+          throw new Error("انقطع الاتصال بالإنترنت — تحقق من اتصالك ثم أعد المحاولة");
         }
         throw err;
       })
@@ -122,7 +122,7 @@
         reject(err);
       };
       xhr.onerror = function () {
-        reject(new Error("تعذر الاتصال بالخادم — تأكد أن السيرفر يعمل على http://localhost:5000 ثم أعد المحاولة"));
+        reject(new Error("انقطع الاتصال بالإنترنت — تحقق من اتصالك ثم أعد المحاولة"));
       };
       xhr.ontimeout = function () {
         reject(new Error("الخادم لا يستجيب — تأكد أن السيرفر شغال ثم أعد المحاولة"));

@@ -134,11 +134,18 @@ router.post("/register", async (req, res, next) => {
       return res.status(400).json({ error: "يرجى إرفاق " + DOC_LABELS[missing] + " — ستراجعها الإدارة قبل تفعيل حسابك" });
     }
 
-    // Email verification check: the email must have been verified via OTP before registration
+    // Email verification check: the email must have been verified via OTP before
+    // registration. Once the 6-digit code was successfully matched, the 15-min
+    // OTP window served its purpose — we must NOT re-check expiresAt here,
+    // because video/document uploads take 5-10+ min and the record would be
+    // expired by the time the user hits submit, wrongly rejecting a verified
+    // email. The verify-email route already enforced the window + attempt cap
+    // at the moment the code was entered, and `verified` can only be set by
+    // that successful match, so an unexpired-check is redundant and harmful.
     const store = db.get();
     store.verifications = store.verifications || [];
     const emailVerified = store.verifications.some(
-      (v) => v.email === email && v.verified === true && new Date(v.expiresAt).getTime() > Date.now()
+      (v) => v.email === email && v.verified === true
     );
     if (!emailVerified) {
       return res.status(400).json({ error: "يجب التحقق من البريد الإلكتروني أولاً — استخدم /api/auth/send-verification" });
@@ -250,6 +257,12 @@ router.post("/register", async (req, res, next) => {
       });
     }
     claimUploads(store, claimed, user.id);
+
+    // Consume the verification record: it is single-use proof of email
+    // ownership for THIS registration only. Leaving it behind would let a
+    // stale `verified` flag satisfy a brand-new sign-up with the same email
+    // months later without ever requesting a new code.
+    store.verifications = (store.verifications || []).filter((v) => !(v.email === email && v.verified === true));
 
     db.save();
 
