@@ -148,7 +148,7 @@ router.post("/register", async (req, res, next) => {
       (v) => v.email === email && v.verified === true
     );
     if (!emailVerified) {
-      return res.status(400).json({ error: "يجب التحقق من البريد الإلكتروني أولاً — استخدم /api/auth/send-verification" });
+      return res.status(400).json({ error: "يجب التحقق من البريد الإلكتروني أولاً — اضغط \"إرسال رمز التحقق\" وأدخل الرمز المرسل" });
     }
 
     // A player must attach at least one highlight video (5-15 min). The video
