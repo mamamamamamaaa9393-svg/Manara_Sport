@@ -1,12 +1,11 @@
 /* ==========================================================================
-   Manara — language switcher (AR / EN).
-   Injects a toggle button next to the theme toggle on every page.
-   Translates elements carrying a `data-i18n` key. Falls back to Arabic.
+   Manara — i18n (Arabic only).
+   The site is Arabic-only with an LTR page layout. Any language toggle left
+   over in a cached page is removed. Translates elements carrying a
+   `data-i18n` key using the Arabic entry of each dictionary item.
    ========================================================================== */
 (function () {
   "use strict";
-
-  var KEY = "manara_lang";
 
   var DICT = {
     // Nav / shared
@@ -83,27 +82,27 @@
     // Landing page (index)
     "index.eyebrow": { ar: "منارة — منصة المواهب", en: "Manara — talent platform" },
     "index.hero_title": { ar: "ابحث عن رياضي", en: "Find your athlete" },
-    "index.hero_lead": { ar: "منارة تربط الرياضيين بالأندية والأكاديميات الموثوقة في كل الرياضات — بملفات شخصية موثقة، وعملية اكتشاف تحترم وقتك.", en: "Manara connects athletes with vetted clubs and academies across every sport — with verified profiles and a scouting process that respects your time." },
+    "index.hero_lead": { ar: "منارة تربط الرياضيين بالأندية والأكاديميات الموثوقة في كل الرياضات — بملفات موثّقة، وعملية كشافة تحترم وقتك.", en: "Manara connects athletes with vetted clubs and academies across every sport — with verified profiles and a scouting process that respects your time." },
     "index.search_btn": { ar: "ابحث عن لاعب", en: "Search Player" },
     "index.keyword_ph": { ar: "المسمى الوظيفي أو كلمة مفتاحية", en: "Job title or keyword" },
     "search.all": { ar: "الكل", en: "All" },
     "search.players": { ar: "لاعبون", en: "Players" },
     "search.clubs": { ar: "أندية", en: "Clubs" },
     "index.location_ph": { ar: "المدينة أو عن بُعد", en: "City or remote" },
-    "index.all_sports": { ar: "جميع الرياضات", en: "All sports" },
+    "index.all_sports": { ar: "كل الرياضات", en: "All sports" },
     "index.popular": { ar: "الأكثر بحثاً:", en: "Popular:" },
-    "index.view_profile": { ar: "👤 عرض ملفي الشخصي", en: "👤 View my profile" },
-    "index.stat_players": { ar: "لاعب مسجل", en: "Registered Players" },
-    "index.stat_pro": { ar: "نادٍ محترف", en: "Professional Clubs" },
-    "index.stat_academy": { ar: "أكاديمية", en: "Academies" },
-    "index.stat_amateur": { ar: "نادٍ هاوٍ", en: "Amateur Clubs" },
-    "index.stat_center": { ar: "مركز تدريب", en: "Training Centers" },
-    "index.stat_team": { ar: "منتخب وطني", en: "National Teams" },
-    "index.cat_eyebrow": { ar: "تصفح حسب الرياضة", en: "Browse by sport" },
-    "index.cat_title": { ar: "اكتشف المواهب في كل رياضة", en: "Discover talent across every sport" },
-    "index.cat_sub": { ar: "تصفح الرياضيين الموثقين، وراجع ملفاتهم، وراسل من تريد.", en: "Browse verified athletes, review their profiles and message the ones you want." },
+    "index.view_profile": { ar: "👤 اعرض ملفي", en: "👤 View my profile" },
+    "index.stat_players": { ar: "لاعبون مسجّلون", en: "Registered Players" },
+    "index.stat_pro": { ar: "أندية احترافية", en: "Professional Clubs" },
+    "index.stat_academy": { ar: "أكاديميات", en: "Academies" },
+    "index.stat_amateur": { ar: "أندية هواة", en: "Amateur Clubs" },
+    "index.stat_center": { ar: "مراكز تدريب", en: "Training Centers" },
+    "index.stat_team": { ar: "المنتخبات الوطنية", en: "National Teams" },
+    "index.cat_eyebrow": { ar: "تصفّح حسب الرياضة", en: "Browse by sport" },
+    "index.cat_title": { ar: "اكتشف المواهب في كل الرياضات", en: "Discover talent across every sport" },
+    "index.cat_sub": { ar: "تصفّح الرياضيين الموثّقين، راجع ملفاتهم، وراسل من تختار.", en: "Browse verified athletes, review their profiles and message the ones you want." },
     "cat.soon": { ar: "قريباً", en: "Coming soon" },
-    "index.browse_clubs": { ar: "تصفح الأندية الموثقة ←", en: "Browse verified clubs →" },
+    "index.browse_clubs": { ar: "تصفّح الأندية الموثّقة →", en: "Browse verified clubs →" },
 
     // 404 page
     "err.title": { ar: "الصفحة غير موجودة", en: "Page not found" },
@@ -207,22 +206,10 @@
     "clubprofile.contact": { ar: "بيانات التواصل", en: "Contact details" }
   };
 
+  /* Arabic only: the page language is fixed. A previous visit may have stored
+     "en" in localStorage, so ignore it rather than trusting the saved value. */
   function currentLang() {
-    try {
-      var saved = localStorage.getItem(KEY);
-      if (saved === "ar" || saved === "en") return saved;
-    } catch (e) {}
-    // Per-page authored language (e.g. data-default-lang="ar" on Arabic pages).
-    var def = document.documentElement.getAttribute("data-default-lang");
-    return def === "ar" || def === "en" ? def : "en";
-  }
-
-  function setLang(lang) {
-    try { localStorage.setItem(KEY, lang); } catch (e) {}
-    document.documentElement.lang = lang === "en" ? "en" : "ar";
-    document.documentElement.dir = "ltr";
-    translate();
-    updateButton();
+    return "ar";
   }
 
   function translate() {
@@ -246,43 +233,18 @@
     });
   }
 
-  function updateButton() {
-    var btn = document.getElementById("langToggle");
-    if (btn) {
-      var lang = currentLang();
-      btn.textContent = lang === "en" ? "عربي" : "EN";
-      btn.title = lang === "en" ? "Switch to Arabic" : "التبديل إلى الإنجليزية";
-      btn.setAttribute("aria-label", btn.title);
-    }
-  }
-
-  function injectButton() {
-    var themeBtn = document.getElementById("themeToggle");
-    if (!themeBtn) return;
-    if (document.getElementById("langToggle")) return;
-
-    var btn = document.createElement("button");
-    btn.id = "langToggle";
-    btn.type = "button";
-    btn.className = "theme-toggle lang-toggle";
-    btn.setAttribute("aria-label", "Switch language");
-    btn.title = "Switch language";
-    btn.style.cssText = "margin-inline-start:8px;";
-    themeBtn.parentNode.insertBefore(btn, themeBtn.nextSibling);
-
-    btn.addEventListener("click", function () {
-      setLang(currentLang() === "en" ? "ar" : "en");
-    });
-    updateButton();
+  /* The language switch button is disabled: the site is Arabic-only. Any
+     button left over in a cached page is removed. */
+  function removeToggle() {
+    var old = document.getElementById("langToggle");
+    if (old && old.parentNode) old.parentNode.removeChild(old);
   }
 
   function init() {
-    var lang = currentLang();
-    document.documentElement.lang = lang === "en" ? "en" : "ar";
+    removeToggle();
+    document.documentElement.lang = "ar";
     document.documentElement.dir = "ltr";
-    injectButton();
     translate();
-    updateButton();
   }
 
   if (document.readyState === "loading") {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" data-default-lang="ar" dir="rtl">
+<html lang="ar" data-default-lang="ar" dir="ltr">
 <head>
 <meta charset="UTF-8" />
 <link rel="manifest" href="manifest.json">
@@ -222,6 +222,27 @@
 
 <div data-partial="foot.b25e1b"></div>
 <script src="js/partials.js"></script>
+<!-- Billing disabled: this pricing page is replaced by a short notice. -->
+<script src="js/api.js"></script>
+<script>
+(function () {
+  function apply() {
+    if (!window.API) return;
+    window.API.subscriptionStatus().then(function (st) {
+      if (!st || st.billingEnabled !== false) return;
+      document.body.innerHTML =
+        '<div style="max-width:560px;margin:14vh auto;padding:0 20px;text-align:center;font-family:Tahoma,Arial,sans-serif">' +
+        '<div style="font-size:52px">✅</div>' +
+        '<h1 style="color:#111;margin:10px 0">كل المميزات متاحة</h1>' +
+        '<p style="color:#555;line-height:1.9;font-size:15px">نظام الاشتراك معطّل حالياً — لا يوجد اشتراك ولا دفع. جميع مزايا المنصة مفتوحة لك بالكامل.</p>' +
+        '<a href="index.html" style="display:inline-block;margin-top:22px;padding:12px 26px;background:#0a7d3f;color:#fff;border-radius:10px;text-decoration:none;font-weight:700">العودة للرئيسية</a>' +
+        '</div>';
+    }).catch(function () {});
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", apply);
+  else apply();
+})();
+</script>
 
 </body>
 </html>

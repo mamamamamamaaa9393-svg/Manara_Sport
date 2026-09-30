@@ -111,7 +111,7 @@ function playerProfileHtml(p) {
   if (clubName) jsonLd.memberOf = { "@type": "SportsOrganization", "name": clubName };
 
   return `<!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="ltr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -200,7 +200,7 @@ function clubProfileHtml(c) {
   if (pub.country) jsonLd.address = { "@type": "PostalAddress", "addressCountry": pub.country };
 
   return `<!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="ltr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -256,7 +256,7 @@ function clubProfileHtml(c) {
 }
 
 function notFoundHtml() {
-  return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+  return `<!doctype html><html lang="ar" dir="ltr"><head><meta charset="utf-8">
 <title>404 — الصفحة غير موجودة | منارة</title>
 <meta name="robots" content="noindex"></head>
 <body style="font-family:sans-serif;text-align:center;padding:60px">

@@ -298,6 +298,24 @@
       state.price = st.price;
       setMode(st.userType);
 
+      /* Billing disabled server-side: there is nothing to pay, no trial and
+         no paywall. Show the plain "all features available" state and never
+         render the price card / checkout form. */
+      if (st.billingEnabled === false) {
+        showOnly("activeView");
+        $("subBody").style.display = "none";
+        $("activeTitle").textContent = "كل المميزات متاحة";
+        $("activeMsg").textContent =
+          "نظام الاشتراك معطّل حالياً — لا يوجد تح��يل ولا اشتراك. جميع مزايا المنصة مفتوحة لك بالكامل بلا حدود.";
+        $("activeChip").textContent = "وصول كامل";
+        var mc = $("manageCard"); if (mc) mc.style.display = "none";
+        var an = $("cancelNote"); if (an) an.textContent = "";
+        var cb = $("cancelBtn"); if (cb) cb.style.display = "none";
+        var rb = $("resumeBtn"); if (rb) rb.style.display = "none";
+        var g = $("goHomeBtn"); if (g) g.style.display = "";
+        return;
+      }
+
       // One-shot milestone notifications (each is delivered exactly once).
       if (st.notifications && st.notifications.length) {
         var last = st.notifications[st.notifications.length - 1];

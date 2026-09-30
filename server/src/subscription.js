@@ -94,6 +94,9 @@ function expireStalePending(store, now) {
 function effectiveStatus(user, now) {
   if (!user) return "inactive";
   if (user.role === "admin") return "active";
+  /* Paywall disabled (BILLING_ENABLED=false): everyone reads as active so no
+     banner, no lock and no trial countdown is shown anywhere in the UI. */
+  if (!config.BILLING_ENABLED) return "active";
 
   const expires = user.subscriptionExpiresAt ? new Date(user.subscriptionExpiresAt).getTime() : 0;
 
@@ -125,12 +128,18 @@ function effectiveStatus(user, now) {
 
 /* Authorized to use premium features? Used by every paywall gate. */
 function hasAccess(user) {
+  /* Paywall disabled -> every requireActiveSub gate opens, so no route can
+     answer 402/403 because of billing. */
+  if (!config.BILLING_ENABLED) return true;
   const s = effectiveStatus(user, Date.now());
   return s === "active" || s === "trialing" || s === "past_due" ||
     (s === "pending" && config.PENDING_GRANTS_ACCESS);
 }
 
 function trialInfo(user) {
+  /* No trial concept while billing is disabled: never expose stale trial
+     dates to the client (it would render a "0 days left" badge). */
+  if (!config.BILLING_ENABLED) return null;
   if (!user || !user.trialStart || !user.trialEnd) return null;
   const startMs = new Date(user.trialStart).getTime();
   const end = new Date(user.trialEnd).getTime();
@@ -152,6 +161,8 @@ function trialInfo(user) {
    Trial length depends on the account type: club -> 7 days, player -> 2 days.
    Set once when the account is created/approved — never restarted on login. */
 function startTrial(user) {
+  /* Billing disabled: never grant or record a free trial. */
+  if (!config.BILLING_ENABLED) return false;
   const now = new Date();
   const type = userTypeOf(user);
   const days = TRIAL_DAYS_BY_TYPE[type] || TRIAL_DAYS;
@@ -274,7 +285,8 @@ function refresh(user) {
   const set = (k, v) => { if (user[k] !== v) { user[k] = v; changed = true; } };
 
   // Eligible approved user with no trial and no paid history -> start trial.
-  if (user.approved !== false && !user.trialStart && !hasPendingTransaction(user.id)) {
+  // Skipped entirely while billing is disabled: no trial is ever created.
+  if (config.BILLING_ENABLED && user.approved !== false && !user.trialStart && !hasPendingTransaction(user.id)) {
     const stillPaid = user.subscriptionStatus === "active" &&
       user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt).getTime() > now;
     if (!stillPaid) {
@@ -294,6 +306,10 @@ function refresh(user) {
   } else if (status === "trialing" && user.subscriptionStatus !== "trialing") {
     set("subscriptionStatus", "trialing");
   }
+
+  /* No trial / expiry notifications while billing is disabled: they would
+     still pop up as toasts on the profile. */
+  if (!config.BILLING_ENABLED) return changed;
 
   const notes = collectTrialNotifications(user, now);
   if (notes.length) {
@@ -351,6 +367,8 @@ function expiryReminderNeeded(user, now) {
 // Emails every user whose period is ending soon (exactly once per period).
 // Never throws — failures are logged so one broken address can't block others.
 async function sendExpiryReminders() {
+  /* No "your subscription is ending" emails while billing is disabled. */
+  if (!config.BILLING_ENABLED) return { emailed: 0, due: 0 };
   const store = db.get();
   const now = Date.now();
   const due = (store.users || []).filter((u) => expiryReminderNeeded(u, now));

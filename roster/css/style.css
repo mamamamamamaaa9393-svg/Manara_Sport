@@ -342,6 +342,11 @@ ul { margin: 0; padding: 0; list-style: none; }
 .flow-tab[aria-selected="true"] { background: #fff; color: #111a2e; }
 .flow-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
 .flow-steps--4 { grid-template-columns: repeat(4, 1fr); }
+/* 5 cards in a 3-col grid would leave an empty slot in the last row.
+   Span the first two cards so the final row of 3 stays centred. */
+.flow-steps--5 { grid-template-columns: repeat(6, 1fr); }
+.flow-steps--5 > .flow-step { grid-column: span 2; }
+.flow-steps--5 > .flow-step:nth-child(4) { grid-column: 2 / span 2; }
 .js .flow-panel.is-hidden { display: none; }
 .flow-step { background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .12); border-radius: var(--radius); padding: 26px; position: relative; }
 .flow-step .step-n { font-family: var(--font-display); font-weight: 800; font-size: .9rem; color: var(--accent); letter-spacing: .1em; }
@@ -349,7 +354,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .flow-step .step-ico svg { width: 24px; height: 24px; color: #fff; }
 .flow-step h3 { color: #fff; font-size: 1.18rem; }
 .flow-step p { color: rgba(255, 255, 255, .72); margin: 0; font-size: .98rem; }
-@media (max-width: 800px) { .flow-inner { padding: 34px 24px; } .flow-steps, .flow-steps--4 { grid-template-columns: 1fr; } }
+@media (max-width: 800px) { .flow-inner { padding: 34px 24px; } .flow-steps, .flow-steps--4, .flow-steps--5 { grid-template-columns: 1fr; } .flow-steps--5 > .flow-step, .flow-steps--5 > .flow-step:nth-child(4) { grid-column: auto; } }
 
 /* ------------------------------------------------------------------ Employer CTA band */
 

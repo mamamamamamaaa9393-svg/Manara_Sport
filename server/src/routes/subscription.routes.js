@@ -84,7 +84,7 @@ router.get("/status", requireAuth, loadUser, async (req, res) => {
   u.pendingNotifications = [];
   if (notes.length) db.save();
 
-  const trial = sub.trialInfo(u);
+  const trial = config.BILLING_ENABLED ? sub.trialInfo(u) : null;
 
   let subscription = null;
   if (u.subscriptionStatus === "active" || u.subscriptionStatus === "past_due" || u.subscriptionExpiresAt) {
@@ -111,6 +111,8 @@ router.get("/status", requireAuth, loadUser, async (req, res) => {
     status: effective,
     active,
     trial,
+    /* Paywall state, so the client knows to hide every subscribe prompt. */
+    billingEnabled: config.BILLING_ENABLED,
     subscription,
     billing: {
       interval: "monthly",
@@ -237,6 +239,10 @@ router.post("/chat", requireAuth, loadUser, async (req, res, next) => {
    subscription.
 */
 router.post("/submit-payment", requireAuth, loadUser, (req, res) => {
+  /* Paywall disabled: do not accept money or queue receipts for review. */
+  if (!config.BILLING_ENABLED) {
+    return res.status(503).json({ error: "نظام الاشتراك معطّل حالياً" });
+  }
   const u = req.userDoc;
   const type = userTypeOf(u);
   const method = String((req.body && req.body.method) || "");
@@ -391,6 +397,15 @@ router.post("/submit-payment", requireAuth, loadUser, (req, res) => {
 // after payment approval; otherwise preview text is returned).
 router.get("/my-chats", requireAuth, loadUser, (req, res) => {
   const store = db.get();
+  /* Billing disabled: unlock every reply that was previously gated behind a
+     payment, otherwise old chats stay blurred for good. */
+  if (!config.BILLING_ENABLED) {
+    let opened = 0;
+    for (const m of store.ai_chats || []) {
+      if (m && m.is_revealed === false) { m.is_revealed = true; opened++; }
+    }
+    if (opened) db.save();
+  }
   const list = store.ai_chats
     .filter((m) => m.user_id === req.userDoc.id)
     .sort((a, b) => (a.created_at || "").localeCompare(b.created_at || ""))

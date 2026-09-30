@@ -419,7 +419,7 @@
           </div>
           <div class="field">
             <label>الموقع الرسمي</label>
-            <input type="url" name="website" placeholder="https://www.example.com">
+            <input type="text" name="website" placeholder="example.com" inputmode="url" autocomplete="url">
           </div>
         </div>
       </div>
@@ -1070,6 +1070,25 @@ const MAX_SIZE   = 230 * 1024 * 1024; // 230MB — same cap as the server/direct
         return;
       }
 
+      // Snapshot the form BEFORE setFrozen(true) below. Per the HTML spec,
+      // `new FormData(form)` omits disabled controls, so reading it after the
+      // freeze posts an empty payload and the server replies
+      // "بريد إلكتروني صالح مطلوب" even though the field was filled in.
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      // The club website is optional. It is a plain text input (not type="url")
+      // so that a bare domain such as "club.com" is accepted instead of being
+      // rejected by the browser's URL validation. Normalise whatever was typed
+      // into a full https:// URL, and drop the field entirely when left blank.
+      if (typeof data.website === 'string') {
+        const raw = data.website.trim();
+        if (!raw) {
+          delete data.website;
+        } else if (!/^https?:\/\//i.test(raw)) {
+          data.website = 'https://' + raw.replace(/^\/+/, '');
+        }
+      }
+
       btn.disabled = true;
       setFrozen(true); // freeze all data fields while the video upload is running
       try {
@@ -1120,7 +1139,6 @@ const MAX_SIZE   = 230 * 1024 * 1024; // 230MB — same cap as the server/direct
 
         // 2) submit the request for admin review
         btn.textContent = 'جاري إرسال الطلب للمراجعة...';
-        const data = Object.fromEntries(new FormData(form).entries());
         data.files = [...form.querySelectorAll('input[type="file"]')].map(i => i.files[0]?.name).filter(Boolean);
         data.videos = videos;
         data.role = role;

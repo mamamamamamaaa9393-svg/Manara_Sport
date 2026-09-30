@@ -4,10 +4,19 @@
    project runs locally with zero setup. NEVER expose secrets to the client —
    the frontend receives only what /api/subscription/status returns.
    ========================================================================== */
-const TRIAL_DAYS = Number(process.env.TRIAL_DAYS || 7); // fallback when a user type has no specific value
+/* MASTER KILL SWITCH — the whole paywall is currently DISABLED.
+   When BILLING_ENABLED=false:
+     - hasAccess() always returns true  -> every requireActiveSub gate opens
+     - effectiveStatus() reports "active" -> the UI shows no paywall / no lock
+     - checkout + receipt submission are refused (money is not taken)
+   Nothing is deleted: set BILLING_ENABLED=true to restore the paywall fully. */
+const BILLING_ENABLED = String(process.env.BILLING_ENABLED || "false").toLowerCase() === "true";
+/* No free trial: 0 days. Even if billing is re-enabled later there is no
+   trial window unless TRIAL_DAYS_* is explicitly set. */
+const TRIAL_DAYS = Number(process.env.TRIAL_DAYS || 0); // fallback when a user type has no specific value
 const TRIAL_DAYS_BY_TYPE = {
-  club: Number(process.env.TRIAL_DAYS_CLUB || 7), // clubs: 7 free days
-  gamer: Number(process.env.TRIAL_DAYS_GAMER || 2) // players: 2 free days
+  club: Number(process.env.TRIAL_DAYS_CLUB || 0), // clubs: no trial
+  gamer: Number(process.env.TRIAL_DAYS_GAMER || 0) // players: no trial
 };
 const GRACE_DAYS = Number(process.env.PAYMENT_GRACE_DAYS || 3); // renewal grace period
 const EXPIRY_REMINDER_DAYS = Number(process.env.EXPIRY_REMINDER_DAYS || 3); // email reminder before period end
@@ -49,6 +58,7 @@ const PENDING_GRANTS_ACCESS = String(process.env.PENDING_GRANTS_ACCESS || "false
 const RECEIPT_AUTO_APPROVE = String(process.env.RECEIPT_AUTO_APPROVE || "false").toLowerCase() === "true";
 
 module.exports = {
+  BILLING_ENABLED,
   TRIAL_DAYS,
   TRIAL_DAYS_BY_TYPE,
   GRACE_DAYS,

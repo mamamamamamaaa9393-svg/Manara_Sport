@@ -12,6 +12,7 @@ const db = require("../db");
 const { requireAuth } = require("../middleware/auth");
 const sub = require("../subscription");
 const kashier = require("../kashier");
+const config = require("../config");
 
 const SITE_URL = String(process.env.SITE_URL || "http://localhost:5000").replace(/\/$/, "");
 const MODE = kashier.MODE;
@@ -27,6 +28,10 @@ function loadUser(req, res, next) {
    authenticated user. Reuses the same server-side price as the manual flow. */
 router.post("/kashier/checkout", requireAuth, loadUser, async (req, res, next) => {
   try {
+    /* Paywall disabled: never create a payment session (no money is taken). */
+    if (!config.BILLING_ENABLED) {
+      return res.status(503).json({ error: "نظام الاشتراك معطّل حالياً" });
+    }
     if (!kashier.enabled()) {
       return res.status(503).json({ error: "بوابة الدفع الإلكتروني غير مفعّلة حالياً — استخدم التحويل اليدوي" });
     }

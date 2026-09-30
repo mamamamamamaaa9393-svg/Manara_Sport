@@ -37,6 +37,10 @@
   // (the /api/subscription/status response).
   function render(el, st) {
     if (!el) return;
+    /* Billing disabled server-side: hide the banner entirely. The server
+       reports status "active" for everyone, which would otherwise render a
+       misleading "اشتراكك مفعّل" confirmation. */
+    if (st && st.billingEnabled === false) { injectBillingOffStyle(); el.style.display = "none"; return; }
     if (!st) { el.style.display = "none"; return; }
 
     var price = st.price != null ? st.price : "";
@@ -111,5 +115,19 @@
     el.style.display = "none";
   }
 
-  window.SubBanner = { render: render };
+  /* When billing is disabled, hide every subscribe/plan link across the whole
+     app (navs render them from generated partials we must not touch). Injected
+     once, on first status fetch, and kept for the page's lifetime. */
+  var billingOffInjected = false;
+  function injectBillingOffStyle() {
+    if (billingOffInjected) return;
+    billingOffInjected = true;
+    var s = document.createElement("style");
+    s.setAttribute("data-billing-off", "1");
+    s.textContent = 'a[href*="subscribe.html"],a[href*="plans.html"]{display:none !important}' +
+      '.trial-chip{display:none !important}';
+    (document.head || document.documentElement).appendChild(s);
+  }
+
+  window.SubBanner = { render: render, disableBillingUI: injectBillingOffStyle };
 })();
