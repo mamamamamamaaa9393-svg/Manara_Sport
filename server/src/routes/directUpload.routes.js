@@ -21,7 +21,7 @@ const { registerQuota, chargeUpload } = require("../uploadQuota");
 const mg = require("../mediaGuard");
 
 const UPLOAD_DIR = path.join(__dirname, "..", "..", "uploads");
-const MAX_VIDEO_BYTES = 230 * 1024 * 1024; // 230MB (Cloudinary free-plan hard cap is 100MB — bigger will fail at Cloudinary)
+const MAX_VIDEO_BYTES = 400 * 1024 * 1024; // 400MB (Cloudinary free-plan hard cap is 100MB — bigger will fail at Cloudinary)
 const PERMIT_TTL_MS = 40 * 60 * 1000; // a phone on mobile data may take a while
 const MAX_PERMIT_BY_IP = 10; // cap outstanding (signed-not-confirmed) permits
 const DIRECT_FOLDER = "manara/videos"; // separate from background promotion
@@ -177,7 +177,7 @@ router.post("/confirm", registerQuota, async (req, res) => {
   }
   permits.delete(publicId); // one-time use
   if (bytes <= 0 || bytes > MAX_VIDEO_BYTES) {
-    return res.status(400).json({ error: "الفيديو كبير جداً — الحد 230MB" });
+    return res.status(400).json({ error: "الفيديو كبير جداً — الحد 400MB" });
   }
   if (db.get().uploads.some((u) => u.publicId === publicId)) {
     return res.status(409).json({ error: "هذا الفيديو مُسجَّل مسبقاً" });

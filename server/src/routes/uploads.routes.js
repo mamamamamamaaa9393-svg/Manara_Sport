@@ -51,10 +51,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  // 230MB cap per file — the local-disk allowance. Videos larger than the
+  // 400MB cap per file — the local-disk allowance. Videos larger than the
   // Cloudinary free-plan cap (10MB) stay on this server, so no cloud limit
-  // applies. At phone bitrates 230MB is ~20+ minutes.
-  limits: { fileSize: 230 * 1024 * 1024 },
+  // applies.
+  limits: { fileSize: 400 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const ext = ALLOWED_MIME[file.mimetype];
     if (!ext) {
@@ -67,7 +67,7 @@ const upload = multer({
 });
 
 const MAX_DOC_BYTES = 10 * 1024 * 1024; // documents / photos: 10MB
-const MAX_VIDEO_BYTES = 230 * 1024 * 1024; // videos: 230MB (local disk; the Cloudinary free-plan hard cap is 10MB per file — videos above that stay local permanently)
+const MAX_VIDEO_BYTES = 400 * 1024 * 1024; // videos: 400MB (local disk; the Cloudinary free-plan hard cap is 10MB per file — videos above that stay local permanently)
 const isVideo = (f) => f.mimetype && f.mimetype.startsWith("video/");
 
 function makeRecord(f, uploadedBy) {
@@ -279,7 +279,7 @@ router.post("/", requireAuth, upload.array("file", 10), (req, res, next) => {
     }
     const f = req.files[i];
     if (isVideo(f)) {
-      if (f.size > MAX_VIDEO_BYTES) return fail("الفيديو كبير جداً — الحد 230MB");
+      if (f.size > MAX_VIDEO_BYTES) return fail("الفيديو كبير جداً — الحد 400MB");
     } else if (f.size > MAX_DOC_BYTES) {
       return fail("الملف أكبر من 10MB — غير مسموح");
     }
@@ -333,7 +333,7 @@ router.post("/register-upload", registerQuota, upload.single("file"), async (req
   };
 
   if (isVideo(req.file)) {
-    if (req.file.size > MAX_VIDEO_BYTES) return fail("الفيديو كبير جداً — الحد 230MB");
+    if (req.file.size > MAX_VIDEO_BYTES) return fail("الفيديو كبير جداً — الحد 400MB");
   } else if (req.file.size > MAX_DOC_BYTES) {
     return fail("الملف أكبر من 10MB — غير مسموح");
   }

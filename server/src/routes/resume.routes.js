@@ -104,7 +104,7 @@ router.post("/start", (req, res) => {
   }
   if (!(size > 0)) return res.status(400).json({ error: "حجم الملف غير صالح" });
   if (mime.startsWith("video/")) {
-    if (size > MAX_VIDEO_BYTES) return res.status(400).json({ error: "الفيديو كبير جداً — الحد 230MB" });
+    if (size > MAX_VIDEO_BYTES) return res.status(400).json({ error: "الفيديو كبير جداً — الحد 400MB" });
   } else if (size > MAX_DOC_BYTES) {
     return res.status(400).json({ error: "الملف أكبر من 10MB — غير مسموح" });
   }
@@ -249,7 +249,7 @@ router.post("/complete", async (req, res) => {
   const fileLike = { filename, originalname: meta.name, mimetype: meta.mime, size: meta.size };
 
   if (isVideo(fileLike)) {
-    if (fileLike.size > MAX_VIDEO_BYTES) return fail("الفيديو كبير جداً — الحد 230MB");
+    if (fileLike.size > MAX_VIDEO_BYTES) return fail("الفيديو كبير جداً — الحد 400MB");
   } else if (fileLike.size > MAX_DOC_BYTES) {
     return fail("الملف أكبر من 10MB — غير مسموح");
   }

@@ -237,7 +237,7 @@
                 <input type="file" id="videoInput" accept="video/*,.mkv" multiple>
                 <div class="ico">🎬</div>
                 <div class="txt">اسحب الفيديوهات هنا أو اضغط للاختيار</div>
-                <div class="hint">MP4, MOV, WEBM, MKV, 3GP — من دقيقة إلى 10 دقائق — حتى 230MB — بدون أي تعديل كل فيديو منفصل عباره عن المهرات الأساسية مثل التمرير-الاستلام والسيطرة:-الجري بالكرة-المراوغة-التسديد</div>
+                <div class="hint">MP4, MOV, WEBM, MKV, 3GP — من دقيقة إلى 10 دقائق — حتى 400MB — بدون أي تعديل كل فيديو منفصل عباره عن المهرات الأساسية مثل التمرير-الاستلام والسيطرة:-الجري بالكرة-المراوغة-التسديد</div>
                 <span class="counter" id="videoCounter">0 / 6</span>
               </div>
               <div class="video-warning" id="videoWarn"></div>
@@ -620,7 +620,7 @@
 
   // ===== Multi-video upload system =====
 const MAX_VIDEOS = 6;
-const MAX_SIZE   = 230 * 1024 * 1024; // 230MB — same cap as the server/directUpload
+const MAX_SIZE   = 400 * 1024 * 1024; // 400MB — same cap as the server/directUpload
   const ACCEPTED   = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/x-matroska', 'video/3gpp', 'video/3gpp2', 'video/x-m4v'];
   const videoStore = []; // {id, file, name, size, duration, thumb, status, progress}
 
@@ -686,7 +686,7 @@ const MAX_SIZE   = 230 * 1024 * 1024; // 230MB — same cap as the server/direct
       }
       // limit size
       if (file.size > MAX_SIZE) {
-        showWarn(`❌ "${file.name}" أكبر من 230MB`);
+        showWarn(`❌ "${file.name}" أكبر من 400MB`);
         return;
       }
       // dedupe by name+size
