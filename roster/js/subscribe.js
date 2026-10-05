@@ -306,7 +306,7 @@
         $("subBody").style.display = "none";
         $("activeTitle").textContent = "كل المميزات متاحة";
         $("activeMsg").textContent =
-          "نظام الاشتراك معطّل حالياً — لا يوجد تح��يل ولا اشتراك. جميع مزايا المنصة مفتوحة لك بالكامل بلا حدود.";
+          "جميع مزايا المنصة مفتوحة لك بالكامل بلا حدود";
         $("activeChip").textContent = "وصول كامل";
         var mc = $("manageCard"); if (mc) mc.style.display = "none";
         var an = $("cancelNote"); if (an) an.textContent = "";
